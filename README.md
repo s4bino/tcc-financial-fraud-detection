@@ -121,6 +121,53 @@ ao rodar localmente.
 
 ---
 
+## Ambiente de execução do HDBSCAN
+
+O experimento não supervisionado foi executado no Google Colab. A máquina de
+referência é a seguinte, com as especificações medidas na própria sessão:
+
+| Recurso | Especificação |
+|---|---|
+| Acelerador | NVIDIA L4 |
+| Memória da GPU | 23.034 MiB |
+| Driver NVIDIA | 580.82.07 |
+| Memória do sistema | 53,0 GiB |
+| Processadores | 12 vCPUs (6 núcleos físicos) |
+| Disco em `/content` | 113 GiB |
+| cuML | 26.02 (pré-instalado na imagem) |
+| scikit-learn / pandas / NumPy | 1.6.1 / 2.2.3 / 2.1.3 |
+| `dbcv` | instalado a partir do repositório de origem |
+
+**Por que a L4.** A escolha do acelerador é determinada pela memória, não pela
+capacidade de cálculo. O ajuste do HDBSCAN leva segundos em qualquer GPU, ao
+passo que o DBCV é executado em CPU e monta matrizes de distância de `n²` — para
+os 28.000 pontos da amostra, 5,84 GiB por matriz, replicadas entre os processos.
+O pico medido foi de **17,6 GiB**, o que exclui a faixa de 12,7 GiB da T4 e
+dispensa os ~83 GiB da A100. A L4 é a menor máquina adequada, com folga de 2,7×.
+
+### Tempo de execução
+
+Medido em uma combinação (`min_cluster_size=5`, `min_samples=300`, fold interno 1)
+e extrapolado para a grade completa:
+
+| Etapa | Tempo |
+|---|---|
+| Ajuste do HDBSCAN | 16,5 s |
+| Cálculo do DBCV (12 processos) | 159,1 s |
+| **Por combinação** | **175,6 s** |
+| **Grade de 21 combinações × 5 folds (105 execuções)** | **≈ 5,1 h** |
+
+A extrapolação é aproximada: o custo do DBCV depende da estrutura de
+agrupamento encontrada, e configurações que produzem mais clusters demoram mais.
+Para uma única sessão de ambiente de execução, convém reservar o dobro da
+estimativa — cerca de **12 horas**.
+
+A reprodutibilidade foi verificada: a mesma combinação executada nesta máquina
+reproduziu o resultado do experimento original até a sexta casa decimal
+(DBCV 0,181026, 4 clusters, 54.220 pontos de ruído).
+
+---
+
 ## Testes
 
 ```bash
