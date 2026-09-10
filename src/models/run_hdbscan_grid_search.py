@@ -217,11 +217,11 @@ def hdbscan_internal_grid_with_tracking(
     with open(os.path.join(output_dir, "best_params_hdbscan.json"), "w") as f:
         json.dump(best_params_per_fold, f, indent=4)
 
-    return df_folds, df_summary, best_params_per_fold # melhor parametro de todos CORRIGIR
+    return df_folds, df_summary, best_params_per_fold
 
 def hdbscan_outer_evaluation(
     outer_folds_dir,
-    best_params_per_fold,
+    best_parameter_achieved,
     target="Class",
     output_dir="results/unsupervised"
 ):
@@ -230,8 +230,17 @@ def hdbscan_outer_evaluation(
 
     print("\n--- Iniciando Avaliação Externa (Outer Folds) com Predição ---")
 
-    for fold, params in best_params_per_fold.items():
-        print(f"Avaliando Fold Externo {fold} com parâmetros: {params}")
+    folds = sorted({
+        int(f.split("_")[1])
+        for f in os.listdir(outer_folds_dir)
+        if f.endswith("_train.csv")
+    })
+
+    min_cluster_size = int(best_parameter_achieved["min_cluster_size"])
+    min_samples = int(best_parameter_achieved["min_samples"])
+
+    for fold in folds:
+        print(f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}")
 
         train_path = os.path.join(outer_folds_dir, f"fold_{fold}_train.csv")
         test_path = os.path.join(outer_folds_dir, f"fold_{fold}_test.csv")
@@ -255,14 +264,9 @@ def hdbscan_outer_evaluation(
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_test_scaled = preprocessor.transform(X_test)
 
-
-        model_params = {k: v for k, v in params.items() if k != 'best_dbcv_score'} # PEGO O MELHOR DE TODOS
-
-        model_params['min_cluster_size'] = int(model_params['min_cluster_size'])
-        model_params['min_samples'] = int(model_params['min_samples'])
-
         model = HDBSCAN(
-            **model_params, # PASSANDO O MELHOR 5 E 300
+            min_cluster_size=min_cluster_size,
+            min_samples=min_samples,
             prediction_data=True
         )
 
@@ -289,8 +293,8 @@ def hdbscan_outer_evaluation(
 
         final_metrics.append({
             "fold": fold,
-            "min_cluster_size": params["min_cluster_size"],
-            "min_samples": params["min_samples"],
+            "min_cluster_size": min_cluster_size,
+            "min_samples": min_samples,
             "precision": prec,
             "recall": rec,
             "f1": f1,
@@ -342,10 +346,18 @@ if __name__ == "__main__":
     print("\nMelhores parâmetros encontrados por fold:")
     print(json.dumps(best_params_per_fold, indent=4))
 
+    best_parameter_achieved = max(
+        best_params_per_fold.values(),
+        key=lambda fold_params: fold_params["best_dbcv_score"]
+    )
+
+    print("\nMelhor parâmetro obtido no ciclo interno:")
+    print(json.dumps(best_parameter_achieved, indent=4))
+
     print("\n=== ETAPA 2: Avaliação Externa (Verificando Fraudes com Labels Reais) ===")
     df_final_report = hdbscan_outer_evaluation(
         outer_folds_dir=OUTER_FOLDS_DIR,
-        best_params_per_fold=best_params_per_fold, #
+        best_parameter_achieved=best_parameter_achieved,
         target="Class",
         output_dir=f"{RESULTS_DIR}/final_reports_hdbscan"
     )
