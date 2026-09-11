@@ -106,6 +106,18 @@ docs/references/articles/**/*.pdf
 .obsidian/
 
 #==============================================================================
+# Rascunhos (docs/scratch)
+#
+# O texto oficial e o LaTeX em docs/monografia. A pasta docs/scratch guarda
+# rascunhos, anotacoes de trabalho e scripts auxiliares de apoio, que mudam a
+# cada sessao de escrita e nao compoem o repositorio.
+#==============================================================================
+docs/scratch/
+*.docx
+*.doc
+~$*.docx
+
+#==============================================================================
 # Editores e IDEs
 #==============================================================================
 .vscode/

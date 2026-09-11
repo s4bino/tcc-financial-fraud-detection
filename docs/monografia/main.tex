@@ -214,7 +214,7 @@ O DBSCAN é um algoritmo de agrupamento que identifica padrões nos dados fundam
 
 A premissa fundamental do algoritmo é localizar regiões contínuas que satisfaçam essa densidade mínima, isolando-as de áreas mais esparsas do conjunto de dados. Para garantir eficiência computacional, o DBSCAN não calcula a densidade nos espaços vazios entre os pontos \cite{schubert2017}. Em vez disso, o modelo define que todos os vizinhos contidos no raio $\epsilon$ de um ponto central pertencem ao mesmo agrupamento (\textit{cluster}), sendo chamados de "diretamente alcançáveis por densidade". Caso algum desses vizinhos também seja um ponto central, o agrupamento se expande de forma transitiva para englobar as suas respectivas vizinhanças.
 
-Dentro da estrutura final do \textit{cluster}, os elementos que não atingem o limiar de vizinhos para serem centrais, mas estão dentro do raio de alcance de um ponto central, são classificados como "pontos de borda" (\textit{border points}). Por fim, os dados que estão isolados e não são alcançáveis pela densidade de nenhum agrupamento são categorizados como ruído (\textit{noise}). Nesse estudo, fraudes serão consideradas ruídos \cite{schubert2017}.
+Dentro da estrutura final do \textit{cluster}, os elementos que não atingem o limiar de vizinhos para serem centrais, mas estão dentro do raio de alcance de um ponto central, são classificados como "pontos de borda" (\textit{border points}). Por fim, os dados que estão isolados e não são alcançáveis pela densidade de nenhum agrupamento são categorizados como ruído (\textit{noise}). Neste estudo, fraudes serão consideradas ruídos \cite{schubert2017}.
 
 %==============================================================================
 % Metodologia
