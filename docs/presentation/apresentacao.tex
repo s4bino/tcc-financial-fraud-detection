@@ -1,0 +1,180 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\usetheme{default}
+\usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{itemize items}[circle]
+\definecolor{ufla}{rgb}{0.09,0.30,0.20}
+\setbeamercolor{structure}{fg=ufla}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+
+\title{Detecção de fraudes financeiras}
+\subtitle{Agrupamento HDBSCAN em comparação com Random Forest e XGBoost}
+\author{Heitor Rodrigues Sabino}
+\institute{Universidade Federal de Lavras \\ \smallskip
+\footnotesize Orientadora: Elaine Cecilia Gatto \\
+Coorientador: Natanael Fabrício Dacioli Batista}
+\date{2026}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% =============================================================================
+\begin{frame}{O problema}
+
+    Fraude em cartão de crédito é um evento \textbf{raro} e \textbf{mutável}.
+
+    \bigskip
+    \begin{itemize}
+        \item A base do Machine Learning Group da ULB tem 284.807 transações e
+              apenas \textbf{492 fraudes} --- 0,172\%.
+        \item Modelos supervisionados aprendem os padrões de fraude
+              \textbf{já rotulados}. Fraudes novas, por definição, não estão nos
+              rótulos.
+        \item Rotular transações é caro e sempre chega atrasado.
+    \end{itemize}
+
+    \bigskip
+    \begin{block}{Hipótese}
+        Se fraude é uma anomalia, um algoritmo de densidade deveria encontrá-la
+        \textbf{sem usar os rótulos} --- como ruído.
+    \end{block}
+
+\end{frame}
+
+% =============================================================================
+\begin{frame}{A pergunta de pesquisa}
+
+    \begin{center}
+    \large
+    Um algoritmo não supervisionado de agrupamento por densidade compete com
+    classificadores supervisionados na detecção de fraudes?
+    \end{center}
+
+    \bigskip
+    \begin{columns}[t]
+        \begin{column}{0.48\textwidth}
+            \textbf{Não supervisionado}
+            \begin{itemize}
+                \item HDBSCAN
+                \item Fraude = ruído (rótulo $-1$)
+                \item Não vê a coluna \textit{Class} no treino
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Supervisionados (referência)}
+            \begin{itemize}
+                \item Random Forest
+                \item XGBoost
+                \item Treinam com os rótulos
+            \end{itemize}
+        \end{column}
+    \end{columns}
+
+\end{frame}
+
+% =============================================================================
+\begin{frame}{Como foi resolvido --- validação}
+
+    \textbf{Validação cruzada aninhada estratificada}
+
+    \bigskip
+    \begin{center}
+    \begin{tabular}{lrr}
+        \toprule
+        \textbf{Partição} & \textbf{Treino} & \textbf{Avaliação} \\
+        \midrule
+        5 \textit{folds} externos (80/20) & 227.845 & 56.961 \\
+        Divisão interna (80/20)           & 182.276 & 45.569 \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \bigskip
+    \begin{itemize}
+        \item Estratificada: cada partição preserva os 0,172\% de fraude.
+        \item Os dados que escolhem hiperparâmetros \textbf{nunca} são os que
+              estimam o desempenho.
+    \end{itemize}
+
+\end{frame}
+
+% =============================================================================
+\begin{frame}{Como foi resolvido --- pré-processamento e busca}
+
+    \textbf{Pré-processamento}
+    \begin{itemize}
+        \item \texttt{Time}: padronização Z-score --- variável incremental e
+              limitada.
+        \item \texttt{Amount}: \textit{Robust Scaler} --- os valores vão de
+              0,00 a 25.691,16, com mediana de 22,00.
+        \item \texttt{V1}--\texttt{V28}: mantidas; já são componentes de PCA.
+    \end{itemize}
+
+    \bigskip
+    \textbf{Busca em grade no ciclo interno}
+    \begin{itemize}
+        \item Supervisionados: seleção por \textbf{F1}.
+        \item HDBSCAN: seleção por \textbf{DBCV}
+              (\textit{Density-Based Clustering Validation}).
+    \end{itemize}
+
+    \bigskip
+    \begin{alertblock}{Por que DBCV}
+        É uma métrica interna: avalia a qualidade do agrupamento sem consultar
+        os rótulos. Usar F1 aqui contaminaria a etapa não supervisionada.
+    \end{alertblock}
+
+\end{frame}
+
+% =============================================================================
+\begin{frame}{Resultado preliminar --- e o problema que ele revelou}
+
+    O HDBSCAN é \textbf{instável entre partições quase idênticas}.
+
+    \bigskip
+    Mesma configuração (\texttt{min\_cluster\_size}=5,
+    \texttt{min\_samples}=300), cinco \textit{folds} internos:
+
+    \begin{center}
+    \begin{tabular}{lrrr}
+        \toprule
+         & \textbf{mínimo} & \textbf{máximo} & \textbf{amplitude} \\
+        \midrule
+        DBCV                & 0,107 & 0,959 & 0,852 \\
+        Pontos de ruído     & 7.985 & 130.231 & 122.246 \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+
+    \bigskip
+    \begin{itemize}
+        \item Como fraude é o rótulo de ruído, essa amplitude determina
+              diretamente quantas transações o modelo acusa.
+        \item O F1 do HDBSCAN ficou entre \textbf{0,011 e 0,070}.
+    \end{itemize}
+
+\end{frame}
+
+% =============================================================================
+\begin{frame}{Questão em aberto}
+
+    \begin{block}{Critério de seleção: máximo ou média?}
+        O ciclo interno elege o maior DBCV entre os cinco \textit{folds}. Numa
+        distribuição tão instável, o máximo seleciona também o \textit{fold}
+        mais favorável. A média é a escolha usual da validação aninhada.
+    \end{block}
+
+\end{frame}
+
+\end{document}
