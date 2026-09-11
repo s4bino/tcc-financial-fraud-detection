@@ -25,6 +25,10 @@ tqdm>=4.65
 # Detecção de núcleos físicos (src/models/run_supervised_grid_search.py)
 psutil>=5.9
 
+# Figuras e testes estatísticos da análise exploratória (src/analysis/)
+matplotlib>=3.8
+scipy>=1.11
+
 #==============================================================================
 # Dependências — GPU (somente src/models/run_hdbscan_grid_search.py)
 #

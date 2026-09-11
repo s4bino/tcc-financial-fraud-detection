@@ -1,6 +1,3 @@
-!pip install "git+https://github.com/FelSiq/DBCV"
-!pip install --extra-index-url=https://pypi.nvidia.com cuml-cu12
-
 import os
 import time
 import json
@@ -191,6 +188,12 @@ def hdbscan_internal_grid_with_tracking(
             print(f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | DBCV={dbcv_score:.4f} | F1 Val={f1:.4f}")
 
         del X_train, y_train, X_val, y_val
+
+        pd.DataFrame(all_trials_history).to_csv(
+            os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"),
+            index=False
+        )
+        print(f"Resultados parciais gravados ao fim do fold {fold}.")
 
     # ==============================================================
     # 6. GERAÇÃO DE RELATÓRIOS E SELEÇÃO DOS MELHORES
