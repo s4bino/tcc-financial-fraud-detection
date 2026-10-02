@@ -7,28 +7,84 @@ import numpy as np
 import pandas as pd
 from cuml.cluster import HDBSCAN
 from cuml.cluster.hdbscan import approximate_predict
+from cuml.neighbors import NearestNeighbors
 import dbcv
 
 from sklearn.metrics import (f1_score, precision_score, recall_score,
-                             roc_auc_score, average_precision_score, confusion_matrix)
+                             average_precision_score, confusion_matrix)
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler, StandardScaler
 
 from sklearn.model_selection import train_test_split
 
-def hdbscan_internal_grid_with_tracking(
+V_COLUMNS = [f"V{i}" for i in range(1, 29)]
+
+
+def to_numpy(values):
+    if hasattr(values, "get"):
+        return values.get()
+    if hasattr(values, "to_numpy"):
+        return values.to_numpy()
+    return np.asarray(values)
+
+
+def engineer_features(X):
+    # fds-et-19-anomaly-detection-models, célula 11, linha 50
+    hour = (X["Time"] % 86400) / 3600
+    features = X[V_COLUMNS].copy()
+    # fds-et-19-anomaly-detection-models, célula 11, linha 48
+    features["log_amount"] = np.log1p(X["Amount"])
+    features["hour_sin"] = np.sin(2 * np.pi * hour / 24)
+    features["hour_cos"] = np.cos(2 * np.pi * hour / 24)
+    return features
+
+
+def build_preprocessor():
+    return ColumnTransformer(
+        transformers=[
+            ("rob_scaler", RobustScaler(), ["log_amount"]),
+            ("std_scaler", StandardScaler(), ["hour_sin", "hour_cos"])
+        ],
+        remainder="passthrough"
+    )
+
+
+# fds-et-19-anomaly-detection-models, célula 15, linhas 62-65
+def neighbor_distances(X_reference, X_query, n_neighbors):
+    nn = NearestNeighbors(n_neighbors=n_neighbors)
+    nn.fit(X_reference)
+    distances, _ = nn.kneighbors(X_query)
+    return to_numpy(distances)
+
+
+# fds-et-19-anomaly-detection-models, célula 15, linhas 1-4 (lá min-max no teste; aqui posto relativo ao treino)
+def percentile_rank(reference, values):
+    return np.searchsorted(np.sort(reference), values, side="right") / len(reference)
+
+
+# fds-et-19-anomaly-detection-models, célula 31, linha 10
+def ensemble_score(train_scores, scores):
+    return np.mean(
+        [percentile_rank(reference, values) for reference, values in zip(train_scores, scores)],
+        axis=0
+    )
+
+
+def hdbscan_enhanced_internal_grid_with_tracking(
     internal_folds_dir,
     param_grid,
     target="Class",
     output_dir="results/unsupervised",
     n_processes=None,
     max_dbcv_sample_size=20000,
+    alert_rate=0.01,
     resume=False,
     only_folds=None
 ):
     """
     Treina o modelo na base de treino usando Grid Search clássico e otimiza pelo DBCV.
-    Testa os clusters na base de validação usando approximate_predict para rastrear métricas reais.
+    Na validação, combina a pertinência do approximate_predict com a distância núcleo do ponto
+    em um escore único e sinaliza como fraude a fração alert_rate mais anômala segundo o treino.
     A grid deve sempre conter 'min_cluster_size' e 'min_samples'.
     """
     os.makedirs(output_dir, exist_ok=True)
@@ -38,7 +94,7 @@ def hdbscan_internal_grid_with_tracking(
         for f in os.listdir(internal_folds_dir)
         if f.endswith("_train.csv")
     })
-    print(f"Folds encontrados para Avaliação (HDBSCAN): {folds}")
+    print(f"Folds encontrados para Avaliação (HDBSCAN aprimorado): {folds}")
 
 
     param_names = list(param_grid.keys())
@@ -46,40 +102,36 @@ def hdbscan_internal_grid_with_tracking(
     all_combinations = list(itertools.product(*param_values))
     df_param_combinations = pd.DataFrame(all_combinations, columns=param_names)
 
-    # df_param_combinations = pd.DataFrame(param_grid)
     print(f"Total de combinações HDBSCAN por fold: {len(df_param_combinations)}")
+
+    max_min_samples = int(df_param_combinations["min_samples"].max())
 
     best_params_per_fold = {}
     all_trials_history = []
-    completed_folds = set()
+    completed_trials = set()
 
-    partial_path = os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv")
+    partial_path = os.path.join(output_dir, "hdbscan_enhanced_grid_results_by_fold.csv")
 
     if resume and os.path.isfile(partial_path):
-        df_partial = pd.read_csv(partial_path)
-        rows_per_fold = df_partial.groupby("fold").size()
-        completed_folds = set(
-            int(f) for f in rows_per_fold[rows_per_fold == len(df_param_combinations)].index
-        )
-        df_partial = df_partial[df_partial["fold"].isin(completed_folds)]
-        all_trials_history = df_partial.to_dict("records")
+        all_trials_history = pd.read_csv(partial_path).to_dict("records")
+        completed_trials = {(int(row["fold"]), int(row["combo_id"])) for row in all_trials_history}
         print(f"Retomando de {partial_path}")
-        print(f"Folds completos, que serão pulados: {sorted(completed_folds)}")
-        print(f"Registros recuperados: {len(all_trials_history)}")
-        incompletos = set(int(f) for f in rows_per_fold.index) - completed_folds
-        if incompletos:
-            print(f"Folds gravados pela metade, que serão refeitos: {sorted(incompletos)}")
+        print(f"Combinações já concluídas, que serão puladas: {len(completed_trials)}")
 
     if only_folds:
         folds = [f for f in folds if f in set(only_folds)]
         print(f"Restrito aos folds: {folds}")
 
     for fold in folds:
-        if fold in completed_folds:
+        pending_combos = [
+            combo_id for combo_id in df_param_combinations.index
+            if (fold, combo_id) not in completed_trials
+        ]
+        if not pending_combos:
             print(f"\n--- Fold Interno {fold} já concluído, pulando ---")
             continue
 
-        print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ---")
+        print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ({len(pending_combos)} combinações pendentes) ---")
 
 
         train_path = os.path.join(internal_folds_dir, f"fold_{fold}_train.csv")
@@ -88,30 +140,32 @@ def hdbscan_internal_grid_with_tracking(
         df_train = pd.read_csv(train_path)
         df_val   = pd.read_csv(val_path)
 
-        X_train = df_train.drop(columns=[target])
-        y_train = df_train[target]
-        X_val   = df_val.drop(columns=[target])
+        # credit-card-fraud-detection-ds, célula 9, linha 2; credit-card-fraud-detection, célula 10, linha 3
+        X_train = engineer_features(df_train.drop(columns=[target]).drop_duplicates())
+        X_val   = engineer_features(df_val.drop(columns=[target]))
         y_val   = df_val[target]
         del df_train, df_val
 
         # ==============================================================
         # 2. PRÉ-PROCESSAMENTO
         # ==============================================================
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ("rob_scaler", RobustScaler(), ['Amount']),
-                ("std_scaler", StandardScaler(), ['Time'])
-            ],
-            remainder="passthrough"
-        )
+        preprocessor = build_preprocessor()
 
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_val_scaled = preprocessor.transform(X_val)
+
+        t_knn = time.time()
+        train_neighbor_distances = neighbor_distances(X_train_scaled, X_train_scaled, max_min_samples + 1)
+        val_neighbor_distances = neighbor_distances(X_train_scaled, X_val_scaled, max_min_samples)
+        print(f"Distâncias aos {max_min_samples} vizinhos calculadas em {time.time() - t_knn:.1f} s")
 
         # ==============================================================
         # GRID
         # ==============================================================
         for combo_id, combo in df_param_combinations.iterrows():
+            if (fold, combo_id) in completed_trials:
+                continue
+
             params_dict = combo.to_dict()
 
 
@@ -130,7 +184,7 @@ def hdbscan_internal_grid_with_tracking(
             model.fit(X_train_scaled)
             train_time = time.time() - t0
 
-            labels = model.labels_.to_numpy() if hasattr(model.labels_, 'to_numpy') else model.labels_
+            labels = to_numpy(model.labels_)
             n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
             n_noise = list(labels).count(-1)
 
@@ -177,20 +231,32 @@ def hdbscan_internal_grid_with_tracking(
             # 5. AVALIAÇÃO PREDITIVA NA VALIDAÇÃO (Tracking oculto)
             # ==============================================================
             t1 = time.time()
-            val_labels, val_probs = approximate_predict(model, X_val_scaled)
+            _, val_probs = approximate_predict(model, X_val_scaled)
+
+            train_scores = [
+                1.0 - to_numpy(model.probabilities_),
+                train_neighbor_distances[:, min_samples]
+            ]
+            val_scores = [
+                1.0 - to_numpy(val_probs),
+                val_neighbor_distances[:, min_samples - 1]
+            ]
+
+            train_ensemble = ensemble_score(train_scores, train_scores)
+            val_ensemble = ensemble_score(train_scores, val_scores)
+            # credit-card-fraud-detection-ds, célula 36, linha 2; credit-card-fraud-detection, célula 55, linhas 2-5
+            alert_threshold = np.quantile(train_ensemble, 1.0 - alert_rate)
             val_time = time.time() - t1
 
-            if hasattr(val_labels, 'get'): val_labels = val_labels.get()
-            if hasattr(val_probs, 'get'):  val_probs = val_probs.get()
+            # fds-et-19-anomaly-detection-models, célula 17, linha 3
+            preds = (val_ensemble >= alert_threshold).astype(int)
 
-            preds = (val_labels == -1).astype(int)
-            preds_proba = 1.0 - val_probs
-
-            f1    = f1_score(y_val, preds, zero_division=0)
-            prec  = precision_score(y_val, preds, zero_division=0)
-            rec   = recall_score(y_val, preds, zero_division=0)
-            auc   = roc_auc_score(y_val, preds_proba)
-            auprc = average_precision_score(y_val, preds_proba)
+            f1               = f1_score(y_val, preds, zero_division=0)
+            prec             = precision_score(y_val, preds, zero_division=0)
+            rec              = recall_score(y_val, preds, zero_division=0)
+            auprc            = average_precision_score(y_val, val_ensemble)
+            auprc_membership = average_precision_score(y_val, val_scores[0])
+            auprc_density    = average_precision_score(y_val, val_scores[1])
             tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
             all_trials_history.append({
@@ -204,8 +270,9 @@ def hdbscan_internal_grid_with_tracking(
                 "f1": f1,
                 "precision": prec,
                 "recall": rec,
-                "auc": auc,
                 "auprc": auprc,
+                "auprc_membership": auprc_membership,
+                "auprc_density": auprc_density,
                 "TP": tp,
                 "FP": fp,
                 "FN": fn,
@@ -213,21 +280,24 @@ def hdbscan_internal_grid_with_tracking(
                 "val_time": val_time
             })
 
-            print(f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | DBCV={dbcv_score:.4f} | F1 Val={f1:.4f}")
+            pd.DataFrame(all_trials_history).to_csv(partial_path, index=False)
 
-        del X_train, y_train, X_val, y_val
+            print(
+                f"Combo {combo_id} [{combo_id + 1}/{len(df_param_combinations)}] | min_cluster={min_cluster_size} | min_samples={min_samples} | "
+                f"clusters={n_clusters} | ruído={n_noise} ({n_noise / len(labels):.1%}) | DBCV={dbcv_score:.4f} | {time.time() - t0:.0f} s\n"
+                f"    AUPRC Val={auprc:.4f} (pertinência={auprc_membership:.4f}, kNN={auprc_density:.4f}) | "
+                f"Precisão={prec:.3f} | Recall={rec:.3f} | F1 Val={f1:.4f} | TP={tp} FP={fp} FN={fn}"
+            )
 
-        pd.DataFrame(all_trials_history).to_csv(
-            os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"),
-            index=False
-        )
-        print(f"Resultados parciais gravados ao fim do fold {fold}.")
+        del X_train, X_val, y_val, train_neighbor_distances, val_neighbor_distances
+
+        print(f"Fold interno {fold} concluído e gravado.")
 
     # ==============================================================
     # 6. GERAÇÃO DE RELATÓRIOS E SELEÇÃO DOS MELHORES
     # ==============================================================
     df_folds = pd.DataFrame(all_trials_history)
-    df_folds.to_csv(os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"), index=False)
+    df_folds.to_csv(os.path.join(output_dir, "hdbscan_enhanced_grid_results_by_fold.csv"), index=False)
 
     summary_data = []
     for fold in sorted(int(f) for f in df_folds['fold'].unique()):
@@ -243,18 +313,19 @@ def hdbscan_internal_grid_with_tracking(
         summary_data.append(best_row.to_dict())
 
     df_summary = pd.DataFrame(summary_data)
-    df_summary.to_csv(os.path.join(output_dir, "hdbscan_grid_best_summary.csv"), index=False)
+    df_summary.to_csv(os.path.join(output_dir, "hdbscan_enhanced_grid_best_summary.csv"), index=False)
 
-    with open(os.path.join(output_dir, "best_params_hdbscan.json"), "w") as f:
+    with open(os.path.join(output_dir, "best_params_hdbscan_enhanced.json"), "w") as f:
         json.dump(best_params_per_fold, f, indent=4)
 
     return df_folds, df_summary, best_params_per_fold
 
-def hdbscan_outer_evaluation(
+def hdbscan_enhanced_outer_evaluation(
     outer_folds_dir,
     best_parameter_achieved,
     target="Class",
-    output_dir="results/unsupervised"
+    output_dir="results/unsupervised",
+    alert_rate=0.01
 ):
     os.makedirs(output_dir, exist_ok=True)
     final_metrics = []
@@ -279,18 +350,12 @@ def hdbscan_outer_evaluation(
         df_train = pd.read_csv(train_path)
         df_test = pd.read_csv(test_path)
 
-        X_train = df_train.drop(columns=[target])
-        y_train = df_train[target]
-        X_test = df_test.drop(columns=[target])
+        # credit-card-fraud-detection-ds, célula 9, linha 2; credit-card-fraud-detection, célula 10, linha 3
+        X_train = engineer_features(df_train.drop(columns=[target]).drop_duplicates())
+        X_test = engineer_features(df_test.drop(columns=[target]))
         y_test = df_test[target]
 
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ("rob_scaler", RobustScaler(), ['Amount']),
-                ("std_scaler", StandardScaler(), ['Time'])
-            ],
-            remainder="passthrough"
-        )
+        preprocessor = build_preprocessor()
 
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_test_scaled = preprocessor.transform(X_test)
@@ -302,24 +367,36 @@ def hdbscan_outer_evaluation(
         )
 
         t0 = time.time()
-        model.fit(X_train_scaled) # Treina com a versão escalonada
+        model.fit(X_train_scaled)
         train_time = time.time() - t0
 
         t1 = time.time()
-        test_labels, test_probabilities = approximate_predict(model, X_test_scaled) # Avalia na versão escalonada
+        _, test_probabilities = approximate_predict(model, X_test_scaled)
+
+        train_scores = [
+            1.0 - to_numpy(model.probabilities_),
+            neighbor_distances(X_train_scaled, X_train_scaled, min_samples + 1)[:, min_samples]
+        ]
+        test_scores = [
+            1.0 - to_numpy(test_probabilities),
+            neighbor_distances(X_train_scaled, X_test_scaled, min_samples)[:, min_samples - 1]
+        ]
+
+        train_ensemble = ensemble_score(train_scores, train_scores)
+        test_ensemble = ensemble_score(train_scores, test_scores)
+        # credit-card-fraud-detection-ds, célula 36, linha 2; credit-card-fraud-detection, célula 55, linhas 2-5
+        alert_threshold = np.quantile(train_ensemble, 1.0 - alert_rate)
         predict_time = time.time() - t1
 
-        if hasattr(test_labels, 'get'): test_labels = test_labels.get()
-        if hasattr(test_probabilities, 'get'): test_probabilities = test_probabilities.get()
+        # fds-et-19-anomaly-detection-models, célula 17, linha 3
+        preds = (test_ensemble >= alert_threshold).astype(int)
 
-        preds = (test_labels == -1).astype(int)
-        preds_proba = 1.0 - test_probabilities
-
-        f1      = f1_score(y_test, preds, zero_division=0)
-        prec    = precision_score(y_test, preds, zero_division=0)
-        rec     = recall_score(y_test, preds, zero_division=0)
-        roc_auc = roc_auc_score(y_test, preds_proba)
-        auprc   = average_precision_score(y_test, preds_proba)
+        f1               = f1_score(y_test, preds, zero_division=0)
+        prec             = precision_score(y_test, preds, zero_division=0)
+        rec              = recall_score(y_test, preds, zero_division=0)
+        auprc            = average_precision_score(y_test, test_ensemble)
+        auprc_membership = average_precision_score(y_test, test_scores[0])
+        auprc_density    = average_precision_score(y_test, test_scores[1])
         tn, fp, fn, tp = confusion_matrix(y_test, preds, labels=[0, 1]).ravel()
 
         final_metrics.append({
@@ -329,8 +406,9 @@ def hdbscan_outer_evaluation(
             "precision": prec,
             "recall": rec,
             "f1": f1,
-            "roc_auc": roc_auc,
             "auprc": auprc,
+            "auprc_membership": auprc_membership,
+            "auprc_density": auprc_density,
             "TP": tp,
             "FP": fp,
             "FN": fn,
@@ -343,7 +421,7 @@ def hdbscan_outer_evaluation(
     mean_metrics["fold"] = "Média"
     df_final = pd.concat([df_final, pd.DataFrame([mean_metrics])], ignore_index=True)
 
-    report_path = os.path.join(output_dir, "hdbscan_outer_final_report.csv")
+    report_path = os.path.join(output_dir, "hdbscan_enhanced_outer_final_report.csv")
     df_final.to_csv(report_path, index=False)
     print(f"\nResultados preditivos finais reportados em: {report_path}")
 
@@ -354,7 +432,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Grid search do HDBSCAN com retomada por fold."
+        description="Grid search do HDBSCAN aprimorado com retomada por fold."
     )
     parser.add_argument(
         "--resume", action="store_true",
@@ -371,22 +449,27 @@ if __name__ == "__main__":
 
     RESULTS_DIR = "/content/drive/MyDrive/RESULTS"
 
+    # fds-et-19-anomaly-detection-models, célula 5, linha 4 (top-1%)
+    ALERT_RATE = 0.002
+
     param_grid_hdbscan = {
-        'min_cluster_size': [5, 25, 50],
-        'min_samples': [280, 290, 300, 315, 325, 350, 400]
+        'min_cluster_size': [5, 15, 50],
+        'min_samples': [10, 15, 20, 25, 30, 40, 50, 60]
     }
+
 
     n_cores_disponiveis = os.cpu_count() or 1
     print(f"Iniciando pipeline... Processos alocados para o DBCV: {n_cores_disponiveis}")
 
     print("=== ETAPA 1: Grid Search Interno (Treino + Tracking na Validação) ===")
-    df_folds, df_summary, best_params_per_fold = hdbscan_internal_grid_with_tracking(
+    df_folds, df_summary, best_params_per_fold = hdbscan_enhanced_internal_grid_with_tracking(
         internal_folds_dir=INTERNAL_FOLDS_DIR,
         param_grid=param_grid_hdbscan,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/grid_results_hdbscan",
+        output_dir=f"{RESULTS_DIR}/grid_results_hdbscan_enhanced",
         n_processes=n_cores_disponiveis,
         max_dbcv_sample_size=28000,
+        alert_rate=ALERT_RATE,
         resume=args.resume,
         only_folds=args.folds
     )
@@ -403,11 +486,12 @@ if __name__ == "__main__":
     print(json.dumps(best_parameter_achieved, indent=4))
 
     print("\n=== ETAPA 2: Avaliação Externa (Verificando Fraudes com Labels Reais) ===")
-    df_final_report = hdbscan_outer_evaluation(
+    df_final_report = hdbscan_enhanced_outer_evaluation(
         outer_folds_dir=OUTER_FOLDS_DIR,
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan"
+        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan_enhanced",
+        alert_rate=ALERT_RATE
     )
 
     print("\nRelatório Final (Outer Folds):")

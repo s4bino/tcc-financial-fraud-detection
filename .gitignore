@@ -118,6 +118,18 @@ docs/scratch/
 ~$*.docx
 
 #==============================================================================
+# Grafo de conhecimento (graphify) e configuracao do Claude Code
+#
+# graphify-out/ e gerado e guarda trechos extraidos dos rascunhos e dos artigos,
+# que nao podem ser redistribuidos. A configuracao das ferramentas e local a
+# esta maquina.
+#==============================================================================
+graphify-out/
+.graphifyignore
+CLAUDE.md
+.claude/
+
+#==============================================================================
 # Editores e IDEs
 #==============================================================================
 .vscode/
