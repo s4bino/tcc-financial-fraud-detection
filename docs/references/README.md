@@ -77,10 +77,13 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `schubert2017` | ✓ | Schubert, Sander, Ester, Kriegel & Xu. *DBSCAN Revisited, Revisited: Why and How You Should (Still) Use DBSCAN*. ACM TODS, 2017. |
+| `campello2013` | | Campello, Moulavi & Sander. *Density-Based Clustering Based on Hierarchical Density Estimates*. PAKDD, 2013. — artigo original do HDBSCAN. |
 | `campello2015` | | Campello, Moulavi, Zimek & Sander. *Hierarchical density estimates for data clustering, visualization, and outlier detection*. ACM TKDD, 2015. |
 | `moulavi2014` | | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. — origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
 | `akbari2016` | | Akbari & Unland. *Automated Determination of the Input Parameter of DBSCAN Based on Outlier Detection*. AIAI, 2016. |
 | `frenzel2021` | | Frenzel. *How To Tune HDBSCAN*. Towards Data Science, 2021. — fonte não revisada por pares; usar como apoio prático, não como citação de método. |
+| `thompson2024` | | Thompson. *Partition-Free Cluster Evaluation: Extending Cluster Validation and Cluster Extraction from Hierarchies*. Dissertação de mestrado, University of Alberta, 2024. — propõe o PFCE, candidato a substituir o DBCV na seleção do grid. |
+| `neto2022` | | Neto, Naldi, Campello & Sander. *CORE-SG: Efficient Computation of Multiple MSTs for Density-Based Methods*. ICDE, 2022. |
 
 ### outlier-detection
 
