@@ -22,7 +22,9 @@ def hdbscan_internal_grid_with_tracking(
     target="Class",
     output_dir="results/unsupervised",
     n_processes=None,
-    max_dbcv_sample_size=20000
+    max_dbcv_sample_size=20000,
+    resume=False,
+    only_folds=None
 ):
     """
     Treina o modelo na base de treino usando Grid Search clássico e otimiza pelo DBCV.
@@ -49,8 +51,34 @@ def hdbscan_internal_grid_with_tracking(
 
     best_params_per_fold = {}
     all_trials_history = []
+    completed_folds = set()
+
+    partial_path = os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv")
+
+    if resume and os.path.isfile(partial_path):
+        df_partial = pd.read_csv(partial_path)
+        rows_per_fold = df_partial.groupby("fold").size()
+        completed_folds = set(
+            int(f) for f in rows_per_fold[rows_per_fold == len(df_param_combinations)].index
+        )
+        df_partial = df_partial[df_partial["fold"].isin(completed_folds)]
+        all_trials_history = df_partial.to_dict("records")
+        print(f"Retomando de {partial_path}")
+        print(f"Folds completos, que serão pulados: {sorted(completed_folds)}")
+        print(f"Registros recuperados: {len(all_trials_history)}")
+        incompletos = set(int(f) for f in rows_per_fold.index) - completed_folds
+        if incompletos:
+            print(f"Folds gravados pela metade, que serão refeitos: {sorted(incompletos)}")
+
+    if only_folds:
+        folds = [f for f in folds if f in set(only_folds)]
+        print(f"Restrito aos folds: {folds}")
 
     for fold in folds:
+        if fold in completed_folds:
+            print(f"\n--- Fold Interno {fold} já concluído, pulando ---")
+            continue
+
         print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ---")
 
 
@@ -202,7 +230,7 @@ def hdbscan_internal_grid_with_tracking(
     df_folds.to_csv(os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"), index=False)
 
     summary_data = []
-    for fold in folds:
+    for fold in sorted(int(f) for f in df_folds['fold'].unique()):
         fold_data = df_folds[df_folds['fold'] == fold]
 
         best_row = fold_data.sort_values("dbcv_score", ascending=False).iloc[0]
@@ -323,6 +351,21 @@ def hdbscan_outer_evaluation(
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Grid search do HDBSCAN com retomada por fold."
+    )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="lê o CSV parcial e pula os folds já concluídos"
+    )
+    parser.add_argument(
+        "--folds", type=int, nargs="+", default=None,
+        help="executa apenas estes folds internos, por exemplo: --folds 2 3"
+    )
+    args = parser.parse_args()
+
     INTERNAL_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/internal_folds"
     OUTER_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/folds_output"
 
@@ -343,7 +386,9 @@ if __name__ == "__main__":
         target="Class",
         output_dir=f"{RESULTS_DIR}/grid_results_hdbscan",
         n_processes=n_cores_disponiveis,
-        max_dbcv_sample_size=28000
+        max_dbcv_sample_size=28000,
+        resume=args.resume,
+        only_folds=args.folds
     )
 
     print("\nMelhores parâmetros encontrados por fold:")
