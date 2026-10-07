@@ -118,6 +118,14 @@ docs/scratch/
 ~$*.docx
 
 #==============================================================================
+# Correcoes da orientacao (docs/corrections)
+#
+# Versoes da monografia devolvidas pela orientacao, com os trechos grifados e
+# os comentarios do revisor. Ficam apenas na copia local.
+#==============================================================================
+docs/corrections/
+
+#==============================================================================
 # Grafo de conhecimento (graphify) e configuracao do Claude Code
 #
 # graphify-out/ e gerado e guarda trechos extraidos dos rascunhos e dos artigos,
