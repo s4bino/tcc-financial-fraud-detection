@@ -23,6 +23,16 @@
 > ([[rezazadeh2025_review-of-machine-learning.pdf#page=11&selection=202,0,220,41&color=yellow|rezazadeh2025, p.11]])
 > Application in Financial Services: Within this sector, ML technology can assist companies in the financial domain by scrutinizing the underlying insights within financial data and detecting instances of financial malfeasance. ML can also prove beneficial in pinpointing opportunities for trading and investment. Cyber surveillance, a technology operating under the ML umbrella, has seen a dramatic rise in use within financial contexts, as it aids in the identification of individuals or entities approaching a zone of financial risk, thereby enabling the implementation of necessary preventative measures to avert fraudulent activities.
 
+> [!PDF|yellow] [[rezazadeh2025_review-of-machine-learning.pdf#page=19|rezazadeh2025, p.19]]
+> > Machine Learning algorithms are predominantly categorized into four main groups: Supervised learning, Unsupervised learning, Semi-supervised learning, and Reinforcement learning (Mohammed et al., 2016). [...] Unsupervised Learning: Unsupervised learning is characterized by the analysis of unlabeled datasets without the necessity for human intervention, thus representing a data-driven process (Han et al., 2011). This approach is widely adopted for extracting generative features, identifying significant trends and underlying structures, forming groupings within results, and for general exploratory data analysis. [...] Semi-supervised Learning: Semi-supervised learning can be described as an amalgamation of the previously mentioned supervised and unsupervised methodologies, as it operates using both labeled and unlabeled data (Han et al., 2011; Sarker et al., 2020f). [...] Reinforcement Learning: [...] This type of learning operates on a system of rewards or penalties, and its fundamental objective is to utilize insights gleaned from environmental interactions [...]
+>
+> Página 192 na numeração da revista. Sustenta as quatro categorias do Aprendizado de Máquina (Seção 3.1) e o aprendizado não supervisionado como processo orientado pelos dados, que revela estruturas sem o uso de rótulos (Seção 3.1.2).
+
+> [!PDF|yellow] [[rezazadeh2025_review-of-machine-learning.pdf#page=13|rezazadeh2025, p.13]]
+> > Semi-supervised learning: This learning algorithm is generally applied for the same objectives as supervised learning. However, this technique utilizes not only labeled data but also incorporates unlabeled data for its training purposes.
+>
+> Página 186 na numeração da revista. Sustenta a definição do aprendizado semissupervisionado (Seção 3.1).
+
 
 
 
