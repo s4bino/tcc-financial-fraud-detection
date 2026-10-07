@@ -712,11 +712,11 @@ if __name__ == "__main__":
     RESULTS_DIR = "/content/drive/MyDrive/RESULTS"
 
     # fds-et-19-anomaly-detection-models, célula 5, linha 4 (top-1%)
-    ALERT_RATE = 0.002
+    ALERT_RATE = 0.001
 
     param_grid_hdbscan = {
-        'min_cluster_size': [5, 15, 50],
-        'min_samples': [10, 15, 20, 25, 30, 40, 50, 60]
+        'min_cluster_size': [50],
+        'min_samples': [150, 200, 250, 300, 350, 400, 500]
     }
 
 
