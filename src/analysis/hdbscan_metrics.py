@@ -44,14 +44,19 @@ METRICS = [
 
 def load():
     df = pd.read_csv(RESULTS)
-    df["config"] = ("mcs " + df["min_cluster_size"].astype(int).astype(str)
-                    + " | ms " + df["min_samples"].astype(int).astype(str))
+    df["config"] = (
+        "mcs "
+        + df["min_cluster_size"].astype(int).astype(str)
+        + " | ms "
+        + df["min_samples"].astype(int).astype(str)
+    )
     return df
 
 
 def pivot(df, metric):
-    table = df.pivot_table(index=["min_cluster_size", "min_samples"],
-                           columns="fold", values=metric, aggfunc="mean")
+    table = df.pivot_table(
+        index=["min_cluster_size", "min_samples"], columns="fold", values=metric, aggfunc="mean"
+    )
     return table.sort_index()
 
 
@@ -63,27 +68,23 @@ def config_labels(table):
 # Figure 01 — Metric stability heatmaps
 # ===========================================================================
 
+
 def figure_stability(df):
     import matplotlib.pyplot as plt
 
-    fig, axes = plt.subplots(1, len(METRICS),
-                             figsize=(3.0 * len(METRICS), 8.4),
-                             sharey=True)
+    fig, axes = plt.subplots(1, len(METRICS), figsize=(3.0 * len(METRICS), 8.4), sharey=True)
 
     for position, (ax, (key, label, _)) in enumerate(zip(axes, METRICS)):
         table = pivot(df, key)
         matrix = table.to_numpy()
         ax.grid(False)
-        im = ax.imshow(matrix, cmap=ps.SEQUENTIAL, aspect="auto",
-                       interpolation="nearest")
-        ax.set_xticks(range(matrix.shape[1]),
-                      [str(int(c)) for c in table.columns])
+        im = ax.imshow(matrix, cmap=ps.SEQUENTIAL, aspect="auto", interpolation="nearest")
+        ax.set_xticks(range(matrix.shape[1]), [str(int(c)) for c in table.columns])
         ax.set_xlabel("Fold")
         ax.set_title(label, loc="left")
 
         if position == 0:
-            ax.set_yticks(range(matrix.shape[0]), config_labels(table),
-                          fontsize=7)
+            ax.set_yticks(range(matrix.shape[0]), config_labels(table), fontsize=7)
             ax.set_ylabel("Configuração")
 
         bar = fig.colorbar(im, ax=ax, fraction=0.055, pad=0.03)
@@ -91,17 +92,21 @@ def figure_stability(df):
         bar.ax.tick_params(labelsize=7)
 
     fig.suptitle("Variação de cada métrica entre os folds internos", y=1.015)
-    ps.footnote(fig, "Cada linha é uma combinação de hiperparâmetros; cada "
-                     "coluna, um fold. Uma linha de tom uniforme indica "
-                     "configuração estável; variação de tom dentro da mesma "
-                     "linha indica sensibilidade à partição. As escalas de cor "
-                     "são independentes entre métricas.")
+    ps.footnote(
+        fig,
+        "Cada linha é uma combinação de hiperparâmetros; cada "
+        "coluna, um fold. Uma linha de tom uniforme indica "
+        "configuração estável; variação de tom dentro da mesma "
+        "linha indica sensibilidade à partição. As escalas de cor "
+        "são independentes entre métricas.",
+    )
     return fig
 
 
 # ===========================================================================
 # Figure 02 — Spread per configuration
 # ===========================================================================
+
 
 def figure_spread(df, key="dbcv_score", label="DBCV"):
     import matplotlib.pyplot as plt
@@ -110,22 +115,47 @@ def figure_spread(df, key="dbcv_score", label="DBCV"):
     summary = grouped.agg(["min", "max", "median", "mean", "std"]).reset_index()
     summary["spread"] = summary["max"] - summary["min"]
     summary = summary.sort_values("spread").reset_index(drop=True)
-    labels = [f"mcs {int(a)} | ms {int(b)}"
-              for a, b in zip(summary["min_cluster_size"], summary["min_samples"])]
+    labels = [
+        f"mcs {int(a)} | ms {int(b)}"
+        for a, b in zip(summary["min_cluster_size"], summary["min_samples"])
+    ]
 
     fig, ax = plt.subplots(figsize=(8.0, 0.30 * len(summary) + 2.0))
     ax.grid(True, axis="x")
     ax.grid(False, axis="y")
 
     positions = np.arange(len(summary))
-    ax.hlines(positions, summary["min"], summary["max"],
-              color=ps.GRID, lw=3.2, zorder=1)
-    ax.scatter(summary["min"], positions, s=34, color=ps.BLUE, zorder=3,
-               edgecolors=ps.SURFACE, linewidths=0.8, label="mínimo entre folds")
-    ax.scatter(summary["max"], positions, s=34, color=ps.ORANGE, zorder=3,
-               edgecolors=ps.SURFACE, linewidths=0.8, label="máximo entre folds")
-    ax.scatter(summary["median"], positions, s=16, color=ps.INK_SECONDARY,
-               zorder=4, marker="|", linewidths=1.6, label="mediana")
+    ax.hlines(positions, summary["min"], summary["max"], color=ps.GRID, lw=3.2, zorder=1)
+    ax.scatter(
+        summary["min"],
+        positions,
+        s=34,
+        color=ps.BLUE,
+        zorder=3,
+        edgecolors=ps.SURFACE,
+        linewidths=0.8,
+        label="mínimo entre folds",
+    )
+    ax.scatter(
+        summary["max"],
+        positions,
+        s=34,
+        color=ps.ORANGE,
+        zorder=3,
+        edgecolors=ps.SURFACE,
+        linewidths=0.8,
+        label="máximo entre folds",
+    )
+    ax.scatter(
+        summary["median"],
+        positions,
+        s=16,
+        color=ps.INK_SECONDARY,
+        zorder=4,
+        marker="|",
+        linewidths=1.6,
+        label="mediana",
+    )
 
     ax.set_yticks(positions, labels, fontsize=7.5)
     # Configurations whose spread exceeds twice the median are worth naming:
@@ -136,28 +166,36 @@ def figure_spread(df, key="dbcv_score", label="DBCV"):
             tick.set_color(ps.ORANGE)
             tick.set_fontweight("bold")
     ax.set_xlabel(label)
-    ax.set_title(f"Amplitude do {label} entre os cinco folds, por configuração",
-                 pad=10)
+    ax.set_title(f"Amplitude do {label} entre os cinco folds, por configuração", pad=10)
     ax.legend(loc="lower right")
 
     worst = summary.iloc[-1]
-    ax.annotate(f"amplitude de {worst['spread']:.3f}",
-                xy=(worst["max"], len(summary) - 1), xytext=(-6, 12),
-                textcoords="offset points", ha="right", fontsize=8,
-                color=ps.INK_SECONDARY)
+    ax.annotate(
+        f"amplitude de {worst['spread']:.3f}",
+        xy=(worst["max"], len(summary) - 1),
+        xytext=(-6, 12),
+        textcoords="offset points",
+        ha="right",
+        fontsize=8,
+        color=ps.INK_SECONDARY,
+    )
 
-    ps.footnote(fig, "Ordenado da configuração menos estável, no topo, para a "
-                     "mais estável, na base. Uma barra longa significa que os "
-                     "mesmos hiperparâmetros produzem resultados muito "
-                     "diferentes em partições que diferem em apenas um quinto "
-                     "dos dados. Em destaque, as configurações cuja amplitude "
-                     "supera o dobro da mediana.")
+    ps.footnote(
+        fig,
+        "Ordenado da configuração menos estável, no topo, para a "
+        "mais estável, na base. Uma barra longa significa que os "
+        "mesmos hiperparâmetros produzem resultados muito "
+        "diferentes em partições que diferem em apenas um quinto "
+        "dos dados. Em destaque, as configurações cuja amplitude "
+        "supera o dobro da mediana.",
+    )
     return fig, summary
 
 
 # ===========================================================================
 # Figure 03 — Does DBCV predict performance?
 # ===========================================================================
+
 
 def figure_criterion(df):
     import matplotlib.pyplot as plt
@@ -175,31 +213,44 @@ def figure_criterion(df):
     correlations = {}
     for ax, (key, label) in zip(axes, pairs):
         ax.grid(True, axis="both")
-        ax.scatter(df["dbcv_score"], df[key], s=22, color=ps.BLUE,
-                   alpha=0.6, edgecolors=ps.SURFACE, linewidths=0.5)
+        ax.scatter(
+            df["dbcv_score"],
+            df[key],
+            s=22,
+            color=ps.BLUE,
+            alpha=0.6,
+            edgecolors=ps.SURFACE,
+            linewidths=0.5,
+        )
 
         rho, p_value = stats.spearmanr(df["dbcv_score"], df[key])
         rho_low, p_low = stats.spearmanr(low["dbcv_score"], low[key])
-        correlations[key] = {"rho_all": rho, "p_all": p_value,
-                             "rho_low": rho_low, "p_low": p_low}
+        correlations[key] = {"rho_all": rho, "p_all": p_value, "rho_low": rho_low, "p_low": p_low}
 
         ax.set_xlabel("DBCV (critério de seleção, não supervisionado)")
         ax.set_ylabel(label)
         ax.set_title(f"{label}", loc="left")
-        ax.annotate(f"ρ global = {rho:+.2f}\nρ no regime inferior = {rho_low:+.2f}",
-                    xy=(0.03, 0.97), xycoords="axes fraction",
-                    va="top", fontsize=8, color=ps.INK_SECONDARY)
+        ax.annotate(
+            f"ρ global = {rho:+.2f}\nρ no regime inferior = {rho_low:+.2f}",
+            xy=(0.03, 0.97),
+            xycoords="axes fraction",
+            va="top",
+            fontsize=8,
+            color=ps.INK_SECONDARY,
+        )
 
     fig.suptitle("O DBCV prediz o desempenho supervisionado?", y=1.05)
-    ps.footnote(fig,
-                f"Cada ponto é uma combinação de hiperparâmetros avaliada em um "
-                f"fold. O DBCV é calculado sem consultar os rótulos; as métricas "
-                f"do eixo vertical os utilizam. A distribuição do DBCV é bimodal "
-                f"— {len(low)} das {len(df)} execuções abaixo de {cut}, o "
-                f"restante acima de 0,95, sem nada entre os dois — de modo que o "
-                f"coeficiente global mede sobretudo a distância entre os dois "
-                f"regimes. O coeficiente calculado apenas no regime inferior "
-                f"mostra se há ordenação dentro do grupo.")
+    ps.footnote(
+        fig,
+        f"Cada ponto é uma combinação de hiperparâmetros avaliada em um "
+        f"fold. O DBCV é calculado sem consultar os rótulos; as métricas "
+        f"do eixo vertical os utilizam. A distribuição do DBCV é bimodal "
+        f"— {len(low)} das {len(df)} execuções abaixo de {cut}, o "
+        f"restante acima de 0,95, sem nada entre os dois — de modo que o "
+        f"coeficiente global mede sobretudo a distância entre os dois "
+        f"regimes. O coeficiente calculado apenas no regime inferior "
+        f"mostra se há ordenação dentro do grupo.",
+    )
     return fig, correlations
 
 
@@ -207,14 +258,14 @@ def figure_criterion(df):
 # Summary
 # ===========================================================================
 
+
 def write_summary(df, spread, correlations, target):
     lines = [
         "# Variação das métricas do HDBSCAN",
         "",
         "Gerado por `src/analysis/hdbscan_metrics.py`.",
         "",
-        f"- Combinações avaliadas: "
-        f"{df.groupby(['min_cluster_size', 'min_samples']).ngroups}",
+        f"- Combinações avaliadas: {df.groupby(['min_cluster_size', 'min_samples']).ngroups}",
         f"- Folds: {sorted(df['fold'].unique().tolist())}",
         f"- Execuções registradas: {len(df)}",
         "",
@@ -229,8 +280,9 @@ def write_summary(df, spread, correlations, target):
     for key, label, _ in METRICS:
         grouped = df.groupby(["min_cluster_size", "min_samples"])[key]
         ranges = grouped.max() - grouped.min()
-        lines.append(f"| {label} | {ranges.min():.4f} | {ranges.max():.4f} | "
-                     f"{ranges.median():.4f} |")
+        lines.append(
+            f"| {label} | {ranges.min():.4f} | {ranges.max():.4f} | {ranges.median():.4f} |"
+        )
 
     worst = spread.iloc[-1]
     best = spread.iloc[0]
@@ -251,9 +303,11 @@ def write_summary(df, spread, correlations, target):
         "|---|---|---|---|---|",
     ]
     for key, values in correlations.items():
-        lines.append(f"| {key} | {values['rho_all']:+.4f} | "
-                     f"{values['p_all']:.3e} | {values['rho_low']:+.4f} | "
-                     f"{values['p_low']:.3e} |")
+        lines.append(
+            f"| {key} | {values['rho_all']:+.4f} | "
+            f"{values['p_all']:.3e} | {values['rho_low']:+.4f} | "
+            f"{values['p_low']:.3e} |"
+        )
 
     lines += [
         "",
@@ -280,10 +334,13 @@ def write_summary(df, spread, correlations, target):
         f"- Vencedora pelo **DBCV médio** entre folds: "
         f"`min_cluster_size={int(by_mean[0])}`, `min_samples={int(by_mean[1])}`",
         "",
-        ("As duas coincidem." if by_max == by_mean else
-         "**As duas divergem.** A escolha do critério muda a configuração "
-         "levada à avaliação externa, e essa divergência é em si um resultado "
-         "sobre a estabilidade do algoritmo."),
+        (
+            "As duas coincidem."
+            if by_max == by_mean
+            else "**As duas divergem.** A escolha do critério muda a configuração "
+            "levada à avaliação externa, e essa divergência é em si um resultado "
+            "sobre a estabilidade do algoritmo."
+        ),
     ]
 
     os.makedirs(os.path.dirname(target), exist_ok=True)
@@ -294,8 +351,10 @@ def write_summary(df, spread, correlations, target):
 
 # ===========================================================================
 
+
 def main():
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -303,8 +362,10 @@ def main():
 
     print("Reading HDBSCAN grid results...")
     df = load()
-    print(f"  {len(df)} runs, "
-          f"{df.groupby(['min_cluster_size', 'min_samples']).ngroups} configurations")
+    print(
+        f"  {len(df)} runs, "
+        f"{df.groupby(['min_cluster_size', 'min_samples']).ngroups} configurations"
+    )
 
     print("01 - metric stability")
     fig = figure_stability(df)
@@ -321,8 +382,7 @@ def main():
     print("   ", ps.save(fig, f"{OUTPUT}/03-dbcv-vs-performance")[0])
     plt.close(fig)
 
-    summary = write_summary(df, spread, correlations,
-                            f"{OUTPUT}/hdbscan-metric-variation.md")
+    summary = write_summary(df, spread, correlations, f"{OUTPUT}/hdbscan-metric-variation.md")
     print("summary:", summary)
 
 

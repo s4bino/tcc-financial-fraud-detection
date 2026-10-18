@@ -161,9 +161,7 @@ def test_rejects_a_metric_that_is_not_reported(tmp_path, inner_folds_dir):
 
 
 @pytest.mark.parametrize("metric", ["auc", "precision", "recall", "f1"])
-def test_accepts_every_reported_metric_as_selection_criterion(
-    tmp_path, inner_folds_dir, metric
-):
+def test_accepts_every_reported_metric_as_selection_criterion(tmp_path, inner_folds_dir, metric):
     _, df_summary, best_params = manual_grid_search(
         folds_dir=inner_folds_dir,
         param_grid=RF_GRID,

@@ -9,12 +9,19 @@ from cuml.cluster import HDBSCAN
 from cuml.cluster.hdbscan import approximate_predict
 import dbcv
 
-from sklearn.metrics import (f1_score, precision_score, recall_score,
-                             roc_auc_score, average_precision_score, confusion_matrix)
+from sklearn.metrics import (
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+    average_precision_score,
+    confusion_matrix,
+)
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler, StandardScaler
 
 from sklearn.model_selection import train_test_split
+
 
 def hdbscan_internal_grid_with_tracking(
     internal_folds_dir,
@@ -24,7 +31,7 @@ def hdbscan_internal_grid_with_tracking(
     n_processes=None,
     max_dbcv_sample_size=20000,
     resume=False,
-    only_folds=None
+    only_folds=None,
 ):
     """
     Treina o modelo na base de treino usando Grid Search clássico e otimiza pelo DBCV.
@@ -33,13 +40,10 @@ def hdbscan_internal_grid_with_tracking(
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(internal_folds_dir)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(internal_folds_dir) if f.endswith("_train.csv")}
+    )
     print(f"Folds encontrados para Avaliação (HDBSCAN): {folds}")
-
 
     param_names = list(param_grid.keys())
     param_values = list(param_grid.values())
@@ -81,17 +85,16 @@ def hdbscan_internal_grid_with_tracking(
 
         print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ---")
 
-
         train_path = os.path.join(internal_folds_dir, f"fold_{fold}_train.csv")
-        val_path   = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
+        val_path = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
 
         df_train = pd.read_csv(train_path)
-        df_val   = pd.read_csv(val_path)
+        df_val = pd.read_csv(val_path)
 
         X_train = df_train.drop(columns=[target])
         y_train = df_train[target]
-        X_val   = df_val.drop(columns=[target])
-        y_val   = df_val[target]
+        X_val = df_val.drop(columns=[target])
+        y_val = df_val[target]
         del df_train, df_val
 
         # ==============================================================
@@ -99,10 +102,10 @@ def hdbscan_internal_grid_with_tracking(
         # ==============================================================
         preprocessor = ColumnTransformer(
             transformers=[
-                ("rob_scaler", RobustScaler(), ['Amount']),
-                ("std_scaler", StandardScaler(), ['Time'])
+                ("rob_scaler", RobustScaler(), ["Amount"]),
+                ("std_scaler", StandardScaler(), ["Time"]),
             ],
-            remainder="passthrough"
+            remainder="passthrough",
         )
 
         X_train_scaled = preprocessor.fit_transform(X_train)
@@ -114,7 +117,6 @@ def hdbscan_internal_grid_with_tracking(
         for combo_id, combo in df_param_combinations.iterrows():
             params_dict = combo.to_dict()
 
-
             min_cluster_size = int(params_dict["min_cluster_size"])
             min_samples = int(params_dict["min_samples"])
 
@@ -123,14 +125,14 @@ def hdbscan_internal_grid_with_tracking(
             # ==============================================================
             t0 = time.time()
             model = HDBSCAN(
-                min_cluster_size=min_cluster_size,
-                min_samples=min_samples,
-                prediction_data=True
+                min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
             )
             model.fit(X_train_scaled)
             train_time = time.time() - t0
 
-            labels = model.labels_.to_numpy() if hasattr(model.labels_, 'to_numpy') else model.labels_
+            labels = (
+                model.labels_.to_numpy() if hasattr(model.labels_, "to_numpy") else model.labels_
+            )
             n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
             n_noise = list(labels).count(-1)
 
@@ -154,16 +156,20 @@ def hdbscan_internal_grid_with_tracking(
                                 labels_unique,
                                 train_size=max_dbcv_sample_size,
                                 random_state=42,
-                                stratify=labels_unique
+                                stratify=labels_unique,
                             )
                         except ValueError:
                             rng = np.random.RandomState(42)
-                            sample_idx = rng.choice(len(X_mat_unique), size=max_dbcv_sample_size, replace=False)
+                            sample_idx = rng.choice(
+                                len(X_mat_unique), size=max_dbcv_sample_size, replace=False
+                            )
                             X_mat_unique = X_mat_unique[sample_idx]
                             labels_unique = labels_unique[sample_idx]
 
                     if len(set(labels_unique) - {-1}) >= 1:
-                        dbcv_score = dbcv.dbcv(X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes)
+                        dbcv_score = dbcv.dbcv(
+                            X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes
+                        )
                     else:
                         dbcv_score = -1.0
 
@@ -180,46 +186,51 @@ def hdbscan_internal_grid_with_tracking(
             val_labels, val_probs = approximate_predict(model, X_val_scaled)
             val_time = time.time() - t1
 
-            if hasattr(val_labels, 'get'): val_labels = val_labels.get()
-            if hasattr(val_probs, 'get'):  val_probs = val_probs.get()
+            if hasattr(val_labels, "get"):
+                val_labels = val_labels.get()
+            if hasattr(val_probs, "get"):
+                val_probs = val_probs.get()
 
             preds = (val_labels == -1).astype(int)
             preds_proba = 1.0 - val_probs
 
-            f1    = f1_score(y_val, preds, zero_division=0)
-            prec  = precision_score(y_val, preds, zero_division=0)
-            rec   = recall_score(y_val, preds, zero_division=0)
-            auc   = roc_auc_score(y_val, preds_proba)
+            f1 = f1_score(y_val, preds, zero_division=0)
+            prec = precision_score(y_val, preds, zero_division=0)
+            rec = recall_score(y_val, preds, zero_division=0)
+            auc = roc_auc_score(y_val, preds_proba)
             auprc = average_precision_score(y_val, preds_proba)
             tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
-            all_trials_history.append({
-                "fold": fold,
-                "combo_id": combo_id,
-                "min_cluster_size": min_cluster_size,
-                "min_samples": min_samples,
-                "dbcv_score": dbcv_score,
-                "n_clusters": n_clusters,
-                "n_noise_points": n_noise,
-                "f1": f1,
-                "precision": prec,
-                "recall": rec,
-                "auc": auc,
-                "auprc": auprc,
-                "TP": tp,
-                "FP": fp,
-                "FN": fn,
-                "train_time": train_time,
-                "val_time": val_time
-            })
+            all_trials_history.append(
+                {
+                    "fold": fold,
+                    "combo_id": combo_id,
+                    "min_cluster_size": min_cluster_size,
+                    "min_samples": min_samples,
+                    "dbcv_score": dbcv_score,
+                    "n_clusters": n_clusters,
+                    "n_noise_points": n_noise,
+                    "f1": f1,
+                    "precision": prec,
+                    "recall": rec,
+                    "auc": auc,
+                    "auprc": auprc,
+                    "TP": tp,
+                    "FP": fp,
+                    "FN": fn,
+                    "train_time": train_time,
+                    "val_time": val_time,
+                }
+            )
 
-            print(f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | DBCV={dbcv_score:.4f} | F1 Val={f1:.4f}")
+            print(
+                f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | DBCV={dbcv_score:.4f} | F1 Val={f1:.4f}"
+            )
 
         del X_train, y_train, X_val, y_val
 
         pd.DataFrame(all_trials_history).to_csv(
-            os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"),
-            index=False
+            os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"), index=False
         )
         print(f"Resultados parciais gravados ao fim do fold {fold}.")
 
@@ -230,15 +241,15 @@ def hdbscan_internal_grid_with_tracking(
     df_folds.to_csv(os.path.join(output_dir, "hdbscan_grid_results_by_fold.csv"), index=False)
 
     summary_data = []
-    for fold in sorted(int(f) for f in df_folds['fold'].unique()):
-        fold_data = df_folds[df_folds['fold'] == fold]
+    for fold in sorted(int(f) for f in df_folds["fold"].unique()):
+        fold_data = df_folds[df_folds["fold"] == fold]
 
         best_row = fold_data.sort_values("dbcv_score", ascending=False).iloc[0]
 
         best_params_per_fold[fold] = {
             "min_cluster_size": int(best_row["min_cluster_size"]),
             "min_samples": int(best_row["min_samples"]),
-            "best_dbcv_score": float(best_row["dbcv_score"])
+            "best_dbcv_score": float(best_row["dbcv_score"]),
         }
         summary_data.append(best_row.to_dict())
 
@@ -250,28 +261,26 @@ def hdbscan_internal_grid_with_tracking(
 
     return df_folds, df_summary, best_params_per_fold
 
+
 def hdbscan_outer_evaluation(
-    outer_folds_dir,
-    best_parameter_achieved,
-    target="Class",
-    output_dir="results/unsupervised"
+    outer_folds_dir, best_parameter_achieved, target="Class", output_dir="results/unsupervised"
 ):
     os.makedirs(output_dir, exist_ok=True)
     final_metrics = []
 
     print("\n--- Iniciando Avaliação Externa (Outer Folds) com Predição ---")
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(outer_folds_dir)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(outer_folds_dir) if f.endswith("_train.csv")}
+    )
 
     min_cluster_size = int(best_parameter_achieved["min_cluster_size"])
     min_samples = int(best_parameter_achieved["min_samples"])
 
     for fold in folds:
-        print(f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}")
+        print(
+            f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}"
+        )
 
         train_path = os.path.join(outer_folds_dir, f"fold_{fold}_train.csv")
         test_path = os.path.join(outer_folds_dir, f"fold_{fold}_test.csv")
@@ -286,57 +295,61 @@ def hdbscan_outer_evaluation(
 
         preprocessor = ColumnTransformer(
             transformers=[
-                ("rob_scaler", RobustScaler(), ['Amount']),
-                ("std_scaler", StandardScaler(), ['Time'])
+                ("rob_scaler", RobustScaler(), ["Amount"]),
+                ("std_scaler", StandardScaler(), ["Time"]),
             ],
-            remainder="passthrough"
+            remainder="passthrough",
         )
 
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_test_scaled = preprocessor.transform(X_test)
 
         model = HDBSCAN(
-            min_cluster_size=min_cluster_size,
-            min_samples=min_samples,
-            prediction_data=True
+            min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
         )
 
         t0 = time.time()
-        model.fit(X_train_scaled) # Treina com a versão escalonada
+        model.fit(X_train_scaled)  # Treina com a versão escalonada
         train_time = time.time() - t0
 
         t1 = time.time()
-        test_labels, test_probabilities = approximate_predict(model, X_test_scaled) # Avalia na versão escalonada
+        test_labels, test_probabilities = approximate_predict(
+            model, X_test_scaled
+        )  # Avalia na versão escalonada
         predict_time = time.time() - t1
 
-        if hasattr(test_labels, 'get'): test_labels = test_labels.get()
-        if hasattr(test_probabilities, 'get'): test_probabilities = test_probabilities.get()
+        if hasattr(test_labels, "get"):
+            test_labels = test_labels.get()
+        if hasattr(test_probabilities, "get"):
+            test_probabilities = test_probabilities.get()
 
         preds = (test_labels == -1).astype(int)
         preds_proba = 1.0 - test_probabilities
 
-        f1      = f1_score(y_test, preds, zero_division=0)
-        prec    = precision_score(y_test, preds, zero_division=0)
-        rec     = recall_score(y_test, preds, zero_division=0)
+        f1 = f1_score(y_test, preds, zero_division=0)
+        prec = precision_score(y_test, preds, zero_division=0)
+        rec = recall_score(y_test, preds, zero_division=0)
         roc_auc = roc_auc_score(y_test, preds_proba)
-        auprc   = average_precision_score(y_test, preds_proba)
+        auprc = average_precision_score(y_test, preds_proba)
         tn, fp, fn, tp = confusion_matrix(y_test, preds, labels=[0, 1]).ravel()
 
-        final_metrics.append({
-            "fold": fold,
-            "min_cluster_size": min_cluster_size,
-            "min_samples": min_samples,
-            "precision": prec,
-            "recall": rec,
-            "f1": f1,
-            "roc_auc": roc_auc,
-            "auprc": auprc,
-            "TP": tp,
-            "FP": fp,
-            "FN": fn,
-            "train_time": train_time,
-            "predict_time": predict_time
-        })
+        final_metrics.append(
+            {
+                "fold": fold,
+                "min_cluster_size": min_cluster_size,
+                "min_samples": min_samples,
+                "precision": prec,
+                "recall": rec,
+                "f1": f1,
+                "roc_auc": roc_auc,
+                "auprc": auprc,
+                "TP": tp,
+                "FP": fp,
+                "FN": fn,
+                "train_time": train_time,
+                "predict_time": predict_time,
+            }
+        )
 
     df_final = pd.DataFrame(final_metrics)
     mean_metrics = df_final.mean().to_dict()
@@ -353,16 +366,16 @@ def hdbscan_outer_evaluation(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Grid search do HDBSCAN com retomada por fold."
+    parser = argparse.ArgumentParser(description="Grid search do HDBSCAN com retomada por fold.")
+    parser.add_argument(
+        "--resume", action="store_true", help="lê o CSV parcial e pula os folds já concluídos"
     )
     parser.add_argument(
-        "--resume", action="store_true",
-        help="lê o CSV parcial e pula os folds já concluídos"
-    )
-    parser.add_argument(
-        "--folds", type=int, nargs="+", default=None,
-        help="executa apenas estes folds internos, por exemplo: --folds 2 3"
+        "--folds",
+        type=int,
+        nargs="+",
+        default=None,
+        help="executa apenas estes folds internos, por exemplo: --folds 2 3",
     )
     args = parser.parse_args()
 
@@ -372,8 +385,8 @@ if __name__ == "__main__":
     RESULTS_DIR = "/content/drive/MyDrive/RESULTS"
 
     param_grid_hdbscan = {
-        'min_cluster_size': [5, 25, 50],
-        'min_samples': [280, 290, 300, 315, 325, 350, 400]
+        "min_cluster_size": [5, 25, 50],
+        "min_samples": [280, 290, 300, 315, 325, 350, 400],
     }
 
     n_cores_disponiveis = os.cpu_count() or 1
@@ -388,15 +401,14 @@ if __name__ == "__main__":
         n_processes=n_cores_disponiveis,
         max_dbcv_sample_size=28000,
         resume=args.resume,
-        only_folds=args.folds
+        only_folds=args.folds,
     )
 
     print("\nMelhores parâmetros encontrados por fold:")
     print(json.dumps(best_params_per_fold, indent=4))
 
     best_parameter_achieved = max(
-        best_params_per_fold.values(),
-        key=lambda fold_params: fold_params["best_dbcv_score"]
+        best_params_per_fold.values(), key=lambda fold_params: fold_params["best_dbcv_score"]
     )
 
     print("\nMelhor parâmetro obtido no ciclo interno:")
@@ -407,7 +419,7 @@ if __name__ == "__main__":
         outer_folds_dir=OUTER_FOLDS_DIR,
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan"
+        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan",
     )
 
     print("\nRelatório Final (Outer Folds):")
