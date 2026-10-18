@@ -211,6 +211,23 @@ com comandos de instalação do Colab, que impedem sua importação.
 
 ---
 
+## Qualidade do código
+
+O código é verificado e formatado pelo [ruff](https://docs.astral.sh/ruff/),
+com a configuração do `pyproject.toml`: linhas de até 100 caracteres, imports
+ordenados e as regras de pycodestyle, Pyflakes, flake8-bugbear e pyupgrade.
+
+```bash
+uv run ruff check          # verificação
+uv run ruff check --fix    # aplica as correções automáticas seguras
+uv run ruff format         # formatação
+```
+
+Os achados anteriores à adoção do ruff que exigem revisão manual estão listados,
+por arquivo, em `[tool.ruff.lint.per-file-ignores]`.
+
+---
+
 ## Monografia
 
 O texto está em `docs/monografia/main.tex`, na classe `uflamon`, com referências

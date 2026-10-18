@@ -79,3 +79,41 @@ addopts = ["-ra", "--strict-markers", "--showlocals"]
 markers = [
     "slow: testes que treinam modelos e levam mais tempo que os demais",
 ]
+
+#------------------------------------------------------------------------------
+# ruff
+#------------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+# Diretórios cujos módulos se importam por nome simples: o ruff os trata como
+# código do projeto ao ordenar os imports.
+src = ["src/preprocessing", "src/models", "src/analysis", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle: erros
+    "W",   # pycodestyle: avisos
+    "F",   # Pyflakes
+    "I",   # ordenação dos imports
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+# Achados anteriores à adoção do ruff que exigem revisão manual, por mudarem o
+# código: linhas longas em comentários e strings (E501), zip sem strict=
+# (B905), variáveis sem uso (F841), import com * (F403, F405) e expressões
+# soltas de exploração interativa (B015, B018). Cada código sai daqui quando o
+# arquivo for revisado.
+[tool.ruff.lint.per-file-ignores]
+"src/analysis/dataset_analysis.py" = ["B905"]
+"src/analysis/fold_analysis.py" = ["B905"]
+"src/analysis/hdbscan_metrics.py" = ["B905"]
+"src/models/grid_search.py" = ["E501"]
+"src/models/run_dbscan_grid_search.py" = ["E501", "F841"]
+"src/models/run_hdbscan_enhanced_grid_search.py" = ["B905", "E501"]
+"src/models/run_hdbscan_grid_search.py" = ["E501", "F841"]
+"src/models/run_hdbscan_grid_search_modal.py" = ["E501", "F841"]
+"src/models/run_supervised_grid_search.py" = ["F403", "F405"]
+"src/preprocessing/run_fold_generation.py" = ["B015", "B018"]
+"tests/preprocessing/test_stratified_folds.py" = ["B905"]
