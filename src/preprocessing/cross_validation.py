@@ -1,10 +1,9 @@
-import os
 import json
+import os
+
 import pandas as pd
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from tqdm import tqdm
-from typing import Optional
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import train_test_split
 
 
 # ---------------------------------------------------------
@@ -31,7 +30,7 @@ def resolve_target_column(df: pd.DataFrame, target) -> str:
 # ---------------------------------------------------------
 # Cria os índices dos folds estratificados
 # ---------------------------------------------------------
-def stratified_folds(df: pd.DataFrame, target: str, n_splits: int, random_state: Optional[int]):
+def stratified_folds(df: pd.DataFrame, target: str, n_splits: int, random_state: int | None):
     X = df.drop(columns=[target])
     y = df[target]
 
@@ -47,7 +46,7 @@ def stratified_folds(df: pd.DataFrame, target: str, n_splits: int, random_state:
 # Criação dos CSVs + Metadados JSON
 # ---------------------------------------------------------
 def external_k_folds(
-    csv_path: str, output_dir: str, target, n_splits: int = 5, random_state: Optional[int] = 42
+    csv_path: str, output_dir: str, target, n_splits: int = 5, random_state: int | None = 42
 ):
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Arquivo não encontrado: {csv_path}")
@@ -166,7 +165,7 @@ def internal_k_folds(
         # ----------------------------
         # Criar metadados internos (não altera o externo!)
         # ----------------------------
-        with open(meta_path_ext, "r", encoding="utf-8") as f:
+        with open(meta_path_ext, encoding="utf-8") as f:
             metadata_ext = json.load(f)
 
         # copia info externa mas sem alterar o original

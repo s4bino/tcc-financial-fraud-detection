@@ -1,13 +1,13 @@
+import itertools
 import os
 import time
-import itertools
 
 import numpy as np
 import pandas as pd
-from xgboost import XGBClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score
 from joblib import Parallel, delayed
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
+from xgboost import XGBClassifier
 
 
 def manual_grid_search(

@@ -1,26 +1,24 @@
+import itertools
+import json
 import os
 import time
-import json
-import itertools
 
+import dbcv
 import numpy as np
 import pandas as pd
 from cuml.cluster import DBSCAN
 from cuml.neighbors import NearestNeighbors
-import dbcv
-
+from sklearn.compose import ColumnTransformer
 from sklearn.metrics import (
+    average_precision_score,
+    confusion_matrix,
     f1_score,
     precision_score,
     recall_score,
     roc_auc_score,
-    average_precision_score,
-    confusion_matrix,
 )
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import RobustScaler, StandardScaler
-
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import RobustScaler, StandardScaler
 
 
 def to_numpy(values):

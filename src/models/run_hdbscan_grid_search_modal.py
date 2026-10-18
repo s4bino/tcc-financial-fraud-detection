@@ -207,6 +207,7 @@ def gpu_fold_stage(fold: int):
     import time
 
     import numpy as np
+    import pandas as pd
     from cuml.cluster import HDBSCAN
     from cuml.cluster.hdbscan import approximate_predict
     from sklearn.compose import ColumnTransformer
@@ -219,7 +220,6 @@ def gpu_fold_stage(fold: int):
         roc_auc_score,
     )
     from sklearn.preprocessing import RobustScaler, StandardScaler
-    import pandas as pd
 
     volume.reload()
     os.makedirs(CACHE_DIR, exist_ok=True)
@@ -369,9 +369,9 @@ def dbcv_stage(task: dict):
     usa `random_state=42` sobre a mesma matriz e os mesmos rótulos, o escore é
     idêntico ao que sairia no laço único.
     """
+    import dbcv
     import numpy as np
     from sklearn.model_selection import train_test_split
-    import dbcv
 
     volume.reload()
 
@@ -507,6 +507,7 @@ def outer_stage(best_parameter_achieved: dict):
     import os
     import time
 
+    import pandas as pd
     from cuml.cluster import HDBSCAN
     from cuml.cluster.hdbscan import approximate_predict
     from sklearn.compose import ColumnTransformer
@@ -519,7 +520,6 @@ def outer_stage(best_parameter_achieved: dict):
         roc_auc_score,
     )
     from sklearn.preprocessing import RobustScaler, StandardScaler
-    import pandas as pd
 
     volume.reload()
 
@@ -644,8 +644,8 @@ def _check_cuml():
 
 @app.function(image=dbcv_image, cpu=DBCV_CPU, memory=DBCV_MEMORY_MIB, timeout=600)
 def _check_dbcv():
-    import numpy as np
     import dbcv
+    import numpy as np
 
     rng = np.random.RandomState(0)
     X = np.vstack([rng.randn(50, 3), rng.randn(50, 3) + 8.0])

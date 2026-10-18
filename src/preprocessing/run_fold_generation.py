@@ -1,6 +1,8 @@
-import cross_validation as cv
 import json
+
 import pandas as pd
+
+import cross_validation as cv
 
 if __name__ == "__main__":
     # Caminho do dataset original (CSV)
@@ -22,7 +24,7 @@ if __name__ == "__main__":
         csv_path=csv_path, output_dir=output_dir, target=target, n_splits=5, random_state=42
     )
 
-    with open("data/processed/outer_folds/fold_2_info.json", "r", encoding="utf-8") as f:
+    with open("data/processed/outer_folds/fold_2_info.json", encoding="utf-8") as f:
         data = json.load(f)
     # print(data)
     print(data.keys())
