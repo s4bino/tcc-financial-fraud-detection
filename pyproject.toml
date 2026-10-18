@@ -1,0 +1,119 @@
+#==============================================================================
+# Detecção de fraudes financeiras: HDBSCAN* em comparação com Random Forest e
+# XGBoost (TCC, Ciência da Computação, UFLA).
+#
+# O ambiente é gerenciado pelo uv e o código é verificado e formatado pelo
+# ruff:
+#
+#   uv sync               cria o .venv com as versões do uv.lock
+#   uv run pytest         executa a suíte de testes
+#   uv run ruff check     verifica o código
+#   uv run ruff format    formata o código
+#==============================================================================
+
+[project]
+name = "tcc-financial-fraud-detection"
+version = "0.1.0"
+description = "Detecção de fraudes financeiras: agrupamento HDBSCAN* em comparação com Random Forest e XGBoost"
+readme = "README.md"
+authors = [{ name = "Heitor Rodrigues Sabino" }]
+# Versão do Python do ambiente local e da VM do Google Colab.
+requires-python = ">=3.13"
+dependencies = [
+    # Manipulação de dados
+    "numpy>=1.24",
+    "pandas>=2.0",
+    # Validação cruzada, pré-processamento e métricas
+    "scikit-learn>=1.3",
+    # Modelos supervisionados
+    "xgboost>=2.0",
+    # Paralelização do grid search (src/models/grid_search.py)
+    "joblib>=1.3",
+    # Barra de progresso na geração dos folds (src/preprocessing/cross_validation.py)
+    "tqdm>=4.65",
+    # Detecção de núcleos físicos (src/models/run_supervised_grid_search.py)
+    "psutil>=5.9",
+    # Figuras e testes estatísticos da análise exploratória (src/analysis/)
+    "matplotlib>=3.8",
+    "scipy>=1.11",
+]
+
+#------------------------------------------------------------------------------
+# Dependências de GPU, fora do uv.lock
+#
+# run_hdbscan_grid_search.py, run_hdbscan_enhanced_grid_search.py e
+# run_dbscan_grid_search.py usam cuML e dbcv, que exigem Linux com GPU NVIDIA
+# (CUDA 12). Os experimentos rodam no Google Colab, onde o ambiente é
+# preparado à parte:
+#
+#   cuml-cu12   fixado em 26.02 antes de cada execução (a 26.06 quebra o
+#               HDBSCAN)
+#   dbcv        pip install "git+https://github.com/FelSiq/DBCV"
+#
+# run_hdbscan_grid_search_modal.py depende ainda do pacote modal.
+#------------------------------------------------------------------------------
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.17",
+]
+
+[tool.uv]
+# Os módulos de src/ são scripts que se importam por nome simples, não um
+# pacote instalável.
+package = false
+
+#------------------------------------------------------------------------------
+# pytest
+#------------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Os módulos de src/ importam uns aos outros por nome simples
+# (import cross_validation, from grid_search import *), o que exige que cada
+# diretório esteja no sys.path, como ocorre quando os scripts são executados
+# diretamente.
+pythonpath = ["src/preprocessing", "src/models"]
+addopts = ["-ra", "--strict-markers", "--showlocals"]
+markers = [
+    "slow: testes que treinam modelos e levam mais tempo que os demais",
+]
+
+#------------------------------------------------------------------------------
+# ruff
+#------------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+# Diretórios cujos módulos se importam por nome simples: o ruff os trata como
+# código do projeto ao ordenar os imports.
+src = ["src/preprocessing", "src/models", "src/analysis", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle: erros
+    "W",   # pycodestyle: avisos
+    "F",   # Pyflakes
+    "I",   # ordenação dos imports
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+# Achados anteriores à adoção do ruff que exigem revisão manual, por mudarem o
+# código: linhas longas em comentários e strings (E501), zip sem strict=
+# (B905), variáveis sem uso (F841), import com * (F403, F405) e expressões
+# soltas de exploração interativa (B015, B018). Cada código sai daqui quando o
+# arquivo for revisado.
+[tool.ruff.lint.per-file-ignores]
+"src/analysis/dataset_analysis.py" = ["B905"]
+"src/analysis/fold_analysis.py" = ["B905"]
+"src/analysis/hdbscan_metrics.py" = ["B905"]
+"src/models/grid_search.py" = ["E501"]
+"src/models/run_dbscan_grid_search.py" = ["E501", "F841"]
+"src/models/run_hdbscan_enhanced_grid_search.py" = ["B905", "E501"]
+"src/models/run_hdbscan_grid_search.py" = ["E501", "F841"]
+"src/models/run_hdbscan_grid_search_modal.py" = ["E501", "F841"]
+"src/models/run_supervised_grid_search.py" = ["F403", "F405"]
+"src/preprocessing/run_fold_generation.py" = ["B015", "B018"]
+"tests/preprocessing/test_stratified_folds.py" = ["B905"]

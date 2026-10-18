@@ -158,9 +158,7 @@ def test_preserves_the_fraud_ratio_across_folds(output_dir, dataset):
 
 def test_accepts_the_target_given_by_index(tmp_path, dataset_csv, dataset):
     directory = tmp_path / "por_indice"
-    external_k_folds(
-        dataset_csv, str(directory), target=len(dataset.columns) - 1, n_splits=2
-    )
+    external_k_folds(dataset_csv, str(directory), target=len(dataset.columns) - 1, n_splits=2)
     metadata = read_metadata(directory, 1)
     assert metadata["target_column"] == "Class"
 

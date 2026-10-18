@@ -172,11 +172,9 @@ def discover_folds():
 
     volume.reload()
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(INTERNAL_FOLDS_DIR)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(INTERNAL_FOLDS_DIR) if f.endswith("_train.csv")}
+    )
     print(f"Folds encontrados para Avaliação (HDBSCAN): {folds}")
 
     df_param_combinations = _combinations()
@@ -209,14 +207,19 @@ def gpu_fold_stage(fold: int):
     import time
 
     import numpy as np
+    import pandas as pd
     from cuml.cluster import HDBSCAN
     from cuml.cluster.hdbscan import approximate_predict
     from sklearn.compose import ColumnTransformer
-    from sklearn.metrics import (average_precision_score, confusion_matrix,
-                                 f1_score, precision_score, recall_score,
-                                 roc_auc_score)
+    from sklearn.metrics import (
+        average_precision_score,
+        confusion_matrix,
+        f1_score,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     from sklearn.preprocessing import RobustScaler, StandardScaler
-    import pandas as pd
 
     volume.reload()
     os.makedirs(CACHE_DIR, exist_ok=True)
@@ -228,15 +231,15 @@ def gpu_fold_stage(fold: int):
     print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ---")
 
     train_path = os.path.join(internal_folds_dir, f"fold_{fold}_train.csv")
-    val_path   = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
+    val_path = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
 
     df_train = pd.read_csv(train_path)
-    df_val   = pd.read_csv(val_path)
+    df_val = pd.read_csv(val_path)
 
     X_train = df_train.drop(columns=[target])
     y_train = df_train[target]
-    X_val   = df_val.drop(columns=[target])
-    y_val   = df_val[target]
+    X_val = df_val.drop(columns=[target])
+    y_val = df_val[target]
     del df_train, df_val
 
     # ==============================================================
@@ -244,10 +247,10 @@ def gpu_fold_stage(fold: int):
     # ==============================================================
     preprocessor = ColumnTransformer(
         transformers=[
-            ("rob_scaler", RobustScaler(), ['Amount']),
-            ("std_scaler", StandardScaler(), ['Time'])
+            ("rob_scaler", RobustScaler(), ["Amount"]),
+            ("std_scaler", StandardScaler(), ["Time"]),
         ],
-        remainder="passthrough"
+        remainder="passthrough",
     )
 
     X_train_scaled = preprocessor.fit_transform(X_train)
@@ -272,14 +275,12 @@ def gpu_fold_stage(fold: int):
         # ==============================================================
         t0 = time.time()
         model = HDBSCAN(
-            min_cluster_size=min_cluster_size,
-            min_samples=min_samples,
-            prediction_data=True
+            min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
         )
         model.fit(X_train_scaled)
         train_time = time.time() - t0
 
-        labels = model.labels_.to_numpy() if hasattr(model.labels_, 'to_numpy') else model.labels_
+        labels = model.labels_.to_numpy() if hasattr(model.labels_, "to_numpy") else model.labels_
         n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
         n_noise = list(labels).count(-1)
 
@@ -299,42 +300,48 @@ def gpu_fold_stage(fold: int):
         val_labels, val_probs = approximate_predict(model, X_val_scaled)
         val_time = time.time() - t1
 
-        if hasattr(val_labels, 'get'): val_labels = val_labels.get()
-        if hasattr(val_probs, 'get'):  val_probs = val_probs.get()
+        if hasattr(val_labels, "get"):
+            val_labels = val_labels.get()
+        if hasattr(val_probs, "get"):
+            val_probs = val_probs.get()
 
         preds = (val_labels == -1).astype(int)
         preds_proba = 1.0 - val_probs
 
-        f1    = f1_score(y_val, preds, zero_division=0)
-        prec  = precision_score(y_val, preds, zero_division=0)
-        rec   = recall_score(y_val, preds, zero_division=0)
-        auc   = roc_auc_score(y_val, preds_proba)
+        f1 = f1_score(y_val, preds, zero_division=0)
+        prec = precision_score(y_val, preds, zero_division=0)
+        rec = recall_score(y_val, preds, zero_division=0)
+        auc = roc_auc_score(y_val, preds_proba)
         auprc = average_precision_score(y_val, preds_proba)
         tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
         # A ordem das chaves reproduz a do original: é ela que determina a
         # ordem das colunas do CSV por fold.
-        fold_records.append({
-            "fold": fold,
-            "combo_id": combo_id,
-            "min_cluster_size": min_cluster_size,
-            "min_samples": min_samples,
-            "dbcv_score": None,  # preenchido em `aggregate_stage`
-            "n_clusters": n_clusters,
-            "n_noise_points": n_noise,
-            "f1": f1,
-            "precision": prec,
-            "recall": rec,
-            "auc": auc,
-            "auprc": auprc,
-            "TP": tp,
-            "FP": fp,
-            "FN": fn,
-            "train_time": train_time,
-            "val_time": val_time
-        })
+        fold_records.append(
+            {
+                "fold": fold,
+                "combo_id": combo_id,
+                "min_cluster_size": min_cluster_size,
+                "min_samples": min_samples,
+                "dbcv_score": None,  # preenchido em `aggregate_stage`
+                "n_clusters": n_clusters,
+                "n_noise_points": n_noise,
+                "f1": f1,
+                "precision": prec,
+                "recall": rec,
+                "auc": auc,
+                "auprc": auprc,
+                "TP": tp,
+                "FP": fp,
+                "FN": fn,
+                "train_time": train_time,
+                "val_time": val_time,
+            }
+        )
 
-        print(f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | F1 Val={f1:.4f}")
+        print(
+            f"Combo {combo_id} | min_cluster={min_cluster_size} | min_samples={min_samples} | F1 Val={f1:.4f}"
+        )
 
     del X_train, y_train, X_val, y_val
 
@@ -362,9 +369,9 @@ def dbcv_stage(task: dict):
     usa `random_state=42` sobre a mesma matriz e os mesmos rótulos, o escore é
     idêntico ao que sairia no laço único.
     """
+    import dbcv
     import numpy as np
     from sklearn.model_selection import train_test_split
-    import dbcv
 
     volume.reload()
 
@@ -394,16 +401,20 @@ def dbcv_stage(task: dict):
                         labels_unique,
                         train_size=max_dbcv_sample_size,
                         random_state=42,
-                        stratify=labels_unique
+                        stratify=labels_unique,
                     )
                 except ValueError:
                     rng = np.random.RandomState(42)
-                    sample_idx = rng.choice(len(X_mat_unique), size=max_dbcv_sample_size, replace=False)
+                    sample_idx = rng.choice(
+                        len(X_mat_unique), size=max_dbcv_sample_size, replace=False
+                    )
                     X_mat_unique = X_mat_unique[sample_idx]
                     labels_unique = labels_unique[sample_idx]
 
             if len(set(labels_unique) - {-1}) >= 1:
-                dbcv_score = dbcv.dbcv(X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes)
+                dbcv_score = dbcv.dbcv(
+                    X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes
+                )
             else:
                 dbcv_score = -1.0
 
@@ -457,14 +468,14 @@ def aggregate_stage(records: list, dbcv_results: list, folds: list):
 
     summary_data = []
     for fold in folds:
-        fold_data = df_folds[df_folds['fold'] == fold]
+        fold_data = df_folds[df_folds["fold"] == fold]
 
         best_row = fold_data.sort_values("dbcv_score", ascending=False).iloc[0]
 
         best_params_per_fold[fold] = {
             "min_cluster_size": int(best_row["min_cluster_size"]),
             "min_samples": int(best_row["min_samples"]),
-            "best_dbcv_score": float(best_row["dbcv_score"])
+            "best_dbcv_score": float(best_row["dbcv_score"]),
         }
         summary_data.append(best_row.to_dict())
 
@@ -496,14 +507,19 @@ def outer_stage(best_parameter_achieved: dict):
     import os
     import time
 
+    import pandas as pd
     from cuml.cluster import HDBSCAN
     from cuml.cluster.hdbscan import approximate_predict
     from sklearn.compose import ColumnTransformer
-    from sklearn.metrics import (average_precision_score, confusion_matrix,
-                                 f1_score, precision_score, recall_score,
-                                 roc_auc_score)
+    from sklearn.metrics import (
+        average_precision_score,
+        confusion_matrix,
+        f1_score,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     from sklearn.preprocessing import RobustScaler, StandardScaler
-    import pandas as pd
 
     volume.reload()
 
@@ -516,17 +532,17 @@ def outer_stage(best_parameter_achieved: dict):
 
     print("\n--- Iniciando Avaliação Externa (Outer Folds) com Predição ---")
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(outer_folds_dir)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(outer_folds_dir) if f.endswith("_train.csv")}
+    )
 
     min_cluster_size = int(best_parameter_achieved["min_cluster_size"])
     min_samples = int(best_parameter_achieved["min_samples"])
 
     for fold in folds:
-        print(f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}")
+        print(
+            f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}"
+        )
 
         train_path = os.path.join(outer_folds_dir, f"fold_{fold}_train.csv")
         test_path = os.path.join(outer_folds_dir, f"fold_{fold}_test.csv")
@@ -541,57 +557,61 @@ def outer_stage(best_parameter_achieved: dict):
 
         preprocessor = ColumnTransformer(
             transformers=[
-                ("rob_scaler", RobustScaler(), ['Amount']),
-                ("std_scaler", StandardScaler(), ['Time'])
+                ("rob_scaler", RobustScaler(), ["Amount"]),
+                ("std_scaler", StandardScaler(), ["Time"]),
             ],
-            remainder="passthrough"
+            remainder="passthrough",
         )
 
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_test_scaled = preprocessor.transform(X_test)
 
         model = HDBSCAN(
-            min_cluster_size=min_cluster_size,
-            min_samples=min_samples,
-            prediction_data=True
+            min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
         )
 
         t0 = time.time()
-        model.fit(X_train_scaled) # Treina com a versão escalonada
+        model.fit(X_train_scaled)  # Treina com a versão escalonada
         train_time = time.time() - t0
 
         t1 = time.time()
-        test_labels, test_probabilities = approximate_predict(model, X_test_scaled) # Avalia na versão escalonada
+        test_labels, test_probabilities = approximate_predict(
+            model, X_test_scaled
+        )  # Avalia na versão escalonada
         predict_time = time.time() - t1
 
-        if hasattr(test_labels, 'get'): test_labels = test_labels.get()
-        if hasattr(test_probabilities, 'get'): test_probabilities = test_probabilities.get()
+        if hasattr(test_labels, "get"):
+            test_labels = test_labels.get()
+        if hasattr(test_probabilities, "get"):
+            test_probabilities = test_probabilities.get()
 
         preds = (test_labels == -1).astype(int)
         preds_proba = 1.0 - test_probabilities
 
-        f1      = f1_score(y_test, preds, zero_division=0)
-        prec    = precision_score(y_test, preds, zero_division=0)
-        rec     = recall_score(y_test, preds, zero_division=0)
+        f1 = f1_score(y_test, preds, zero_division=0)
+        prec = precision_score(y_test, preds, zero_division=0)
+        rec = recall_score(y_test, preds, zero_division=0)
         roc_auc = roc_auc_score(y_test, preds_proba)
-        auprc   = average_precision_score(y_test, preds_proba)
+        auprc = average_precision_score(y_test, preds_proba)
         tn, fp, fn, tp = confusion_matrix(y_test, preds, labels=[0, 1]).ravel()
 
-        final_metrics.append({
-            "fold": fold,
-            "min_cluster_size": min_cluster_size,
-            "min_samples": min_samples,
-            "precision": prec,
-            "recall": rec,
-            "f1": f1,
-            "roc_auc": roc_auc,
-            "auprc": auprc,
-            "TP": tp,
-            "FP": fp,
-            "FN": fn,
-            "train_time": train_time,
-            "predict_time": predict_time
-        })
+        final_metrics.append(
+            {
+                "fold": fold,
+                "min_cluster_size": min_cluster_size,
+                "min_samples": min_samples,
+                "precision": prec,
+                "recall": rec,
+                "f1": f1,
+                "roc_auc": roc_auc,
+                "auprc": auprc,
+                "TP": tp,
+                "FP": fp,
+                "FN": fn,
+                "train_time": train_time,
+                "predict_time": predict_time,
+            }
+        )
 
     df_final = pd.DataFrame(final_metrics)
     mean_metrics = df_final.mean().to_dict()
@@ -616,6 +636,7 @@ def _check_cuml():
     import subprocess
 
     import cuml
+
     print("cuML:", cuml.__version__)
     print(subprocess.run(["nvidia-smi"], capture_output=True, text=True).stdout)
     return "cuml ok"
@@ -623,8 +644,8 @@ def _check_cuml():
 
 @app.function(image=dbcv_image, cpu=DBCV_CPU, memory=DBCV_MEMORY_MIB, timeout=600)
 def _check_dbcv():
-    import numpy as np
     import dbcv
+    import numpy as np
 
     rng = np.random.RandomState(0)
     X = np.vstack([rng.randn(50, 3), rng.randn(50, 3) + 8.0])
@@ -668,11 +689,11 @@ def main():
 
     print("\nMelhores parâmetros encontrados por fold:")
     import json
+
     print(json.dumps(best_params_per_fold, indent=4))
 
     best_parameter_achieved = max(
-        best_params_per_fold.values(),
-        key=lambda fold_params: fold_params["best_dbcv_score"]
+        best_params_per_fold.values(), key=lambda fold_params: fold_params["best_dbcv_score"]
     )
 
     print("\nMelhor parâmetro obtido no ciclo interno:")
