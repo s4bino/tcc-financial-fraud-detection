@@ -39,11 +39,13 @@
             pdftitle={Detecção de fraudes financeiras},
           pdfauthor={Heitor Rodrigues Sabino},
           pdfsubject={Trabalho de Conclusão de Curso},
-          pdfkeywords={Fraudes. 2. HDBSCAN . 3. Machine Learning. 4. Classificação.}%
+          pdfkeywords={Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação}%
 ]{hyperref} % para referência cruzadas
 
 \usepackage{subfigure}           % figuras dentro de figuras
 \usepackage{caption}            % remodelando o formato dos títulos de tabelas e figuras
+\usepackage{tikz}                % para desenho de figuras e esquemas
+\usetikzlibrary{decorations.pathreplacing} % chaves de agrupamento nas figuras
 
 % configuração padrão do listings   
 \lstset{
@@ -65,7 +67,7 @@
 % Dados da monografia, capa: autor, titulo, banca, etc... - SUBSTITUA DE ACORDO
 %==============================================================================
 \author{Heitor Rodrigues Sabino}
-\title{Detecção de fraudes financeiras: Algoritmo não supervisionado de agrupamento HDBSCAN em comparação com abordagens supervisionadas de classificação Random Forest e XGBoost}
+\title{Detecção de fraudes financeiras: Algoritmo não supervisionado de agrupamento HDBSCAN* em comparação com abordagens supervisionadas de classificação Random Forest e XGBoost}
 \subtitle{}
 \engtitle{}
 \engsubtitle{}
@@ -95,12 +97,12 @@
 (Pierre Bourdie)}
 
 % palavras-chave
-\palchaves{Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN; Agrupamento; Classificação.}
+\palchaves{Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação.}
 
 \resumo{ - }  
 
 % keywords devem vir antes do abstract
-\keywords{Financial Fraud; Machine Learning; HDBSCAN; Clustering; Classification.} % keywords
+\keywords{Financial Fraud; Machine Learning; HDBSCAN*; Clustering; Classification.} % keywords
 
 \abstract{ - } 
 
@@ -139,9 +141,9 @@ Este capítulo apresenta os conceitos teóricos fundamentais que embasam o desen
 
 \section{Aprendizado de Máquina}
 
-Machine Learning tem-se por definição o desenvolvimento de algoritmos que capacitam computadores a aprender a realizar tarefas a partir de dados, sem necessidade de programação explícita para cada regra de execução, segundo \citeonline{samuel1959}, que introduziu o tema.
+O Aprendizado de Máquina (\textit{Machine Learning}, ML) consiste no desenvolvimento de algoritmos que capacitam computadores a aprender a realizar tarefas a partir de dados, sem a necessidade de programação explícita para cada regra de execução, segundo \citeonline{samuel1959}, que introduziu o tema.
 
-As abordagens principais dividem-se em: Aprendizado Supervisionado (baseado em dados rotulados), Aprendizado Não Supervisionado (focado em dados não rotulados) e Aprendizado por Reforço (baseado em tentativa e erro). Será abordado nesta seção tanto sobre Aprendizado Não Supervisionado quanto o Aprendizado Supervisionado, embasado através de \citeonline{rezazadeh2025}.
+Segundo \citeonline{rezazadeh2025}, as principais abordagens do Aprendizado de Máquina dividem"-se em quatro categorias: o aprendizado supervisionado, baseado em dados rotulados; o aprendizado não supervisionado, aplicado a dados não rotulados; o aprendizado semissupervisionado, que combina as duas abordagens anteriores ao utilizar simultaneamente dados rotulados e não rotulados; e o aprendizado por reforço, no qual o agente aprende por tentativa e erro, a partir de recompensas e penalidades obtidas na interação com o ambiente. As subseções seguintes tratam do aprendizado supervisionado e do não supervisionado, que fundamentam os modelos comparados neste trabalho.
 
 \subsection{Aprendizado Supervisionado}
 
@@ -158,7 +160,7 @@ As técnicas primárias empregadas no aprendizado supervisionado são a classifi
 
 A segunda principal técnica em ML é o aprendizado não supervisionado, empregado na construção de modelos preditivos em situações onde não há disponibilidade de dados previamente rotulados para o treinamento \cite{solorio2020}. Consequentemente, não há informações prévias sobre a correlação exata entre as características de entrada e saída.
 
-O papel do algoritmo, neste caso, é delinear de forma independente a estrutura oculta nos dados. Uma das distinções mais significativas em relação à metodologia supervisionada é que as abordagens não supervisionadas frequentemente requerem um grau mais elevado de interpretação humana. Uma vez que não existem métricas estatísticas simples que definam um resultado de forma binária (como um rótulo "certo ou errado"), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados \cite{gopal2018}. As principais categorias do aprendizado não supervisionado incluem:
+Nesse caso, o papel do algoritmo é permitir que os dados falem por si, revelando as estruturas intrínsecas do conjunto sem a orientação de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados \cite{rezazadeh2025}. Uma das distinções mais significativas em relação à metodologia supervisionada é que as abordagens não supervisionadas frequentemente requerem um grau mais elevado de interpretação humana. Uma vez que não existem métricas estatísticas simples que definam um resultado de forma binária (como um rótulo "certo ou errado"), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados \cite{gopal2018}. As principais categorias do aprendizado não supervisionado incluem:
 
 \begin{itemize}
     \item \textbf{Agrupamento (Clustering):} Considerada a técnica não supervisionada mais prevalente \cite{kononenko2007}, o agrupamento visa organizar os dados com base em suas semelhanças intrínsecas. O objetivo é garantir que os itens dentro de um mesmo agrupamento (\textit{cluster}) compartilhem características fortes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros agrupamentos \cite{iglesias2021, shalev2014}.
@@ -184,7 +186,85 @@ A Análise de Componentes Principais é um procedimento de estatística multivar
 
 Com o fim de mitigar o viés de otimismo na estimativa de desempenho, assegurar a estabilidade estatística, garantindo a consistência e confiabilidade dos resultados, e, também, fazer a cobertura integral do conjunto de dados durante o processo de modelagem, adotou-se a metodologia de validação cruzada aninhada (\textit{nested cross-validation}). Para \citeonline{krstajic2014}, parafraseando a literatura clássica \cite{stone1974, varma2006}, essa abordagem é indispensável quando se realiza otimização de hiperparâmetros, pois impede o vazamento de informações (\textit{data leakage}) ao separar de forma clara a etapa de calibração da etapa de generalização.
 
-O método é uma variação da validação cruzada, onde consiste em dividir o conjunto de dados em $k$ subconjuntos (\textit{folds}) distintos. A partir desses subconjuntos, criam-se mais $k$ subconjuntos que serão usados para validação e otimização de parâmetros.
+Segundo \citeonline{berrar2024}, a validação cruzada \textit{k-fold} consiste em particionar o conjunto de dados disponível, por amostragem aleatória sem reposição, em $k$ subconjuntos disjuntos (\textit{folds}) de tamanho aproximadamente igual. Em cada uma de $k$ rodadas, o modelo é treinado com $k-1$ subconjuntos, que formam o conjunto de treinamento, e avaliado no subconjunto restante, denominado conjunto de validação. O procedimento se repete até que cada subconjunto tenha sido utilizado uma vez para validação, e a média das $k$ medidas de desempenho constitui a estimativa obtida por validação cruzada. Quando a amostragem é estratificada, cada subconjunto preserva a proporção das classes do conjunto original. A Figura \ref{fig:kfold} ilustra o procedimento para $k = 5$.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Validação cruzada \textit{k-fold} com $k = 5$.}
+    \label{fig:kfold}
+    \begin{tikzpicture}[
+        bloco/.style={draw, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
+        treino/.style={bloco, fill=white},
+        validacao/.style={bloco, fill=black!70}]
+        \foreach \r in {1,...,5} {
+            \node[anchor=east] at (0.4, -0.8*\r) {Rodada \r};
+            \foreach \c in {1,...,5} {
+                \ifnum\c=\r
+                    \node[validacao] at (1.2*\c, -0.8*\r) {};
+                \else
+                    \node[treino] at (1.2*\c, -0.8*\r) {};
+                \fi
+            }
+        }
+        \node[treino, minimum width=0.5cm, minimum height=0.35cm] at (1.0, -5.0) {};
+        \node[anchor=west] at (1.35, -5.0) {Treinamento};
+        \node[validacao, minimum width=0.5cm, minimum height=0.35cm] at (4.4, -5.0) {};
+        \node[anchor=west] at (4.75, -5.0) {Validação};
+    \end{tikzpicture}
+    \par\vspace{2mm}
+    {\small Fonte: Adaptado de \citeonline{berrar2024}.}
+\end{figure}
+
+A validação cruzada aninhada executa esse procedimento em dois níveis. O ciclo externo corresponde a uma validação cruzada \textit{k-fold} convencional, destinada a estimar o desempenho de generalização. Em cada rodada externa, o conjunto de treinamento é submetido a uma nova validação cruzada, o ciclo interno, na qual são avaliadas as configurações candidatas de hiperparâmetros. A configuração de melhor desempenho médio no ciclo interno é utilizada para treinar o modelo com todo o conjunto de treinamento externo, que é então avaliado no subconjunto de teste externo. A estimativa final corresponde à média dos desempenhos obtidos nas $k$ rodadas externas, e as configurações selecionadas podem diferir entre as rodadas. Desse modo, a seleção de hiperparâmetros permanece separada da avaliação do modelo \cite{berrar2024}. A Figura \ref{fig:nested} ilustra o esquema.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Validação cruzada aninhada com cinco rodadas externas e duas internas. O ciclo interno é representado apenas para a quinta rodada externa.}
+    \label{fig:nested}
+    \begin{tikzpicture}[
+        bloco/.style={draw, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
+        treino/.style={bloco, fill=white},
+        valint/.style={bloco, fill=black!25},
+        teste/.style={bloco, fill=black!70}]
+        \foreach \r in {1,...,5} {
+            \node[anchor=east] at (0.4, -0.8*\r) {Rodada externa \r};
+            \foreach \c in {1,...,5} {
+                \ifnum\c=\r
+                    \node[teste] at (1.2*\c, -0.8*\r) {};
+                \else
+                    \node[treino] at (1.2*\c, -0.8*\r) {};
+                \fi
+            }
+        }
+        \draw[dashed] (0.55, -4.3) rectangle (5.4, -3.7);
+        \draw[->] (3.0, -4.3) -- (3.0, -5.3);
+        \foreach \r/\y in {1/-5.6, 2/-6.4} {
+            \node[anchor=east] at (0.05, \y) {Rodada interna \r};
+            \foreach \c in {1,...,4} {
+                \pgfmathtruncatemacro{\metade}{\c > 2 ? 2 : 1}
+                \ifnum\metade=\r
+                    \node[treino] at (1.2*\c, \y) {};
+                \else
+                    \node[valint] at (1.2*\c, \y) {};
+                \fi
+            }
+        }
+        \draw[decorate, decoration={brace, amplitude=6pt}] (6.6, -0.5) -- (6.6, -4.3)
+            node[midway, right=8pt, align=left] {Ciclo externo:\\estimativa do\\desempenho};
+        \draw[decorate, decoration={brace, amplitude=6pt}] (5.4, -5.3) -- (5.4, -6.7)
+            node[midway, right=8pt, align=left] {Ciclo interno:\\seleção de\\hiperparâmetros};
+        \node[treino, minimum width=0.5cm, minimum height=0.35cm] at (-1.6, -7.6) {};
+        \node[anchor=west] at (-1.25, -7.6) {Treinamento};
+        \node[valint, minimum width=0.5cm, minimum height=0.35cm] at (1.6, -7.6) {};
+        \node[anchor=west] at (1.95, -7.6) {Validação interna};
+        \node[teste, minimum width=0.5cm, minimum height=0.35cm] at (5.9, -7.6) {};
+        \node[anchor=west] at (6.25, -7.6) {Teste externo};
+    \end{tikzpicture}
+    \par\vspace{2mm}
+    {\small Fonte: Adaptado de \citeonline{berrar2024}.}
+\end{figure}
+
+Neste trabalho, a seleção de hiperparâmetros do HDBSCAN* difere desse esquema. Cada ciclo interno indica a configuração de melhor desempenho e, dentre as configurações assim obtidas, seleciona-se a de maior desempenho, que é aplicada a todas as rodadas externas.
 
 \section{Algoritmos Supervisionados}
 
@@ -194,9 +274,9 @@ Neste tópico, serão descritos os algoritmos supervisionados baseados em árvor
 
 Uma árvore de decisão é a menor unidade formadora de um modelo \textit{Random Forest} (RF). Assim, segundo \citeonline{zhang2010}, a estrutura de uma árvore de decisão é constituída por camadas, onde a quantidade total dos dados a serem analisados se encontra na raiz, e assim as estruturas subsequentes possuem menor quantidade de dados. À medida que os dados atravessam a árvore, eles passam por nós internos até serem classificados em subgrupos terminais mutuamente exclusivos, as folhas \cite{west2016}. 
 
-O modelo RF é construído através de várias árvores de decisão, com o fim de superar limitações que somente a estrutura de uma árvore de decisão possui. Dessa forma, \citeonline{zhang2010} afirmam que sozinhas, cada árvore não representa um bom modelo, mas quando combinadas tem-se ganho de valor. Assim, por ser uma junção de modelos (árvores de decisão), o \textit{Random Forest} é categorizado como modelo de \textit{ensemble} \cite{salman2024}.
+O modelo RF é construído a partir de várias árvores de decisão, com o fim de superar a instabilidade das estimativas de uma árvore isolada \cite{biau2016}. Nesse sentido, \citeonline{zhang2010} afirmam que, isoladamente, cada árvore não representa um bom modelo, mas a combinação delas gera ganho de valor. Assim, por ser uma junção de modelos (árvores de decisão), o \textit{Random Forest} é categorizado como modelo de \textit{ensemble} \cite{salman2024}.
 
-O método utiliza a técnica \textit{Bagging} (\textit{Bootstrap Aggregating}). Esse processo consiste em gerar múltiplos conjuntos de treinamento a partir da base de dados original, selecionando as amostras de forma aleatória e com reposição. Cada subconjunto treina uma árvore independente. O resultado final do modelo é obtido pela agregação das respostas de todos os chamados \textit{base learners} (modelos menores como árvores de decisão): utiliza-se a média aritmética para tarefas de regressão ou o voto da maioria para classificação \cite{salman2024}.
+O método utiliza a técnica \textit{Bagging} (\textit{Bootstrap Aggregating}). Esse processo consiste em gerar múltiplos conjuntos de treinamento a partir da base de dados original, selecionando as amostras de forma aleatória e com reposição. Cada subconjunto treina uma árvore independente. O resultado final do modelo é obtido pela agregação das respostas de todos os chamados \textit{base learners} (modelos menores como árvores de decisão): utiliza-se a média aritmética para tarefas de regressão ou o voto da maioria para classificação \cite{salman2024}. Além da amostragem com reposição, a cada divisão de nó o RF considera apenas um subconjunto de variáveis sorteado entre as disponíveis \cite{biau2016}, o que torna as árvores mais diferentes e menos correlacionadas entre si e confere maior estabilidade à agregação \cite{probst2019}. A variância da floresta corresponde ao produto da correlação entre as árvores pela variância de uma árvore individual; por isso, a combinação de árvores pouco correlacionadas reduz a variância do modelo, que diminui à medida que o número de árvores aumenta, sem conduzir ao sobreajuste \cite{biau2016}.
 
 \subsection{Extreme Gradient Boosting}
 
@@ -258,7 +338,7 @@ Através de análises acerca da base, notou-se que não há necessidade de trata
 
 Durante a etapa de pré-processamento foram feitas algumas transformações quanto aos dados. Assim, foram feitas padronizações nas variáveis exceto pela variável Class e pelas que passaram pelo processo de PCA, pois pressupõe-se que em ordem de aplicar a transformação PCA, é necessário que passe pelo processo de padronização antes, visto que o método é sensível às escalas.
 
-Já quanto a padronização das variáveis Amount e Time, foram escalonadas, pois em Machine Learning, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas tem o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
+Já quanto a padronização das variáveis Amount e Time, foram escalonadas, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas tem o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
 
 Foram usadas duas formas de padronização, uma para a coluna Time e uma para a coluna Amount. Para os valores da variável Time foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
 
@@ -305,7 +385,7 @@ De acordo com estudos comparativos em otimização de hiperparâmetros \cite{lia
 
 \section{Modelos}
 
-Os modelos analisados neste trabalho são: de natureza Supervisionada, Random Forest e XGBoost, e de natureza Não Supervisionada, HDBSCAN.
+Os modelos analisados neste trabalho são: de natureza Supervisionada, Random Forest e XGBoost, e de natureza Não Supervisionada, HDBSCAN*.
 
 \subsection{Supervisionados}
 % Escreva sobre os modelos supervisionados aqui.
