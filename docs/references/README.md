@@ -19,6 +19,8 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/random-forest.md` | 3.2.1 Random Forest |
 | `01-theoretical-background/xgboost.md` | 3.2.2 Extreme Gradient Boosting |
 | `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
+| `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
+| `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
 | `02-methodology/density-based-clustering-validation.md` | 4.3 Parametrização — critério DBCV |
@@ -40,7 +42,7 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 30 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 37 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
@@ -89,16 +91,25 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 |---|:-:|---|
 | `schubert2017` | ✓ | Schubert, Sander, Ester, Kriegel & Xu. *DBSCAN Revisited, Revisited: Why and How You Should (Still) Use DBSCAN*. ACM TODS, 2017. |
 | `akbari2016` | | Akbari & Unland. *Automated Determination of the Input Parameter of DBSCAN Based on Outlier Detection*. AIAI, 2016. |
+| `ester1996` | ✓ | Ester, Kriegel, Sander & Xu. *A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise*. KDD, 1996. Artigo original do DBSCAN. |
+
+#### optics
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `ankerst1999` | | Ankerst, Breunig, Kriegel & Sander. *OPTICS: Ordering Points To Identify the Clustering Structure*. ACM SIGMOD Record, 1999. |
 
 #### hdbscan
 
 | Chave | bib | Referência |
 |---|:-:|---|
 | `campello2013` | | Campello, Moulavi & Sander. *Density-Based Clustering Based on Hierarchical Density Estimates*. PAKDD, 2013. Artigo original do HDBSCAN. |
-| `campello2015` | | Campello, Moulavi, Zimek & Sander. *Hierarchical density estimates for data clustering, visualization, and outlier detection*. ACM TKDD, 2015. |
+| `campello2013b` | ✓ | Campello, Moulavi, Zimek & Sander. *A framework for semi-supervised and unsupervised optimal extraction of clusters from hierarchies*. Data Mining and Knowledge Discovery, 2013. |
+| `campello2015` | ✓ | Campello, Moulavi, Zimek & Sander. *Hierarchical density estimates for data clustering, visualization, and outlier detection*. ACM TKDD, 2015. |
+| `neto2021` | ✓ | Neto, Sander, Campello & Nascimento. *Efficient Computation and Visualization of Multiple Density-Based Clustering Hierarchies*. IEEE TKDE, 2021. |
 | `mcinnes2017` | | McInnes & Healy. *Accelerated Hierarchical Density Based Clustering*. IEEE ICDM Workshops, 2017. |
-| `neto2022` | | Neto, Naldi, Campello & Sander. *CORE-SG: Efficient Computation of Multiple MSTs for Density-Based Methods*. ICDE, 2022. |
-| `ghosh2024` | | Ghosh, Naldi, Sander & Choo. *Unsupervised Parameter-free Outlier Detection using HDBSCAN* Outlier Profiles*. 2024. |
+| `neto2022` | ✓ | Neto, Naldi, Campello & Sander. *CORE-SG: Efficient Computation of Multiple MSTs for Density-Based Methods*. ICDE, 2022. |
+| `ghosh2024` | ✓ | Ghosh, Naldi, Sander & Choo. *Unsupervised Parameter-free Outlier Detection using HDBSCAN* Outlier Profiles*. 2024. |
 | `frenzel2021` | | Frenzel. *How To Tune HDBSCAN*. Towards Data Science, 2021. Fonte não revisada por pares; usar como apoio prático, não como citação de método. |
 
 #### cluster-validation
@@ -114,6 +125,7 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 |---|:-:|---|
 | `samariya2023` | | Samariya. *A Comprehensive Survey of Anomaly Detection Algorithms*. 2023. |
 | `boukerche2020` | | Boukerche, Zheng & Alfandi. *Outlier Detection: Methods, Models, and Classification*. ACM Computing Surveys, 2020. |
+| `ramaswamy2000` | ✓ | Ramaswamy, Rastogi & Shim. *Efficient Algorithms for Mining Outliers from Large Data Sets*. ACM SIGMOD, 2000. Origem do escore de anomalia pela distância ao k-ésimo vizinho. |
 
 ### preprocessing
 
