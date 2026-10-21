@@ -14,14 +14,22 @@ Rules applied throughout:
 
 Figure labels are written in Portuguese because the figures are produced for
 the monograph, which is written in Portuguese.
+
+Figures that go into the monograph follow the UFLA layout used by Alcino
+(2022): white background, no title or note inside the image (the caption and
+the "Fonte" line are written in LaTeX), and a figure size equal to the printed
+size, so that fonts keep their nominal size on the page.
 """
 
 from matplotlib.colors import LinearSegmentedColormap
 
+# Text width of the monograph (uflamon: A4, 3 cm left and 2 cm right margins).
+TEXT_WIDTH_IN = 16 / 2.54
+
 # ---------------------------------------------------------------------------
 # Surfaces and ink
 # ---------------------------------------------------------------------------
-SURFACE = "#fcfcfb"
+SURFACE = "#ffffff"
 INK = "#0b0b0b"
 INK_SECONDARY = "#52514e"
 INK_MUTED = "#898781"
@@ -141,3 +149,15 @@ def footnote(fig, text):
 def thousands(value):
     """Format an integer with the Brazilian thousands separator."""
     return f"{value:,}".replace(",", ".")
+
+
+def decimal_comma(*axes):
+    """Write the tick labels of numeric axes (ax.xaxis, ax.yaxis) with the decimal comma."""
+    from matplotlib.ticker import ScalarFormatter
+
+    class CommaFormatter(ScalarFormatter):
+        def __call__(self, x, pos=None):
+            return super().__call__(x, pos).replace(".", ",")
+
+    for axis in axes:
+        axis.set_major_formatter(CommaFormatter())

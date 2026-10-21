@@ -105,39 +105,34 @@ def discriminative_power(X, y):
 
 
 def figure_correlation(df):
+    """Lower triangle of the correlation matrix, sized for 0.8 of the text width."""
     import matplotlib.pyplot as plt
 
     corr = df.corr()
     order = list(df.columns)
-    matrix = corr.loc[order, order].to_numpy()
+    # The matrix is symmetric: only the lower triangle and the diagonal are drawn.
+    matrix = np.ma.masked_where(
+        np.triu(np.ones((len(order), len(order))), k=1) == 1, corr.loc[order, order].to_numpy()
+    )
 
-    fig, ax = plt.subplots(figsize=(9.2, 8.0))
+    width = 0.8 * ps.TEXT_WIDTH_IN
+    fig, ax = plt.subplots(figsize=(width, 0.9 * width))
     ax.grid(False)
+    for side in ("left", "bottom"):
+        ax.spines[side].set_visible(False)
     im = ax.imshow(matrix, cmap=ps.DIVERGING, vmin=-1, vmax=1, interpolation="nearest")
 
     ax.set_xticks(range(len(order)))
     ax.set_yticks(range(len(order)))
-    ax.set_xticklabels(order, rotation=90, fontsize=6.5)
-    ax.set_yticklabels(order, fontsize=6.5)
-    ax.set_title("Correlação de Pearson entre as variáveis", pad=12)
-
-    # Highlight the three variables that did not go through PCA.
-    for label in ("Time", "Amount", "Class"):
-        i = order.index(label)
-        ax.axhline(i, color=ps.INK, lw=0.5, alpha=0.35)
-        ax.axvline(i, color=ps.INK, lw=0.5, alpha=0.35)
+    ax.set_xticklabels(order, rotation=90, fontsize=6)
+    ax.set_yticklabels(order, fontsize=6)
+    ax.tick_params(length=0)
 
     bar = fig.colorbar(im, ax=ax, fraction=0.040, pad=0.02, ticks=[-1, -0.5, 0, 0.5, 1])
-    bar.set_label("coeficiente de correlação", color=ps.INK_SECONDARY)
+    bar.set_label("Coeficiente de correlação", color=ps.INK_SECONDARY)
+    bar.ax.tick_params(labelsize=7)
     bar.outline.set_visible(False)
-
-    ps.footnote(
-        fig,
-        "As linhas destacam Time, Amount e Class, as únicas "
-        "variáveis que não resultam do PCA. V1–V28 são ortogonais "
-        "entre si por construção, o que explica o bloco central "
-        "sem correlação.",
-    )
+    ps.decimal_comma(bar.ax.yaxis)
     return fig, corr
 
 
@@ -212,6 +207,7 @@ def figure_discriminative(table, prevalence):
 
 
 def figure_time(df, y):
+    """Panel (a) on top, over the full text width; panels (b) and (c) below it."""
     import matplotlib.pyplot as plt
     from scipy import stats
 
@@ -219,7 +215,9 @@ def figure_time(df, y):
     hour_of_day = hours % 24
     legit, fraud = y == 0, y == 1
 
-    fig, axes = plt.subplots(1, 3, figsize=(14.5, 4.2))
+    fig = plt.figure(figsize=(ps.TEXT_WIDTH_IN, 0.8 * ps.TEXT_WIDTH_IN))
+    grid = fig.add_gridspec(2, 2)
+    axes = [fig.add_subplot(grid[0, :]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])]
 
     ax = axes[0]
     bins = np.linspace(0, hours.max(), 97)
@@ -228,11 +226,11 @@ def figure_time(df, y):
         (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
     ):
         counts, _ = np.histogram(hours[mask], bins=bins)
-        ax.plot(bins[:-1], counts / counts.sum(), color=color, label=label)
+        ax.plot(bins[:-1], counts / counts.sum(), color=color, label=label, lw=1.2)
     ax.set_xlabel("Horas desde a primeira transação")
-    ax.set_ylabel("Proporção da própria classe")
-    ax.set_title("(a) Distribuição ao longo da coleta", loc="left")
-    ax.legend()
+    ax.set_ylabel("Proporção da classe")
+    ax.set_title("(a)", loc="left")
+    ax.legend(loc="upper right")
 
     ax = axes[1]
     bins = np.arange(0, 25, 1)
@@ -241,12 +239,11 @@ def figure_time(df, y):
         (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
     ):
         counts, _ = np.histogram(hour_of_day[mask], bins=bins)
-        ax.step(bins[:-1], counts / counts.sum(), where="post", color=color, label=label)
-    ax.set_xlabel("Hora do dia (Time convertido, módulo 24 h)")
-    ax.set_ylabel("Proporção da própria classe")
-    ax.set_title("(b) Perfil horário", loc="left")
+        ax.step(bins[:-1], counts / counts.sum(), where="post", color=color, label=label, lw=1.2)
+    ax.set_xlabel("Hora do dia (relativa à primeira transação)")
+    ax.set_ylabel("Proporção da classe")
+    ax.set_title("(b)", loc="left")
     ax.set_xticks(range(0, 25, 4))
-    ax.legend()
 
     # The rate per band is what the two curves above imply but do not state:
     # a weak ranker can still multiply the prior odds of fraud several times.
@@ -259,33 +256,21 @@ def figure_time(df, y):
     ax.bar([f"{b:02d}–{b + 3:02d}" for b in bands], rates, color=colours, width=0.66)
     ax.axhline(10000 * y.mean(), color=ps.INK_MUTED, lw=1.0)
     ax.annotate(
-        f"média da base: {10000 * y.mean():.1f}",
+        f"média da base: {10000 * y.mean():.1f}".replace(".", ","),
         xy=(len(bands) - 0.5, 10000 * y.mean()),
-        xytext=(0, 5),
+        xytext=(0, 4),
         textcoords="offset points",
         ha="right",
-        fontsize=7.5,
+        fontsize=7,
         color=ps.INK_MUTED,
     )
     ax.set_xlabel("Faixa horária")
     ax.set_ylabel("Fraudes por 10.000 transações")
-    ax.set_title("(c) Risco por faixa horária", loc="left")
+    ax.set_title("(c)", loc="left")
     ax.tick_params(axis="x", labelrotation=45)
 
+    ps.decimal_comma(axes[0].xaxis, axes[0].yaxis, axes[1].xaxis, axes[1].yaxis, axes[2].yaxis)
     ks = stats.ks_2samp(hour_of_day[fraud], hour_of_day[legit])
-    ratio = rates.max() / rates.min()
-    fig.suptitle("A variável Time separa fraude de transação legítima?", y=1.04)
-    ps.footnote(
-        fig,
-        f"Kolmogorov–Smirnov sobre a hora do dia: "
-        f"D = {ks.statistic:.3f}, p = {ks.pvalue:.2e}. Em (a) e "
-        f"(b) as curvas são normalizadas dentro de cada classe, "
-        f"pois as 492 fraudes não seriam visíveis na mesma escala "
-        f"das 284.315 legítimas. O painel (c) mostra o que as "
-        f"curvas implicam mas não declaram: a faixa de maior risco "
-        f"concentra {ratio:.1f} vezes mais fraude por transação "
-        f"que a de menor risco.",
-    )
     return fig, ks
 
 
