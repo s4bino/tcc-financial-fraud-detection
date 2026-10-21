@@ -21,6 +21,7 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
 | `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
 | `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
+| `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
 | `02-methodology/density-based-clustering-validation.md` | 4.3 Parametrização — critério DBCV |
@@ -42,7 +43,7 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 37 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 38 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
@@ -154,6 +155,12 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `huang2015` | ✓ | Huang et al. *An empirical analysis of data preprocessing for machine learning-based software cost estimation*. 2015. |
+
+### statistics
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `joanes1998` | ✓ | Joanes & Gill. *Comparing measures of sample skewness and kurtosis*. Journal of the Royal Statistical Society: Series D (The Statistician), 1998. Definição do coeficiente de assimetria amostral $g_1$. |
 
 ### model-validation
 
