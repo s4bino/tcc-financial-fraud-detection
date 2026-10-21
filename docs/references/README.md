@@ -12,6 +12,7 @@ dos capítulos na listagem do Obsidian.
 
 | Nota | Seção correspondente na monografia |
 |---|---|
+| `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
 | `01-theoretical-background/machine-learning.md` | 3.1 Aprendizado de Máquina |
 | `01-theoretical-background/principal-component-analysis.md` | 3.1.3.2 Principal Component Analysis |
 | `01-theoretical-background/scaling-and-standardization.md` | 3.1.3.3 Escalonamento e padronização |
@@ -43,7 +44,7 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 38 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 41 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
@@ -57,9 +58,9 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `alarfaj2022` | ✓ | Alarfaj et al. *Credit Card Fraud Detection Using State-of-the-Art Machine Learning and Deep Learning Algorithms*. IEEE Access, 2022. |
-| `sulaiman2022` | | Sulaiman, Schetinin & Sant. *Review of Machine Learning Approach on Credit Card Fraud Detection*. Human-Centric Intelligent Systems, 2022. |
-| `jurgovsky2018` | | Jurgovsky et al. *Sequence Classification for Credit-Card Fraud Detection*. Expert Systems with Applications, 2018. |
-| `ghalwash2025` | | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
+| `sulaiman2022` | ✓ | Sulaiman, Schetinin & Sant. *Review of Machine Learning Approach on Credit Card Fraud Detection*. Human-Centric Intelligent Systems, 2022. |
+| `jurgovsky2018` | ✓ | Jurgovsky et al. *Sequence Classification for Credit-Card Fraud Detection*. Expert Systems with Applications, 2018. |
+| `ghalwash2025` | ✓ | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
 | `santos2025` | | Santos, Bueno dos Santos & Toma. *Detecção de transações fraudulentas com cartão de crédito: uma abordagem comparativa baseada em aprendizado de máquina*. Revista Foco, 2025. |
 | `alcino2022` | | Alcino. *Modelos de classificação em fraudes financeiras: comparação de desempenho em casos de crime de smurfing*. Dissertação, UFLA, 2022. |
 
