@@ -389,22 +389,45 @@ Durante a etapa de pré-processamento foram feitas algumas transformações quan
 
 Já quanto à padronização das variáveis Amount e Time (após a transformação), foram escalonadas, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
 
-Foram usadas duas formas de padronização, uma para as componentes da hora e uma para a coluna Amount. Para as componentes da hora foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
+Para a hora do dia e para a coluna Amount foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
 
-$$z = \frac{x - \mu_X}{\sigma_X}$$
-\label{eq:zscore}
+\begin{equation}
+    z = \frac{x - \mu_X}{\sigma_X}
+    \label{eq:zscore}
+\end{equation}
 
 em que $\mu_X$ e $\sigma_X$ são a média e o desvio padrão da variável em questão.
 
-A variável Amount (Valor) foi transformada utilizando o \textit{Robust Scaler}, uma vez que dados financeiros apresentam alta assimetria e presença severa de \textit{outliers} (valores transacionais atípicos). O uso de mediana e intervalo interquartil por este escalonador impede que valores extremos distorçam a escala da maioria. Uma vez que a mediana não é influenciada por \textit{outliers}, sendo por definição o dado central de um conjunto.
+Antes do escalonamento, a variável Amount foi transformada pelo logaritmo (Equação \ref{eq:log}), uma vez que dados financeiros apresentam alta assimetria e presença severa de \textit{outliers} (valores transacionais atípicos):
 
-% Descomente as linhas abaixo e insira o nome do arquivo da sua imagem quando for compilar
-%\begin{figure}[htb]
-%    \centering
-%    \includegraphics[width=0.8\textwidth]{nome_da_imagem_do_grafico.png} % Substitua pelo nome real do arquivo
-%    \caption{Disposição dos dados antes e depois do escalonamento.}
-%    \label{fig:escalonamento}
-%\end{figure}
+\begin{equation}
+    x' = \ln(1 + x)
+    \label{eq:log}
+\end{equation}
+
+em que $x$ é o valor da transação. A soma de 1 mantém a transformação definida quando o valor é zero.
+
+A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$ \cite{joanes1998} (Equação \ref{eq:assimetria}):
+
+\begin{equation}
+    g_1 = \frac{\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{3/2}}
+    \label{eq:assimetria}
+\end{equation}
+
+em que $n$ é o número de transações e $\bar{x}$ é a média dos valores. O coeficiente é nulo para uma distribuição simétrica e positivo quando há uma cauda longa à direita. Em Amount, ele vale 16,98, pois a mediana é de 22,00, mas o maior valor chega a 25.691,16. Após o logaritmo, o coeficiente cai para 0,16.
+
+Sem o logaritmo, a cauda inflaria o desvio padrão usado no escalonamento. Assim, 98\% das transações ficariam entre $-0{,}35$ e $3{,}72$ desvios padrão da média, enquanto a maior delas ficaria a 102. Como a distância euclidiana soma as diferenças ao quadrado de cada variável, Amount sozinha decidiria os vizinhos das transações extremas e quase não diferenciaria as demais, o que contraria o objetivo do escalonamento, citado anteriormente, de dar às variáveis o mesmo grau de influência. Com o logaritmo, 98\% das transações ficam entre $-1{,}83$ e $2{,}28$ desvios padrão, e a mais extrema, a 4,2. A Figura \ref{fig:amount} compara as duas distribuições.
+
+O logaritmo preserva a ordem dos valores, de modo que a maior transação continua a mais distante da média. O que muda é a medida da diferença, que passa a ser relativa, de modo que, exemplificando, ir de 10 a 100 equivale a ir de 1.000 a 10.000. Além disso, os valores extremos da base não são fraudes. Nenhuma das 284 transações acima de 3.000 é fraudulenta, e a maior fraude é de 2.125,87. As consequências disso para os modelos são discutidas no Capítulo 5.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Distribuição de Amount padronizada pelo Z-score, (a) sem e (b) com o logaritmo. A faixa cinza contém 98\% das transações. Na figura, a média e o desvio padrão são os da base completa, e nos modelos vêm do conjunto de treinamento de cada fold.}
+    \label{fig:amount}
+    \includegraphics[width=\textwidth]{08-amount-transformation.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
 
 \section{Parametrização e avaliação de consistência}
 
