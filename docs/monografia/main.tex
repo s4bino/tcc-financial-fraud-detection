@@ -9,6 +9,7 @@
 \usepackage{amssymb}             % símbolos extras da AMS
 \usepackage{latexsym}            % símbolos extras do LaTeX
 \usepackage{graphicx}            % para inserção de gráficos
+\graphicspath{{../../results/figures/dataset/}} % figuras geradas por src/analysis/dataset_analysis.py
 \usepackage{listings}            % para inserção de código
 \usepackage{fancyvrb}            % para inserção de saídas de comandos
 \usepackage{longtable}           % para tabelas muito grandes
@@ -288,13 +289,35 @@ A partir dessa base conceitual, o XGBoost surge como uma evolução de alta perf
 
 \section{Algoritmo Não Supervisionado}
 
-\subsection{DBSCAN}
+\subsection{DBSCAN*}
+\label{sec:dbscan}
 
-O DBSCAN é um algoritmo de agrupamento que identifica padrões nos dados fundamentado na estimativa de níveis mínimos de densidade. O funcionamento do modelo depende da definição de dois parâmetros principais: um raio de alcance ($\epsilon$) e um número mínimo de vizinhos ($minPts$). Durante a análise, um objeto é classificado como um "ponto central" (\textit{core point}) se a quantidade de vizinhos presentes dentro do seu raio $\epsilon$ for igual ou superior ao limiar estabelecido por $minPts$ \cite{schubert2017}.
+O DBSCAN* é uma variante do DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}) \cite{ester1996, campello2015} e, como ele, é um algoritmo de agrupamento que identifica padrões nos dados fundamentado na estimativa de níveis mínimos de densidade \cite{schubert2017}. O funcionamento do modelo depende da definição de dois parâmetros principais: um raio de alcance ($\epsilon$) e um número mínimo de vizinhos ($minPts$). Durante a análise, um objeto é classificado como um "ponto central" (\textit{core point}) se a quantidade de vizinhos presentes dentro do seu raio $\epsilon$ for igual ou superior ao limiar estabelecido por $minPts$ \cite{schubert2017, campello2015}.
 
-A premissa fundamental do algoritmo é localizar regiões contínuas que satisfaçam essa densidade mínima, isolando-as de áreas mais esparsas do conjunto de dados. Para garantir eficiência computacional, o DBSCAN não calcula a densidade nos espaços vazios entre os pontos \cite{schubert2017}. Em vez disso, o modelo define que todos os vizinhos contidos no raio $\epsilon$ de um ponto central pertencem ao mesmo agrupamento (\textit{cluster}), sendo chamados de "diretamente alcançáveis por densidade". Caso algum desses vizinhos também seja um ponto central, o agrupamento se expande de forma transitiva para englobar as suas respectivas vizinhanças.
+A premissa fundamental do algoritmo é localizar regiões contínuas que satisfaçam essa densidade mínima, isolando-as de áreas mais esparsas do conjunto de dados \cite{schubert2017}. No DBSCAN*, os agrupamentos (\textit{clusters}) são formados apenas por pontos centrais: dois pontos centrais contidos no raio $\epsilon$ um do outro são diretamente alcançáveis e pertencem ao mesmo agrupamento, que se expande de forma transitiva para englobar os demais pontos centrais alcançáveis a partir dos seus membros. Os pontos que não são centrais são rotulados como ruído (\textit{noise}) \cite{campello2015}.
 
-Dentro da estrutura final do \textit{cluster}, os elementos que não atingem o limiar de vizinhos para serem centrais, mas estão dentro do raio de alcance de um ponto central, são classificados como "pontos de borda" (\textit{border points}). Por fim, os dados que estão isolados e não são alcançáveis pela densidade de nenhum agrupamento são categorizados como ruído (\textit{noise}). Neste estudo, fraudes serão consideradas ruídos \cite{schubert2017}.
+\subsection{HDBSCAN*}
+
+O HDBSCAN* (\textit{Hierarchical DBSCAN*}) é um algoritmo hierárquico de agrupamento baseado em densidade que aprimora o método de agrupamento por densidade, o DBSCAN* \cite{campello2015}. Ao contrário do DBSCAN*, que exige a definição prévia do raio $\epsilon$, o HDBSCAN* tem como parâmetro principal o número mínimo de pontos, $m_{pts}$, equivalente ao $m_{pts}$ do DBSCAN* e tratado como um fator de suavização das estimativas de densidade \cite{campello2015}.
+
+A principal diferença do HDBSCAN* em relação ao DBSCAN* está no tratamento do raio. Em vez de fixar um valor de $\epsilon$, o HDBSCAN* calcula, para cada ponto $x_p$, a distância núcleo $d_{core}(x_p)$, definida como a distância de $x_p$ ao seu $m_{pts}$-ésimo vizinho mais próximo, contando o próprio $x_p$. A distância núcleo é, portanto, o menor raio $\epsilon$ para o qual $x_p$ satisfaz a condição de ponto central \cite{campello2015}, e é intuitivo que ela cresça à medida que a vizinhança do ponto se torna mais esparsa. A partir dela, define-se a distância de alcançabilidade mútua entre dois pontos $x_p$ e $x_q$ (Equação \ref{eq:mrd}), que corresponde ao menor raio $\epsilon$ para o qual os dois pontos são alcançáveis um a partir do outro \cite{campello2015}:
+
+\begin{equation}
+    d_{mreach}(x_p, x_q) = \max\{d_{core}(x_p),\, d_{core}(x_q),\, d(x_p, x_q)\}
+    \label{eq:mrd}
+\end{equation}
+
+em que $d(x_p, x_q)$ é a distância original entre os dois pontos.
+
+Essas distâncias definem o grafo de alcançabilidade mútua, um grafo completo cujos vértices são os pontos do conjunto de dados e cujas arestas têm como peso a distância de alcançabilidade mútua entre eles \cite{campello2015}. Esse grafo é conceitual e não precisa ser materializado, pois os pesos das arestas são calculados sob demanda para a obtenção da sua árvore geradora mínima \cite{neto2022}. As arestas dessa árvore são então removidas em ordem decrescente de peso, o que equivale a reduzir progressivamente o raio $\epsilon$: a cada remoção, os componentes conectados de pontos centrais formam os agrupamentos, e os demais pontos passam a ser ruído \cite{campello2015}. Dessa forma, enquanto o DBSCAN* produz um único agrupamento para o raio escolhido, o HDBSCAN* produz uma hierarquia que reúne todos os agrupamentos que o DBSCAN* obteria para o valor de $m_{pts}$ e para qualquer $\epsilon \in [0, \infty)$ \cite{campello2015}.
+
+Para obter uma partição única, os agrupamentos são extraídos da hierarquia por um critério de estabilidade, segundo o qual os agrupamentos mais proeminentes tendem a persistir por uma faixa maior de densidades \cite{campello2013b, campello2015}. Nesse processo, componentes com menos pontos que um tamanho mínimo de agrupamento, $m_{clSize}$, são considerados espúrios e rotulados como ruído \cite{campello2015}.
+
+O valor de $m_{pts}$ continua a influenciar o resultado. Valores maiores exigem mais vizinhos para que um ponto seja central, o que aumenta as distâncias núcleo e tende a formar agrupamentos mais suaves e possivelmente maiores, enquanto valores menores permitem agrupamentos mais detalhados e menores \cite{ghosh2024}. Assim, diferentes faixas de $m_{pts}$ podem levar a resultados distintos \cite{neto2021, neto2022}, o que torna necessária a busca por esse parâmetro.
+
+Na detecção não supervisionada de anomalias, parte-se da premissa de que as anomalias se encontram em regiões de baixa densidade do conjunto de referência \cite{ghosh2024}. Um método global clássico é o dos $k$ vizinhos mais próximos (\textit{k-Nearest Neighbors}, kNN), em que o escore de anomalia de um ponto é a distância ao seu $k$-ésimo vizinho mais próximo \cite{ramaswamy2000}, grandeza análoga à distância núcleo do HDBSCAN* \cite{campello2015}.
+
+Neste estudo, as fraudes não são identificadas apenas como os pontos rotulados como ruído. Cada transação recebe um escore de anomalia que combina a sua pertinência ao agrupamento atribuído pelo HDBSCAN* e a distância ao seu $m_{pts}$-ésimo vizinho mais próximo, e as transações de maior escore são sinalizadas como suspeitas.
 
 %==============================================================================
 % Metodologia
@@ -334,30 +357,77 @@ Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis num�
 
 \section{Pré-processamento}
 
-Através de análises acerca da base, notou-se que não há necessidade de tratamentos quanto a dados faltantes, nulos ou inserção incorreta. O conjunto de dados foi validado nesse sentido. Nenhum tratamento quanto a variáveis correlacionadas foi feito.
+Através de processos de análise exploratória acerca da base, notou-se que não há necessidade de tratamentos quanto a dados faltantes ou nulos. O conjunto de dados foi originalmente validado nesse sentido. A base contém, no entanto, 1.081 transações que repetem outra em todas as variáveis. Elas são retiradas do conjunto de treinamento do HDBSCAN*, pois cópias de um mesmo ponto ficam a distância zero umas das outras e aumentariam artificialmente a densidade estimada na sua região; os conjuntos de validação e de teste permanecem completos, para que a avaliação cubra todas as transações.
+
+A Figura \ref{fig:correlacao} mostra a correlação de Pearson entre as variáveis: as componentes V1 a V28 não são correlacionadas entre si, por construção do PCA \cite{abdi2010}, e as correlações restantes envolvem Time e Amount. Por conta da anonimização advinda do PCA, não é possível interpretar o que essas correlações representam, e nenhuma variável foi retirada ou fundida por causa delas: todas são mantidas nos modelos com suas devidas transformações e padronizações.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Correlação de Pearson entre as variáveis da base.}
+    \label{fig:correlacao}
+    \includegraphics[width=0.8\textwidth]{01-correlation-matrix.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+A variável Time registra os segundos decorridos desde a primeira transação da base e cresce ao longo dos dois dias de coleta, de modo que, em seu valor bruto, apenas ordena as transações, como um identificador. A Figura \ref{fig:hora} compara o horário das transações legítimas e das fraudulentas: convertidas em hora do dia, as fraudes se concentram em determinadas faixas de horário (painel b), e a faixa de maior risco tem 5,6 vezes mais fraudes por transação que a de menor risco (painel c). Por isso, o valor bruto de Time não é usado por nenhum dos modelos. Dele se extrai apenas a posição da transação no ciclo de 24 horas, cuja distribuição difere entre fraudes e transações legítimas, como confirma o teste de Kolmogorov-Smirnov sobre a hora do dia ($D = 0{,}197$; $p < 0{,}001$). O valor de $D$ é a maior diferença entre as proporções acumuladas das duas classes ao longo do dia: em certo horário, a fração das fraudes ocorridas até ali difere em 19,7 pontos percentuais da fração das transações legítimas. O valor de $p$ indica que uma diferença desse tamanho seria muito improvável se as duas classes tivessem a mesma distribuição de horários.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Horário das transações legítimas e fraudulentas. (a) Distribuição ao longo da coleta; (b) distribuição por hora do dia; (c) fraudes por 10.000 transações em cada faixa de três horas.}
+    \label{fig:hora}
+    \includegraphics[width=\textwidth]{03-time-relevance.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+Como a base não informa o horário da primeira transação, a hora do dia é contada a partir desse instante, e não do horário de fato. O deslocamento é o mesmo para todas as transações, de modo que a duração do ciclo, a distância entre os horários e a diferença entre fraudes e transações legítimas se preservam; apenas os rótulos das faixas da Figura \ref{fig:hora} deixam de corresponder ao horário local.
+
+A coluna Time passou então pela transformação para representar a hora do dia. O HDBSCAN*, o \textit{Random Forest} e o XGBoost recebem essa mesma representação.
 
 Durante a etapa de pré-processamento foram feitas algumas transformações quanto aos dados. Assim, foram feitas padronizações nas variáveis exceto pela variável Class e pelas que passaram pelo processo de PCA, pois pressupõe-se que em ordem de aplicar a transformação PCA, é necessário que passe pelo processo de padronização antes, visto que o método é sensível às escalas.
 
-Já quanto a padronização das variáveis Amount e Time, foram escalonadas, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas tem o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
+Já quanto à padronização das variáveis Amount e Time (após a transformação), foram escalonadas, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
 
-Foram usadas duas formas de padronização, uma para a coluna Time e uma para a coluna Amount. Para os valores da variável Time foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
+Para a hora do dia e para a coluna Amount foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
 
-$$z = \frac{x - \mu_X}{\sigma_X}$$
-\label{eq:zscore}
+\begin{equation}
+    z = \frac{x - \mu_X}{\sigma_X}
+    \label{eq:zscore}
+\end{equation}
 
 em que $\mu_X$ e $\sigma_X$ são a média e o desvio padrão da variável em questão.
 
-Foi usado este tipo de escalonamento pelo fato dos valores da \textit{feature} Time serem de natureza incremental e com limite determinístico, já que a coluna é o tempo em segundos decorridos desde a primeira transação registrada na base.
+Antes do escalonamento, a variável Amount foi transformada pelo logaritmo (Equação \ref{eq:log}), uma vez que dados financeiros apresentam alta assimetria e presença severa de \textit{outliers} (valores transacionais atípicos):
 
-A variável Amount (Valor) foi transformada utilizando o \textit{Robust Scaler}, uma vez que dados financeiros apresentam alta assimetria e presença severa de \textit{outliers} (valores transacionais atípicos). O uso de mediana e intervalo interquartil por este escalonador impede que valores extremos distorçam a escala da maioria. Uma vez que a mediana não é influenciada por \textit{outliers}, sendo por definição o dado central de um conjunto.
+\begin{equation}
+    x' = \ln(1 + x)
+    \label{eq:log}
+\end{equation}
 
-% Descomente as linhas abaixo e insira o nome do arquivo da sua imagem quando for compilar
-%\begin{figure}[htb]
-%    \centering
-%    \includegraphics[width=0.8\textwidth]{nome_da_imagem_do_grafico.png} % Substitua pelo nome real do arquivo
-%    \caption{Disposição dos dados antes e depois do escalonamento.}
-%    \label{fig:escalonamento}
-%\end{figure}
+em que $x$ é o valor da transação. A soma de 1 mantém a transformação definida quando o valor é zero.
+
+A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$ \cite{joanes1998} (Equação \ref{eq:assimetria}):
+
+\begin{equation}
+    g_1 = \frac{\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{3/2}}
+    \label{eq:assimetria}
+\end{equation}
+
+em que $n$ é o número de transações e $\bar{x}$ é a média dos valores. O coeficiente é nulo para uma distribuição simétrica e positivo quando há uma cauda longa à direita. Em Amount, ele vale 16,98, pois a mediana é de 22,00, mas o maior valor chega a 25.691,16. Após o logaritmo, o coeficiente cai para 0,16.
+
+Sem o logaritmo, a cauda inflaria o desvio padrão usado no escalonamento. Assim, 98\% das transações ficariam entre $-0{,}35$ e $3{,}72$ desvios padrão da média, enquanto a maior delas ficaria a 102. Como a distância euclidiana soma as diferenças ao quadrado de cada variável, Amount sozinha decidiria os vizinhos das transações extremas e quase não diferenciaria as demais, o que contraria o objetivo do escalonamento, citado anteriormente, de dar às variáveis o mesmo grau de influência. Com o logaritmo, 98\% das transações ficam entre $-1{,}83$ e $2{,}28$ desvios padrão, e a mais extrema, a 4,2. A Figura \ref{fig:amount} compara as duas distribuições.
+
+O logaritmo preserva a ordem dos valores, de modo que a maior transação continua a mais distante da média. O que muda é a medida da diferença, que passa a ser relativa, de modo que, exemplificando, ir de 10 a 100 equivale a ir de 1.000 a 10.000. Além disso, os valores extremos da base não são fraudes. Nenhuma das 284 transações acima de 3.000 é fraudulenta, e a maior fraude é de 2.125,87. As consequências disso para os modelos são discutidas no Capítulo 5.
+
+\begin{figure}[htb]
+    \centering
+    \caption{Distribuição de Amount padronizada pelo Z-score, (a) sem e (b) com o logaritmo. A faixa cinza contém 98\% das transações. Na figura, a média e o desvio padrão são os da base completa, e nos modelos vêm do conjunto de treinamento de cada fold.}
+    \label{fig:amount}
+    \includegraphics[width=\textwidth]{08-amount-transformation.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
 
 \section{Parametrização e avaliação de consistência}
 

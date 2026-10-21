@@ -1,6 +1,6 @@
 > [!check] Status — em uso na monografia
 > - `shams2024` — consta do `refbib.bib`, citado em Metodologia › Parametrização e avaliação de consistência › Grid Search.
-> - `schubert2017` — consta do `refbib.bib`, citado em Fundamentação Teórica › Algoritmo Não Supervisionado › DBSCAN.
+> - `schubert2017` — consta do `refbib.bib`, citado em Fundamentação Teórica › Algoritmo Não Supervisionado › DBSCAN*.
 
 > [!PDF|yellow] [[shams2024_grid-search-water-quality-prediction.pdf#page=17&selection=211,0,319,3&color=yellow|shams2024, p.35323]]
 > > Approaches Parameters Tuning The best parameters RF Criterion = [‘gini’, ‘entropy’] N_Estimators = [50,100,150,200,250], Criterion = entropy N_Estimators = 100, XGBoost N_Estimators = [50,100,150,200,250], Max_depth =[1,2,3,4,5,6,7,8,9,10], Objective = [‘binary’, ‘logistic’] N_estimators = 200, Max_depth = 2, Objective = logistic GB N_estimators = [50,100,150,200,250], Max_depth =[1,2,3,4,5,6,7,8,9,10], Max_features = [‘auto’, ‘sqrt’, ‘log2’] N_estimators = 250, Max_depth = 1, Max_features = auto AdaBoost N_estimators = [50,100,150,200,250], Learning_Rate = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1] N_estimators = 250, Learning_Rate = 0.5

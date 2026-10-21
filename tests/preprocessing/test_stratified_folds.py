@@ -109,9 +109,7 @@ def test_different_seeds_produce_different_partitions(dataset):
     first = stratified_folds(dataset, "Class", 5, random_state=42)
     second = stratified_folds(dataset, "Class", 5, random_state=7)
 
-    assert any(
-        not np.array_equal(a["test_idx"], b["test_idx"]) for a, b in zip(first, second)
-    )
+    assert any(not np.array_equal(a["test_idx"], b["test_idx"]) for a, b in zip(first, second))
 
 
 def test_shuffles_instead_of_slicing_the_base_in_order(folds):

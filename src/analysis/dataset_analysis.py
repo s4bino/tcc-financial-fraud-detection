@@ -40,6 +40,7 @@ K_NEIGHBOURS = 20
 # Preparation
 # ===========================================================================
 
+
 def load():
     df = pd.read_csv(CSV)
     y = df[TARGET].to_numpy()
@@ -86,13 +87,14 @@ def discriminative_power(X, y):
         values = X[col].to_numpy(dtype=float)
         ascending = average_precision_score(y, values)
         descending = average_precision_score(y, -values)
-        rows.append({
-            "feature": col,
-            "auprc": max(ascending, descending),
-            "lift": max(ascending, descending) / prevalence,
-            "direction": ("maior em fraude" if ascending >= descending
-                          else "menor em fraude"),
-        })
+        rows.append(
+            {
+                "feature": col,
+                "auprc": max(ascending, descending),
+                "lift": max(ascending, descending) / prevalence,
+                "direction": ("maior em fraude" if ascending >= descending else "menor em fraude"),
+            }
+        )
     table = pd.DataFrame(rows).sort_values("auprc", ascending=False)
     return table.reset_index(drop=True), prevalence
 
@@ -101,39 +103,36 @@ def discriminative_power(X, y):
 # Figure 01 — Correlation matrix
 # ===========================================================================
 
+
 def figure_correlation(df):
+    """Lower triangle of the correlation matrix, sized for 0.8 of the text width."""
     import matplotlib.pyplot as plt
 
     corr = df.corr()
     order = list(df.columns)
-    matrix = corr.loc[order, order].to_numpy()
+    # The matrix is symmetric: only the lower triangle and the diagonal are drawn.
+    matrix = np.ma.masked_where(
+        np.triu(np.ones((len(order), len(order))), k=1) == 1, corr.loc[order, order].to_numpy()
+    )
 
-    fig, ax = plt.subplots(figsize=(9.2, 8.0))
+    width = 0.8 * ps.TEXT_WIDTH_IN
+    fig, ax = plt.subplots(figsize=(width, 0.9 * width))
     ax.grid(False)
-    im = ax.imshow(matrix, cmap=ps.DIVERGING, vmin=-1, vmax=1,
-                   interpolation="nearest")
+    for side in ("left", "bottom"):
+        ax.spines[side].set_visible(False)
+    im = ax.imshow(matrix, cmap=ps.DIVERGING, vmin=-1, vmax=1, interpolation="nearest")
 
     ax.set_xticks(range(len(order)))
     ax.set_yticks(range(len(order)))
-    ax.set_xticklabels(order, rotation=90, fontsize=6.5)
-    ax.set_yticklabels(order, fontsize=6.5)
-    ax.set_title("Correlação de Pearson entre as variáveis", pad=12)
+    ax.set_xticklabels(order, rotation=90, fontsize=6)
+    ax.set_yticklabels(order, fontsize=6)
+    ax.tick_params(length=0)
 
-    # Highlight the three variables that did not go through PCA.
-    for label in ("Time", "Amount", "Class"):
-        i = order.index(label)
-        ax.axhline(i, color=ps.INK, lw=0.5, alpha=0.35)
-        ax.axvline(i, color=ps.INK, lw=0.5, alpha=0.35)
-
-    bar = fig.colorbar(im, ax=ax, fraction=0.040, pad=0.02,
-                       ticks=[-1, -0.5, 0, 0.5, 1])
-    bar.set_label("coeficiente de correlação", color=ps.INK_SECONDARY)
+    bar = fig.colorbar(im, ax=ax, fraction=0.040, pad=0.02, ticks=[-1, -0.5, 0, 0.5, 1])
+    bar.set_label("Coeficiente de correlação", color=ps.INK_SECONDARY)
+    bar.ax.tick_params(labelsize=7)
     bar.outline.set_visible(False)
-
-    ps.footnote(fig, "As linhas destacam Time, Amount e Class, as únicas "
-                     "variáveis que não resultam do PCA. V1–V28 são ortogonais "
-                     "entre si por construção, o que explica o bloco central "
-                     "sem correlação.")
+    ps.decimal_comma(bar.ax.yaxis)
     return fig, corr
 
 
@@ -141,13 +140,13 @@ def figure_correlation(df):
 # Figure 02 — Discriminative power per feature
 # ===========================================================================
 
+
 def figure_discriminative(table, prevalence):
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 
     ordered = table.sort_values("lift")
-    colors = [ps.ORANGE if f in ("Time", "Amount") else ps.BLUE
-              for f in ordered["feature"]]
+    colors = [ps.ORANGE if f in ("Time", "Amount") else ps.BLUE for f in ordered["feature"]]
 
     fig, ax = plt.subplots(figsize=(7.4, 8.2))
     ax.grid(True, axis="x")
@@ -164,24 +163,41 @@ def figure_discriminative(table, prevalence):
 
     for feature in ("Time", "Amount"):
         row = ordered[ordered["feature"] == feature].iloc[0]
-        ax.text(row["lift"] * 1.08, list(ordered["feature"]).index(feature),
-                f"{row['lift']:.1f}×", va="center", fontsize=8,
-                color=ps.INK_SECONDARY)
+        ax.text(
+            row["lift"] * 1.08,
+            list(ordered["feature"]).index(feature),
+            f"{row['lift']:.1f}×",
+            va="center",
+            fontsize=8,
+            color=ps.INK_SECONDARY,
+        )
     best = ordered.iloc[-1]
-    ax.text(best["lift"] * 1.08, len(ordered) - 1,
-            f"{best['lift']:.0f}×  (AUPRC {best['auprc']:.3f})",
-            va="center", fontsize=8, color=ps.INK_SECONDARY)
+    ax.text(
+        best["lift"] * 1.08,
+        len(ordered) - 1,
+        f"{best['lift']:.0f}×  (AUPRC {best['auprc']:.3f})",
+        va="center",
+        fontsize=8,
+        color=ps.INK_SECONDARY,
+    )
 
-    ax.legend(handles=[Patch(color=ps.BLUE, label="Componente do PCA (V1–V28)"),
-                       Patch(color=ps.ORANGE, label="Variável original")],
-              loc="lower right")
+    ax.legend(
+        handles=[
+            Patch(color=ps.BLUE, label="Componente do PCA (V1–V28)"),
+            Patch(color=ps.ORANGE, label="Variável original"),
+        ],
+        loc="lower right",
+    )
 
-    ps.footnote(fig, f"Mede-se o AUPRC, não o AUC ROC: com "
-                     f"{100 * prevalence:.3f}% de fraudes, o AUC ROC é dominado "
-                     f"pela ordenação dos negativos e superestima a separação. "
-                     f"O lift é o AUPRC dividido pela prevalência, isto é, pelo "
-                     f"AUPRC de {prevalence:.6f} que um ordenador aleatório "
-                     f"obteria. Lift 1 significa nenhuma informação.")
+    ps.footnote(
+        fig,
+        f"Mede-se o AUPRC, não o AUC ROC: com "
+        f"{100 * prevalence:.3f}% de fraudes, o AUC ROC é dominado "
+        f"pela ordenação dos negativos e superestima a separação. "
+        f"O lift é o AUPRC dividido pela prevalência, isto é, pelo "
+        f"AUPRC de {prevalence:.6f} que um ordenador aleatório "
+        f"obteria. Lift 1 significa nenhuma informação.",
+    )
     return fig
 
 
@@ -189,7 +205,9 @@ def figure_discriminative(table, prevalence):
 # Figure 03 — Is the Time variable relevant?
 # ===========================================================================
 
+
 def figure_time(df, y):
+    """Panel (a) on top, over the full text width; panels (b) and (c) below it."""
     import matplotlib.pyplot as plt
     from scipy import stats
 
@@ -197,31 +215,35 @@ def figure_time(df, y):
     hour_of_day = hours % 24
     legit, fraud = y == 0, y == 1
 
-    fig, axes = plt.subplots(1, 3, figsize=(14.5, 4.2))
+    fig = plt.figure(figsize=(ps.TEXT_WIDTH_IN, 0.8 * ps.TEXT_WIDTH_IN))
+    grid = fig.add_gridspec(2, 2)
+    axes = [fig.add_subplot(grid[0, :]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])]
 
     ax = axes[0]
     bins = np.linspace(0, hours.max(), 97)
-    for mask, color, label in ((legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
-                               (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD)):
+    for mask, color, label in (
+        (legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+        (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+    ):
         counts, _ = np.histogram(hours[mask], bins=bins)
-        ax.plot(bins[:-1], counts / counts.sum(), color=color, label=label)
+        ax.plot(bins[:-1], counts / counts.sum(), color=color, label=label, lw=1.2)
     ax.set_xlabel("Horas desde a primeira transação")
-    ax.set_ylabel("Proporção da própria classe")
-    ax.set_title("(a) Distribuição ao longo da coleta", loc="left")
-    ax.legend()
+    ax.set_ylabel("Proporção da classe")
+    ax.set_title("(a)", loc="left")
+    ax.legend(loc="upper right")
 
     ax = axes[1]
     bins = np.arange(0, 25, 1)
-    for mask, color, label in ((legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
-                               (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD)):
+    for mask, color, label in (
+        (legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+        (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+    ):
         counts, _ = np.histogram(hour_of_day[mask], bins=bins)
-        ax.step(bins[:-1], counts / counts.sum(), where="post",
-                color=color, label=label)
-    ax.set_xlabel("Hora do dia (Time convertido, módulo 24 h)")
-    ax.set_ylabel("Proporção da própria classe")
-    ax.set_title("(b) Perfil horário", loc="left")
+        ax.step(bins[:-1], counts / counts.sum(), where="post", color=color, label=label, lw=1.2)
+    ax.set_xlabel("Hora do dia (relativa à primeira transação)")
+    ax.set_ylabel("Proporção da classe")
+    ax.set_title("(b)", loc="left")
     ax.set_xticks(range(0, 25, 4))
-    ax.legend()
 
     # The rate per band is what the two curves above imply but do not state:
     # a weak ranker can still multiply the prior odds of fraud several times.
@@ -231,35 +253,83 @@ def figure_time(df, y):
     bands = np.arange(0, 24, 3)
     rates = np.array([10000 * y[band == b].mean() for b in bands])
     colours = [ps.ORANGE if r >= rates.mean() else ps.BLUE for r in rates]
-    ax.bar([f"{b:02d}–{b + 3:02d}" for b in bands], rates,
-           color=colours, width=0.66)
+    ax.bar([f"{b:02d}–{b + 3:02d}" for b in bands], rates, color=colours, width=0.66)
     ax.axhline(10000 * y.mean(), color=ps.INK_MUTED, lw=1.0)
-    ax.annotate(f"média da base: {10000 * y.mean():.1f}",
-                xy=(len(bands) - 0.5, 10000 * y.mean()), xytext=(0, 5),
-                textcoords="offset points", ha="right", fontsize=7.5,
-                color=ps.INK_MUTED)
+    ax.annotate(
+        f"média da base: {10000 * y.mean():.1f}".replace(".", ","),
+        xy=(len(bands) - 0.5, 10000 * y.mean()),
+        xytext=(0, 4),
+        textcoords="offset points",
+        ha="right",
+        fontsize=7,
+        color=ps.INK_MUTED,
+    )
     ax.set_xlabel("Faixa horária")
     ax.set_ylabel("Fraudes por 10.000 transações")
-    ax.set_title("(c) Risco por faixa horária", loc="left")
+    ax.set_title("(c)", loc="left")
     ax.tick_params(axis="x", labelrotation=45)
 
+    ps.decimal_comma(axes[0].xaxis, axes[0].yaxis, axes[1].xaxis, axes[1].yaxis, axes[2].yaxis)
     ks = stats.ks_2samp(hour_of_day[fraud], hour_of_day[legit])
-    ratio = rates.max() / rates.min()
-    fig.suptitle("A variável Time separa fraude de transação legítima?", y=1.04)
-    ps.footnote(fig, f"Kolmogorov–Smirnov sobre a hora do dia: "
-                     f"D = {ks.statistic:.3f}, p = {ks.pvalue:.2e}. Em (a) e "
-                     f"(b) as curvas são normalizadas dentro de cada classe, "
-                     f"pois as 492 fraudes não seriam visíveis na mesma escala "
-                     f"das 284.315 legítimas. O painel (c) mostra o que as "
-                     f"curvas implicam mas não declaram: a faixa de maior risco "
-                     f"concentra {ratio:.1f} vezes mais fraude por transação "
-                     f"que a de menor risco.")
     return fig, ks
+
+
+# ===========================================================================
+# Figure 08 — Amount before and after the logarithm
+# ===========================================================================
+
+
+def figure_amount_transformation(df, y):
+    """Z-score of Amount without (a) and with (b) the logarithm, per class.
+
+    Both panels are in standard deviations from the mean, the unit the models
+    see after the Z-score, so the long tail of the raw values and its removal by
+    the logarithm can be compared directly. The shaded band holds the central
+    98% of the transactions. The statistics come from the whole dataset; in the
+    models they come from the training set of each fold.
+    """
+    import matplotlib.pyplot as plt
+
+    amount = df["Amount"].to_numpy(dtype=float)
+    panels = [
+        ("(a)", amount, 1.0, True),
+        ("(b)", np.log1p(amount), 0.1, False),
+    ]
+    legit, fraud = y == 0, y == 1
+
+    fig, axes = plt.subplots(1, 2, figsize=(ps.TEXT_WIDTH_IN, 0.42 * ps.TEXT_WIDTH_IN))
+    for ax, (label, values, width, log_y) in zip(axes, panels, strict=True):
+        z = (values - values.mean()) / values.std()
+        bins = np.arange(np.floor(z.min()), z.max() + width, width)
+        low, high = np.quantile(z, [0.01, 0.99])
+        ax.axvspan(low, high, color=ps.INK_MUTED, alpha=0.12, lw=0, label="98% centrais")
+        for mask, color, name in (
+            (legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+            (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+        ):
+            counts, _ = np.histogram(z[mask], bins=bins)
+            share = counts / counts.sum()
+            if log_y:
+                # empty bins break the line instead of dropping to log(0)
+                share = np.where(share > 0, share, np.nan)
+            ax.stairs(share, bins, baseline=None, color=color, label=name, lw=1.2)
+        ax.set_xlabel("Desvios padrão da média")
+        ax.set_title(label, loc="left")
+        if log_y:
+            ax.set_yscale("log")
+            ax.set_ylabel("Proporção da classe (escala log.)")
+            ps.decimal_comma(ax.xaxis)
+        else:
+            ax.set_ylabel("Proporção da classe")
+            ps.decimal_comma(ax.xaxis, ax.yaxis)
+    axes[1].legend(loc="upper right")
+    return fig
 
 
 # ===========================================================================
 # Figure 04 — Class-conditional distributions
 # ===========================================================================
+
 
 def figure_distributions(scaled, y, table, top_n=6):
     import matplotlib.pyplot as plt
@@ -275,22 +345,24 @@ def figure_distributions(scaled, y, table, top_n=6):
         high = max(np.percentile(values_legit, 99.9), values_fraud.max())
         bins = np.linspace(low, high, 70)
 
-        for values, color, label in ((values_legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
-                                     (values_fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD)):
+        for values, color, label in (
+            (values_legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+            (values_fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+        ):
             counts, _ = np.histogram(values, bins=bins)
-            ax.plot(bins[:-1], counts / max(counts.sum(), 1),
-                    color=color, label=label, lw=1.4)
+            ax.plot(bins[:-1], counts / max(counts.sum(), 1), color=color, label=label, lw=1.4)
 
         row = table[table["feature"] == feature].iloc[0]
-        ax.set_title(f"{feature}   (AUPRC {row['auprc']:.3f}, "
-                     f"lift {row['lift']:.0f}×)", loc="left")
+        ax.set_title(f"{feature}   (AUPRC {row['auprc']:.3f}, lift {row['lift']:.0f}×)", loc="left")
         ax.set_ylabel("densidade")
 
     axes[0, 0].legend(loc="upper left")
-    fig.suptitle("Distribuição das seis variáveis mais discriminantes, por classe",
-                 y=1.03)
-    ps.footnote(fig, "Cada curva é normalizada dentro da própria classe. Valores "
-                     "escalonados pelo mesmo pré-processamento do pipeline.")
+    fig.suptitle("Distribuição das seis variáveis mais discriminantes, por classe", y=1.03)
+    ps.footnote(
+        fig,
+        "Cada curva é normalizada dentro da própria classe. Valores "
+        "escalonados pelo mesmo pré-processamento do pipeline.",
+    )
     return fig
 
 
@@ -298,14 +370,13 @@ def figure_distributions(scaled, y, table, top_n=6):
 # Figure 05 — Projections
 # ===========================================================================
 
+
 def figure_projections(scaled, y, table, rng):
     import matplotlib.pyplot as plt
 
     first, second, third = list(table.head(3)["feature"])
     legit_idx = np.where(y == 0)[0]
-    legit_idx = rng.choice(legit_idx,
-                           size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)),
-                           replace=False)
+    legit_idx = rng.choice(legit_idx, size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)), replace=False)
     fraud_idx = np.where(y == 1)[0]
 
     fig = plt.figure(figsize=(12.0, 4.4))
@@ -315,16 +386,27 @@ def figure_projections(scaled, y, table, rng):
         # text and axes stay vector. Without it a single figure with 20.000
         # markers per panel produces a file of tens of megabytes.
         ax.grid(True, axis="both")
-        ax.scatter(scaled[x_name].to_numpy()[legit_idx],
-                   scaled[y_name].to_numpy()[legit_idx],
-                   s=3, color=ps.COLOR_LEGIT, alpha=0.22, linewidths=0,
-                   rasterized=True,
-                   label=f"{ps.LABEL_LEGIT} (amostra de {ps.thousands(len(legit_idx))})")
-        ax.scatter(scaled[x_name].to_numpy()[fraud_idx],
-                   scaled[y_name].to_numpy()[fraud_idx],
-                   s=16, color=ps.COLOR_FRAUD, alpha=0.95,
-                   edgecolors=ps.SURFACE, linewidths=0.6, rasterized=True,
-                   label=f"{ps.LABEL_FRAUD} (todas as {len(fraud_idx)})")
+        ax.scatter(
+            scaled[x_name].to_numpy()[legit_idx],
+            scaled[y_name].to_numpy()[legit_idx],
+            s=3,
+            color=ps.COLOR_LEGIT,
+            alpha=0.22,
+            linewidths=0,
+            rasterized=True,
+            label=f"{ps.LABEL_LEGIT} (amostra de {ps.thousands(len(legit_idx))})",
+        )
+        ax.scatter(
+            scaled[x_name].to_numpy()[fraud_idx],
+            scaled[y_name].to_numpy()[fraud_idx],
+            s=16,
+            color=ps.COLOR_FRAUD,
+            alpha=0.95,
+            edgecolors=ps.SURFACE,
+            linewidths=0.6,
+            rasterized=True,
+            label=f"{ps.LABEL_FRAUD} (todas as {len(fraud_idx)})",
+        )
         ax.set_xlabel(x_name)
         ax.set_ylabel(y_name)
 
@@ -341,18 +423,21 @@ def figure_projections(scaled, y, table, rng):
     scatter(ax3, second, third)
     ax3.set_title(f"(c) {second} × {third}", loc="left")
 
-    fig.suptitle("Fraudes projetadas nas três componentes mais discriminantes",
-                 y=1.04)
-    ps.footnote(fig, "As componentes são escolhidas pelo AUPRC individual, não "
-                     "pela variância. V1–V28 já resultam de PCA, e a ordem do "
-                     "PCA reflete variância total, que não coincide com poder "
-                     "de separação entre as classes.")
+    fig.suptitle("Fraudes projetadas nas três componentes mais discriminantes", y=1.04)
+    ps.footnote(
+        fig,
+        "As componentes são escolhidas pelo AUPRC individual, não "
+        "pela variância. V1–V28 já resultam de PCA, e a ordem do "
+        "PCA reflete variância total, que não coincide com poder "
+        "de separação entre as classes.",
+    )
     return fig, (first, second, third)
 
 
 # ===========================================================================
 # Figure 06 — Three-dimensional view
 # ===========================================================================
+
 
 def figure_projection_3d(scaled, y, table, rng):
     """Four viewpoints of the same three-dimensional cloud.
@@ -365,9 +450,7 @@ def figure_projection_3d(scaled, y, table, rng):
 
     first, second, third = list(table.head(3)["feature"])
     legit_idx = np.where(y == 0)[0]
-    legit_idx = rng.choice(legit_idx,
-                           size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)),
-                           replace=False)
+    legit_idx = rng.choice(legit_idx, size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)), replace=False)
     fraud_idx = np.where(y == 1)[0]
 
     x_legit = scaled[first].to_numpy()[legit_idx]
@@ -385,34 +468,61 @@ def figure_projection_3d(scaled, y, table, rng):
         ax.set_facecolor(ps.SURFACE)
         # See the note in figure_projections: four panels of 20.000 vector
         # markers each would make this the heaviest file in the repository.
-        ax.scatter(x_legit, y_legit, z_legit, s=2.4,
-                   color=ps.COLOR_LEGIT, alpha=0.20, linewidths=0,
-                   rasterized=True, label=ps.LABEL_LEGIT)
-        ax.scatter(x_fraud, y_fraud, z_fraud, s=13,
-                   color=ps.COLOR_FRAUD, alpha=0.9,
-                   edgecolors=ps.SURFACE, linewidths=0.4,
-                   rasterized=True, label=ps.LABEL_FRAUD)
+        ax.scatter(
+            x_legit,
+            y_legit,
+            z_legit,
+            s=2.4,
+            color=ps.COLOR_LEGIT,
+            alpha=0.20,
+            linewidths=0,
+            rasterized=True,
+            label=ps.LABEL_LEGIT,
+        )
+        ax.scatter(
+            x_fraud,
+            y_fraud,
+            z_fraud,
+            s=13,
+            color=ps.COLOR_FRAUD,
+            alpha=0.9,
+            edgecolors=ps.SURFACE,
+            linewidths=0.4,
+            rasterized=True,
+            label=ps.LABEL_FRAUD,
+        )
         ax.set_xlabel(first, labelpad=2)
         ax.set_ylabel(second, labelpad=2)
         ax.set_zlabel(third, labelpad=2)
         ax.tick_params(labelsize=6.5, pad=1)
         ax.view_init(elev=elevation, azim=azimuth)
-        ax.set_title(f"elevação {elevation}°, azimute {azimuth}°",
-                     loc="left", fontsize=9, color=ps.INK_SECONDARY)
+        ax.set_title(
+            f"elevação {elevation}°, azimute {azimuth}°",
+            loc="left",
+            fontsize=9,
+            color=ps.INK_SECONDARY,
+        )
         for pane in (ax.xaxis, ax.yaxis, ax.zaxis):
             pane.pane.set_facecolor(ps.SURFACE)
             pane.pane.set_edgecolor(ps.GRID)
 
     handles, labels = fig.axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncols=2,
-               markerscale=2.4, bbox_to_anchor=(0.5, -0.015))
+    fig.legend(
+        handles, labels, loc="lower center", ncols=2, markerscale=2.4, bbox_to_anchor=(0.5, -0.015)
+    )
 
-    fig.suptitle(f"Estrutura tridimensional em {first} × {second} × {third}",
-                 y=1.02)
-    fig.text(0.0, -0.055, f"O mesmo conjunto de pontos visto de quatro ângulos. "
-                          f"Amostra de {ps.thousands(len(legit_idx))} transações "
-                          f"legítimas e todas as {len(fraud_idx)} fraudes.",
-             ha="left", va="top", fontsize=7.5, color=ps.INK_MUTED)
+    fig.suptitle(f"Estrutura tridimensional em {first} × {second} × {third}", y=1.02)
+    fig.text(
+        0.0,
+        -0.055,
+        f"O mesmo conjunto de pontos visto de quatro ângulos. "
+        f"Amostra de {ps.thousands(len(legit_idx))} transações "
+        f"legítimas e todas as {len(fraud_idx)} fraudes.",
+        ha="left",
+        va="top",
+        fontsize=7.5,
+        color=ps.INK_MUTED,
+    )
     return fig
 
 
@@ -420,15 +530,14 @@ def figure_projection_3d(scaled, y, table, rng):
 # Figure 07 — Local density: the premise under test
 # ===========================================================================
 
+
 def figure_local_density(scaled, y, rng, k=K_NEIGHBOURS):
     import matplotlib.pyplot as plt
     from scipy import stats
     from sklearn.neighbors import NearestNeighbors
 
     legit_idx = np.where(y == 0)[0]
-    legit_idx = rng.choice(legit_idx,
-                           size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)),
-                           replace=False)
+    legit_idx = rng.choice(legit_idx, size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)), replace=False)
     fraud_idx = np.where(y == 1)[0]
     index = np.concatenate([legit_idx, fraud_idx])
 
@@ -448,8 +557,10 @@ def figure_local_density(scaled, y, rng, k=K_NEIGHBOURS):
     ax = axes[0]
     upper = np.percentile(k_distance, 99.0)
     grid = np.linspace(0, upper, 400)
-    for values, color, label in ((d_legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
-                                 (d_fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD)):
+    for values, color, label in (
+        (d_legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+        (d_fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+    ):
         kernel = stats.gaussian_kde(values)
         ax.plot(grid, kernel(grid), color=color, label=label)
         ax.fill_between(grid, kernel(grid), color=color, alpha=0.10, linewidth=0)
@@ -464,10 +575,12 @@ def figure_local_density(scaled, y, rng, k=K_NEIGHBOURS):
     ax = axes[1]
     ax.grid(True, axis="y")
     quantiles = np.linspace(0, 99, 100)
-    ax.plot(quantiles, np.percentile(d_legit, quantiles),
-            color=ps.COLOR_LEGIT, label=ps.LABEL_LEGIT)
-    ax.plot(quantiles, np.percentile(d_fraud, quantiles),
-            color=ps.COLOR_FRAUD, label=ps.LABEL_FRAUD)
+    ax.plot(
+        quantiles, np.percentile(d_legit, quantiles), color=ps.COLOR_LEGIT, label=ps.LABEL_LEGIT
+    )
+    ax.plot(
+        quantiles, np.percentile(d_fraud, quantiles), color=ps.COLOR_FRAUD, label=ps.LABEL_FRAUD
+    )
     ax.set_xlabel("Percentil (recortado no 99º)")
     ax.set_ylabel(f"Distância ao {k}º vizinho")
     ax.set_title("(b) Curvas de quantis", loc="left")
@@ -478,20 +591,28 @@ def figure_local_density(scaled, y, rng, k=K_NEIGHBOURS):
     ratio = median_fraud / median_legit
 
     fig.suptitle("Fraudes ocupam regiões de densidade mais baixa?", y=1.04)
-    ps.footnote(fig,
-                f"Mediana da distância: {median_legit:.2f} para transações "
-                f"legítimas e {median_fraud:.2f} para fraudes — razão de "
-                f"{ratio:.2f}×. Kolmogorov–Smirnov: D = {ks.statistic:.3f}, "
-                f"p = {ks.pvalue:.2e}. Amostra de "
-                f"{ps.thousands(len(legit_idx))} legítimas e todas as "
-                f"{len(fraud_idx)} fraudes.")
-    return fig, {"median_legit": median_legit, "median_fraud": median_fraud,
-                 "ratio": ratio, "ks_d": ks.statistic, "ks_p": ks.pvalue}
+    ps.footnote(
+        fig,
+        f"Mediana da distância: {median_legit:.2f} para transações "
+        f"legítimas e {median_fraud:.2f} para fraudes — razão de "
+        f"{ratio:.2f}×. Kolmogorov–Smirnov: D = {ks.statistic:.3f}, "
+        f"p = {ks.pvalue:.2e}. Amostra de "
+        f"{ps.thousands(len(legit_idx))} legítimas e todas as "
+        f"{len(fraud_idx)} fraudes.",
+    )
+    return fig, {
+        "median_legit": median_legit,
+        "median_fraud": median_fraud,
+        "ratio": ratio,
+        "ks_d": ks.statistic,
+        "ks_p": ks.pvalue,
+    }
 
 
 # ===========================================================================
 # Statistical summary
 # ===========================================================================
+
 
 def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, target):
     total = len(df)
@@ -562,9 +683,11 @@ def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, target
         "|---|---|---|---|---|---|",
     ]
     for i, row in table.head(10).iterrows():
-        lines.append(f"| {i + 1} | {row.feature} | {row.auprc:.4f} | "
-                     f"{row.lift:.1f}× | "
-                     f"{corr.loc[row.feature, 'Class']:+.4f} | {row.direction} |")
+        lines.append(
+            f"| {i + 1} | {row.feature} | {row.auprc:.4f} | "
+            f"{row.lift:.1f}× | "
+            f"{corr.loc[row.feature, 'Class']:+.4f} | {row.direction} |"
+        )
 
     lines += [
         "",
@@ -597,8 +720,10 @@ def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, target
 
 # ===========================================================================
 
+
 def main():
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -647,8 +772,14 @@ def main():
     print("   ", ps.save(fig, f"{OUTPUT}/07-local-density")[0])
     plt.close(fig)
 
-    summary = write_summary(df, y, corr, table, prevalence, ks_time, density,
-                            axes, f"{OUTPUT}/dataset-statistics.md")
+    print("08 - Amount before and after the logarithm")
+    fig = figure_amount_transformation(df, y)
+    print("   ", ps.save(fig, f"{OUTPUT}/08-amount-transformation")[0])
+    plt.close(fig)
+
+    summary = write_summary(
+        df, y, corr, table, prevalence, ks_time, density, axes, f"{OUTPUT}/dataset-statistics.md"
+    )
     print("summary:", summary)
 
     table.to_csv(f"{OUTPUT}/feature-discriminative-power.csv", index=False)

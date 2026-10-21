@@ -1,23 +1,26 @@
+import itertools
+import json
 import os
 import time
-import json
-import itertools
 
+import dbcv
 import numpy as np
 import pandas as pd
 from cuml.cluster import HDBSCAN
 from cuml.cluster.hdbscan import approximate_predict
 from cuml.neighbors import NearestNeighbors
-import dbcv
-
-from sklearn.metrics import (f1_score, precision_score, recall_score,
-                             average_precision_score, confusion_matrix)
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import RobustScaler, StandardScaler
-
+from sklearn.metrics import (
+    average_precision_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
-V_COLUMNS = [f"V{i}" for i in range(1, 29)]
+from features import engineer_features
 
 
 def to_numpy(values):
@@ -52,58 +55,23 @@ def to_numpy(values):
     return np.asarray(values)
 
 
-def engineer_features(X):
-    """
-    Constrói as variáveis de entrada do HDBSCAN* aprimorado a partir das colunas originais da base.
-
-    Objetivo:
-        Mantém os componentes principais V1 a V28 e substitui Amount e Time por três variáveis
-        derivadas. O valor da transação entra como log_amount = ln(1 + Amount), transformação
-        que comprime a cauda direita da distribuição, fortemente assimétrica em dados
-        financeiros, e permanece definida quando Amount é zero. O tempo é reduzido à posição da
-        transação no ciclo de 24 horas, hora = (Time mod 86400) / 3600, e codificado como o par
-        (sen(2π·hora/24), cos(2π·hora/24)). A codificação cíclica preserva a proximidade entre
-        23h e 0h, que uma escala linear trataria como extremos opostos, e o par seno e cosseno
-        identifica cada hora de forma única. Como Time conta os segundos desde a primeira
-        transação da base, a hora obtida é relativa a esse instante, e não ao horário do relógio.
-
-    Parâmetros:
-        X (pd.DataFrame): transações com as colunas Time, V1 a V28 e Amount, sem a coluna alvo.
-
-    Retorno:
-        pd.DataFrame com 31 colunas, na ordem V1 a V28, log_amount, hour_sin e hour_cos, e o
-        mesmo índice de X.
-
-    Exemplo de uso:
-        X_train = engineer_features(df_train.drop(columns=["Class"]))
-        # Time = 90000 s cai na hora 1 do ciclo: hour_sin ≈ 0.259 e hour_cos ≈ 0.966
-        # Amount = 99 resulta em log_amount = ln(100) ≈ 4.605
-    """
-    # fds-et-19-anomaly-detection-models, célula 11, linha 50
-    hour = (X["Time"] % 86400) / 3600
-    features = X[V_COLUMNS].copy()
-    # fds-et-19-anomaly-detection-models, célula 11, linha 48
-    features["log_amount"] = np.log1p(X["Amount"])
-    features["hour_sin"] = np.sin(2 * np.pi * hour / 24)
-    features["hour_cos"] = np.cos(2 * np.pi * hour / 24)
-    return features
-
-
 def build_preprocessor():
     """
     Cria, ainda sem ajuste, o transformador que padroniza as variáveis derivadas por engineer_features.
 
     Objetivo:
         O HDBSCAN* e as distâncias aos vizinhos mais próximos usam a distância euclidiana, que é
-        sensível à escala de cada variável. O transformador aplica o RobustScaler a log_amount,
-        subtraindo a mediana e dividindo pelo intervalo interquartil, estatísticas pouco
-        afetadas por valores extremos, e o StandardScaler a hour_sin e hour_cos, que passam a ter
-        média zero e variância unitária. Os componentes V1 a V28 seguem sem alteração
-        (remainder="passthrough"), por já resultarem da PCA aplicada na origem da base.
+        sensível à escala de cada variável. O transformador aplica o StandardScaler a log_amount,
+        hour_sin e hour_cos, que passam a ter média zero e variância unitária. O logaritmo já
+        reduz a assimetria de Amount (de 16,98 para 0,16 na base completa), de modo que o
+        RobustScaler, antes usado em log_amount, não alterava o resultado: no fold interno 1, a
+        AUPRC da distância kNN mudou só na terceira casa decimal. Os componentes V1 a V28 seguem
+        sem alteração (remainder="passthrough"): padronizá-los iguala o peso de componentes de
+        variância muito diferente na distância e reduziu essa AUPRC de 0,363 para 0,308.
 
         O ajuste deve usar apenas o conjunto de treinamento (fit_transform), e a validação ou o
-        teste recebem somente transform. Assim, mediana, quartis, médias e desvios vêm
-        exclusivamente do treino, sem vazamento de informação. A saída é um np.ndarray sem nomes
+        teste recebem somente transform. Assim, médias e desvios vêm exclusivamente do treino,
+        sem vazamento de informação. A saída é um np.ndarray sem nomes
         de colunas, na ordem log_amount, hour_sin, hour_cos e V1 a V28, porque o
         ColumnTransformer acrescenta as colunas repassadas ao final.
 
@@ -117,10 +85,9 @@ def build_preprocessor():
     """
     return ColumnTransformer(
         transformers=[
-            ("rob_scaler", RobustScaler(), ["log_amount"]),
-            ("std_scaler", StandardScaler(), ["hour_sin", "hour_cos"])
+            ("std_scaler", StandardScaler(), ["log_amount", "hour_sin", "hour_cos"]),
         ],
-        remainder="passthrough"
+        remainder="passthrough",
     )
 
 
@@ -224,7 +191,7 @@ def ensemble_score(train_scores, scores):
     """
     return np.mean(
         [percentile_rank(reference, values) for reference, values in zip(train_scores, scores)],
-        axis=0
+        axis=0,
     )
 
 
@@ -237,7 +204,7 @@ def hdbscan_enhanced_internal_grid_with_tracking(
     max_dbcv_sample_size=20000,
     alert_rate=0.01,
     resume=False,
-    only_folds=None
+    only_folds=None,
 ):
     """
     Executa o ciclo interno da validação cruzada aninhada do HDBSCAN* aprimorado: grid search
@@ -309,13 +276,10 @@ def hdbscan_enhanced_internal_grid_with_tracking(
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(internal_folds_dir)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(internal_folds_dir) if f.endswith("_train.csv")}
+    )
     print(f"Folds encontrados para Avaliação (HDBSCAN aprimorado): {folds}")
-
 
     param_names = list(param_grid.keys())
     param_values = list(param_grid.values())
@@ -344,26 +308,28 @@ def hdbscan_enhanced_internal_grid_with_tracking(
 
     for fold in folds:
         pending_combos = [
-            combo_id for combo_id in df_param_combinations.index
+            combo_id
+            for combo_id in df_param_combinations.index
             if (fold, combo_id) not in completed_trials
         ]
         if not pending_combos:
             print(f"\n--- Fold Interno {fold} já concluído, pulando ---")
             continue
 
-        print(f"\n--- Iniciando Grid Search para o Fold Interno {fold} ({len(pending_combos)} combinações pendentes) ---")
-
+        print(
+            f"\n--- Iniciando Grid Search para o Fold Interno {fold} ({len(pending_combos)} combinações pendentes) ---"
+        )
 
         train_path = os.path.join(internal_folds_dir, f"fold_{fold}_train.csv")
-        val_path   = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
+        val_path = os.path.join(internal_folds_dir, f"fold_{fold}_val.csv")
 
         df_train = pd.read_csv(train_path)
-        df_val   = pd.read_csv(val_path)
+        df_val = pd.read_csv(val_path)
 
         # credit-card-fraud-detection-ds, célula 9, linha 2; credit-card-fraud-detection, célula 10, linha 3
         X_train = engineer_features(df_train.drop(columns=[target]).drop_duplicates())
-        X_val   = engineer_features(df_val.drop(columns=[target]))
-        y_val   = df_val[target]
+        X_val = engineer_features(df_val.drop(columns=[target]))
+        y_val = df_val[target]
         del df_train, df_val
 
         # ==============================================================
@@ -375,9 +341,13 @@ def hdbscan_enhanced_internal_grid_with_tracking(
         X_val_scaled = preprocessor.transform(X_val)
 
         t_knn = time.time()
-        train_neighbor_distances = neighbor_distances(X_train_scaled, X_train_scaled, max_min_samples + 1)
+        train_neighbor_distances = neighbor_distances(
+            X_train_scaled, X_train_scaled, max_min_samples + 1
+        )
         val_neighbor_distances = neighbor_distances(X_train_scaled, X_val_scaled, max_min_samples)
-        print(f"Distâncias aos {max_min_samples} vizinhos calculadas em {time.time() - t_knn:.1f} s")
+        print(
+            f"Distâncias aos {max_min_samples} vizinhos calculadas em {time.time() - t_knn:.1f} s"
+        )
 
         # ==============================================================
         # GRID
@@ -388,7 +358,6 @@ def hdbscan_enhanced_internal_grid_with_tracking(
 
             params_dict = combo.to_dict()
 
-
             min_cluster_size = int(params_dict["min_cluster_size"])
             min_samples = int(params_dict["min_samples"])
 
@@ -397,9 +366,7 @@ def hdbscan_enhanced_internal_grid_with_tracking(
             # ==============================================================
             t0 = time.time()
             model = HDBSCAN(
-                min_cluster_size=min_cluster_size,
-                min_samples=min_samples,
-                prediction_data=True
+                min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
             )
             model.fit(X_train_scaled)
             train_time = time.time() - t0
@@ -428,16 +395,20 @@ def hdbscan_enhanced_internal_grid_with_tracking(
                                 labels_unique,
                                 train_size=max_dbcv_sample_size,
                                 random_state=42,
-                                stratify=labels_unique
+                                stratify=labels_unique,
                             )
                         except ValueError:
                             rng = np.random.RandomState(42)
-                            sample_idx = rng.choice(len(X_mat_unique), size=max_dbcv_sample_size, replace=False)
+                            sample_idx = rng.choice(
+                                len(X_mat_unique), size=max_dbcv_sample_size, replace=False
+                            )
                             X_mat_unique = X_mat_unique[sample_idx]
                             labels_unique = labels_unique[sample_idx]
 
                     if len(set(labels_unique) - {-1}) >= 1:
-                        dbcv_score = dbcv.dbcv(X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes)
+                        dbcv_score = dbcv.dbcv(
+                            X_mat_unique, labels_unique, noise_id=-1, n_processes=n_processes
+                        )
                     else:
                         dbcv_score = -1.0
 
@@ -455,12 +426,9 @@ def hdbscan_enhanced_internal_grid_with_tracking(
 
             train_scores = [
                 1.0 - to_numpy(model.probabilities_),
-                train_neighbor_distances[:, min_samples]
+                train_neighbor_distances[:, min_samples],
             ]
-            val_scores = [
-                1.0 - to_numpy(val_probs),
-                val_neighbor_distances[:, min_samples - 1]
-            ]
+            val_scores = [1.0 - to_numpy(val_probs), val_neighbor_distances[:, min_samples - 1]]
 
             train_ensemble = ensemble_score(train_scores, train_scores)
             val_ensemble = ensemble_score(train_scores, val_scores)
@@ -471,34 +439,36 @@ def hdbscan_enhanced_internal_grid_with_tracking(
             # fds-et-19-anomaly-detection-models, célula 17, linha 3
             preds = (val_ensemble >= alert_threshold).astype(int)
 
-            f1               = f1_score(y_val, preds, zero_division=0)
-            prec             = precision_score(y_val, preds, zero_division=0)
-            rec              = recall_score(y_val, preds, zero_division=0)
-            auprc            = average_precision_score(y_val, val_ensemble)
+            f1 = f1_score(y_val, preds, zero_division=0)
+            prec = precision_score(y_val, preds, zero_division=0)
+            rec = recall_score(y_val, preds, zero_division=0)
+            auprc = average_precision_score(y_val, val_ensemble)
             auprc_membership = average_precision_score(y_val, val_scores[0])
-            auprc_density    = average_precision_score(y_val, val_scores[1])
+            auprc_density = average_precision_score(y_val, val_scores[1])
             tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
-            all_trials_history.append({
-                "fold": fold,
-                "combo_id": combo_id,
-                "min_cluster_size": min_cluster_size,
-                "min_samples": min_samples,
-                "dbcv_score": dbcv_score,
-                "n_clusters": n_clusters,
-                "n_noise_points": n_noise,
-                "f1": f1,
-                "precision": prec,
-                "recall": rec,
-                "auprc": auprc,
-                "auprc_membership": auprc_membership,
-                "auprc_density": auprc_density,
-                "TP": tp,
-                "FP": fp,
-                "FN": fn,
-                "train_time": train_time,
-                "val_time": val_time
-            })
+            all_trials_history.append(
+                {
+                    "fold": fold,
+                    "combo_id": combo_id,
+                    "min_cluster_size": min_cluster_size,
+                    "min_samples": min_samples,
+                    "dbcv_score": dbcv_score,
+                    "n_clusters": n_clusters,
+                    "n_noise_points": n_noise,
+                    "f1": f1,
+                    "precision": prec,
+                    "recall": rec,
+                    "auprc": auprc,
+                    "auprc_membership": auprc_membership,
+                    "auprc_density": auprc_density,
+                    "TP": tp,
+                    "FP": fp,
+                    "FN": fn,
+                    "train_time": train_time,
+                    "val_time": val_time,
+                }
+            )
 
             pd.DataFrame(all_trials_history).to_csv(partial_path, index=False)
 
@@ -517,35 +487,40 @@ def hdbscan_enhanced_internal_grid_with_tracking(
     # 6. GERAÇÃO DE RELATÓRIOS E SELEÇÃO DOS MELHORES
     # ==============================================================
     df_folds = pd.DataFrame(all_trials_history)
-    df_folds.to_csv(os.path.join(output_dir, "hdbscan_enhanced_grid_results_by_fold.csv"), index=False)
+    df_folds.to_csv(
+        os.path.join(output_dir, "hdbscan_enhanced_grid_results_by_fold.csv"), index=False
+    )
 
     summary_data = []
-    for fold in sorted(int(f) for f in df_folds['fold'].unique()):
-        fold_data = df_folds[df_folds['fold'] == fold]
+    for fold in sorted(int(f) for f in df_folds["fold"].unique()):
+        fold_data = df_folds[df_folds["fold"] == fold]
 
         best_row = fold_data.sort_values("dbcv_score", ascending=False).iloc[0]
 
         best_params_per_fold[fold] = {
             "min_cluster_size": int(best_row["min_cluster_size"]),
             "min_samples": int(best_row["min_samples"]),
-            "best_dbcv_score": float(best_row["dbcv_score"])
+            "best_dbcv_score": float(best_row["dbcv_score"]),
         }
         summary_data.append(best_row.to_dict())
 
     df_summary = pd.DataFrame(summary_data)
-    df_summary.to_csv(os.path.join(output_dir, "hdbscan_enhanced_grid_best_summary.csv"), index=False)
+    df_summary.to_csv(
+        os.path.join(output_dir, "hdbscan_enhanced_grid_best_summary.csv"), index=False
+    )
 
     with open(os.path.join(output_dir, "best_params_hdbscan_enhanced.json"), "w") as f:
         json.dump(best_params_per_fold, f, indent=4)
 
     return df_folds, df_summary, best_params_per_fold
 
+
 def hdbscan_enhanced_outer_evaluation(
     outer_folds_dir,
     best_parameter_achieved,
     target="Class",
     output_dir="results/unsupervised",
-    alert_rate=0.01
+    alert_rate=0.01,
 ):
     """
     Executa o ciclo externo da validação cruzada aninhada: estima, nos folds externos de teste, o
@@ -594,17 +569,17 @@ def hdbscan_enhanced_outer_evaluation(
 
     print("\n--- Iniciando Avaliação Externa (Outer Folds) com Predição ---")
 
-    folds = sorted({
-        int(f.split("_")[1])
-        for f in os.listdir(outer_folds_dir)
-        if f.endswith("_train.csv")
-    })
+    folds = sorted(
+        {int(f.split("_")[1]) for f in os.listdir(outer_folds_dir) if f.endswith("_train.csv")}
+    )
 
     min_cluster_size = int(best_parameter_achieved["min_cluster_size"])
     min_samples = int(best_parameter_achieved["min_samples"])
 
     for fold in folds:
-        print(f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}")
+        print(
+            f"Avaliando Fold Externo {fold} | min_cluster_size={min_cluster_size} | min_samples={min_samples}"
+        )
 
         train_path = os.path.join(outer_folds_dir, f"fold_{fold}_train.csv")
         test_path = os.path.join(outer_folds_dir, f"fold_{fold}_test.csv")
@@ -623,9 +598,7 @@ def hdbscan_enhanced_outer_evaluation(
         X_test_scaled = preprocessor.transform(X_test)
 
         model = HDBSCAN(
-            min_cluster_size=min_cluster_size,
-            min_samples=min_samples,
-            prediction_data=True
+            min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
         )
 
         t0 = time.time()
@@ -637,11 +610,11 @@ def hdbscan_enhanced_outer_evaluation(
 
         train_scores = [
             1.0 - to_numpy(model.probabilities_),
-            neighbor_distances(X_train_scaled, X_train_scaled, min_samples + 1)[:, min_samples]
+            neighbor_distances(X_train_scaled, X_train_scaled, min_samples + 1)[:, min_samples],
         ]
         test_scores = [
             1.0 - to_numpy(test_probabilities),
-            neighbor_distances(X_train_scaled, X_test_scaled, min_samples)[:, min_samples - 1]
+            neighbor_distances(X_train_scaled, X_test_scaled, min_samples)[:, min_samples - 1],
         ]
 
         train_ensemble = ensemble_score(train_scores, train_scores)
@@ -653,30 +626,32 @@ def hdbscan_enhanced_outer_evaluation(
         # fds-et-19-anomaly-detection-models, célula 17, linha 3
         preds = (test_ensemble >= alert_threshold).astype(int)
 
-        f1               = f1_score(y_test, preds, zero_division=0)
-        prec             = precision_score(y_test, preds, zero_division=0)
-        rec              = recall_score(y_test, preds, zero_division=0)
-        auprc            = average_precision_score(y_test, test_ensemble)
+        f1 = f1_score(y_test, preds, zero_division=0)
+        prec = precision_score(y_test, preds, zero_division=0)
+        rec = recall_score(y_test, preds, zero_division=0)
+        auprc = average_precision_score(y_test, test_ensemble)
         auprc_membership = average_precision_score(y_test, test_scores[0])
-        auprc_density    = average_precision_score(y_test, test_scores[1])
+        auprc_density = average_precision_score(y_test, test_scores[1])
         tn, fp, fn, tp = confusion_matrix(y_test, preds, labels=[0, 1]).ravel()
 
-        final_metrics.append({
-            "fold": fold,
-            "min_cluster_size": min_cluster_size,
-            "min_samples": min_samples,
-            "precision": prec,
-            "recall": rec,
-            "f1": f1,
-            "auprc": auprc,
-            "auprc_membership": auprc_membership,
-            "auprc_density": auprc_density,
-            "TP": tp,
-            "FP": fp,
-            "FN": fn,
-            "train_time": train_time,
-            "predict_time": predict_time
-        })
+        final_metrics.append(
+            {
+                "fold": fold,
+                "min_cluster_size": min_cluster_size,
+                "min_samples": min_samples,
+                "precision": prec,
+                "recall": rec,
+                "f1": f1,
+                "auprc": auprc,
+                "auprc_membership": auprc_membership,
+                "auprc_density": auprc_density,
+                "TP": tp,
+                "FP": fp,
+                "FN": fn,
+                "train_time": train_time,
+                "predict_time": predict_time,
+            }
+        )
 
     df_final = pd.DataFrame(final_metrics)
     mean_metrics = df_final.mean().to_dict()
@@ -697,12 +672,14 @@ if __name__ == "__main__":
         description="Grid search do HDBSCAN aprimorado com retomada por fold."
     )
     parser.add_argument(
-        "--resume", action="store_true",
-        help="lê o CSV parcial e pula os folds já concluídos"
+        "--resume", action="store_true", help="lê o CSV parcial e pula os folds já concluídos"
     )
     parser.add_argument(
-        "--folds", type=int, nargs="+", default=None,
-        help="executa apenas estes folds internos, por exemplo: --folds 2 3"
+        "--folds",
+        type=int,
+        nargs="+",
+        default=None,
+        help="executa apenas estes folds internos, por exemplo: --folds 2 3",
     )
     args = parser.parse_args()
 
@@ -715,10 +692,9 @@ if __name__ == "__main__":
     ALERT_RATE = 0.001
 
     param_grid_hdbscan = {
-        'min_cluster_size': [50],
-        'min_samples': [150, 200, 250, 300, 350, 400, 500]
+        "min_cluster_size": [50],
+        "min_samples": [150, 200, 250, 300, 350, 400, 500],
     }
-
 
     n_cores_disponiveis = os.cpu_count() or 1
     print(f"Iniciando pipeline... Processos alocados para o DBCV: {n_cores_disponiveis}")
@@ -733,15 +709,14 @@ if __name__ == "__main__":
         max_dbcv_sample_size=28000,
         alert_rate=ALERT_RATE,
         resume=args.resume,
-        only_folds=args.folds
+        only_folds=args.folds,
     )
 
     print("\nMelhores parâmetros encontrados por fold:")
     print(json.dumps(best_params_per_fold, indent=4))
 
     best_parameter_achieved = max(
-        best_params_per_fold.values(),
-        key=lambda fold_params: fold_params["best_dbcv_score"]
+        best_params_per_fold.values(), key=lambda fold_params: fold_params["best_dbcv_score"]
     )
 
     print("\nMelhor parâmetro obtido no ciclo interno:")
@@ -753,7 +728,7 @@ if __name__ == "__main__":
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
         output_dir=f"{RESULTS_DIR}/final_reports_hdbscan_enhanced",
-        alert_rate=ALERT_RATE
+        alert_rate=ALERT_RATE,
     )
 
     print("\nRelatório Final (Outer Folds):")

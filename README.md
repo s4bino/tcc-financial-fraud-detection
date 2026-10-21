@@ -63,8 +63,9 @@ e coloque em `data/raw/creditcard.csv`.
 │       ├── articles/                         # PDFs por tema (não versionados)
 │       └── citations/                        # notas de leitura
 │
-├── pytest.ini
-├── requirements.txt
+├── .python-version                       # versão do Python usada pelo uv
+├── pyproject.toml                        # dependências e configuração do pytest e do ruff
+├── uv.lock                               # versões travadas das dependências
 └── README.md
 ```
 
@@ -76,13 +77,22 @@ importadas por eles. Os caminhos são relativos à raiz do repositório.
 
 ## Instalação
 
+O ambiente é gerenciado pelo [uv](https://docs.astral.sh/uv/). Na raiz do
+repositório:
+
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
+O comando obtém o Python indicado em `.python-version`, cria o `.venv` e instala
+as dependências nas versões travadas em `uv.lock`, incluindo as de
+desenvolvimento (pytest e ruff). Os scripts e as ferramentas são executados com
+`uv run`, que usa esse ambiente.
+
 A etapa não supervisionada depende de `cuml-cu12` e `dbcv`, que exigem Linux com
-GPU NVIDIA (CUDA 12) e não são instaláveis pelo `requirements.txt`. Os comandos
-estão documentados no próprio arquivo. Esse experimento foi executado no Google Colab.
+GPU NVIDIA (CUDA 12) e ficam fora do `uv.lock`. Esse experimento foi executado
+no Google Colab, e as instruções de instalação estão documentadas no
+`pyproject.toml`.
 
 ---
 
@@ -93,7 +103,7 @@ Todos os scripts assumem a **raiz do repositório** como diretório de trabalho.
 **1. Geração dos folds** — nested cross-validation estratificada, 5 folds externos 80/20 e divisão interna 80/20:
 
 ```bash
-python src/preprocessing/run_fold_generation.py
+uv run python src/preprocessing/run_fold_generation.py
 ```
 
 Produz `data/processed/outer_folds/` (227.845 treino / 56.961 teste por fold) e
@@ -102,7 +112,7 @@ Produz `data/processed/outer_folds/` (227.845 treino / 56.961 teste por fold) e
 **2. Grid search supervisionado** — Random Forest ou XGBoost, seleção por F1:
 
 ```bash
-python src/models/run_supervised_grid_search.py
+uv run python src/models/run_supervised_grid_search.py
 ```
 
 O modelo (`"rf"` ou `"xgb"`) e a grade são definidos no bloco `__main__`.
@@ -171,9 +181,9 @@ reproduziu o resultado do experimento original até a sexta casa decimal
 ## Testes
 
 ```bash
-pytest                  # suíte completa
-pytest -m "not slow"    # exclui os testes que treinam modelos
-pytest tests/preprocessing
+uv run pytest                  # suíte completa
+uv run pytest -m "not slow"    # exclui os testes que treinam modelos
+uv run pytest tests/preprocessing
 ```
 
 A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
@@ -198,6 +208,23 @@ alcança as partições de calibração, o resumo por combinação corresponde �
 média das métricas por fold e a execução paralela reproduz a sequencial.
 `run_hdbscan_grid_search.py` fica fora da suíte por exigir GPU e por começar
 com comandos de instalação do Colab, que impedem sua importação.
+
+---
+
+## Qualidade do código
+
+O código é verificado e formatado pelo [ruff](https://docs.astral.sh/ruff/),
+com a configuração do `pyproject.toml`: linhas de até 100 caracteres, imports
+ordenados e as regras de pycodestyle, Pyflakes, flake8-bugbear e pyupgrade.
+
+```bash
+uv run ruff check          # verificação
+uv run ruff check --fix    # aplica as correções automáticas seguras
+uv run ruff format         # formatação
+```
+
+Os achados anteriores à adoção do ruff que exigem revisão manual estão listados,
+por arquivo, em `[tool.ruff.lint.per-file-ignores]`.
 
 ---
 
