@@ -18,7 +18,7 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import RobustScaler, StandardScaler
+from sklearn.preprocessing import StandardScaler
 
 from features import engineer_features
 
@@ -61,15 +61,17 @@ def build_preprocessor():
 
     Objetivo:
         O HDBSCAN* e as distâncias aos vizinhos mais próximos usam a distância euclidiana, que é
-        sensível à escala de cada variável. O transformador aplica o RobustScaler a log_amount,
-        subtraindo a mediana e dividindo pelo intervalo interquartil, estatísticas pouco
-        afetadas por valores extremos, e o StandardScaler a hour_sin e hour_cos, que passam a ter
-        média zero e variância unitária. Os componentes V1 a V28 seguem sem alteração
-        (remainder="passthrough"), por já resultarem da PCA aplicada na origem da base.
+        sensível à escala de cada variável. O transformador aplica o StandardScaler a log_amount,
+        hour_sin e hour_cos, que passam a ter média zero e variância unitária. O logaritmo já
+        reduz a assimetria de Amount (de 16,98 para 0,16 na base completa), de modo que o
+        RobustScaler, antes usado em log_amount, não alterava o resultado: no fold interno 1, a
+        AUPRC da distância kNN mudou só na terceira casa decimal. Os componentes V1 a V28 seguem
+        sem alteração (remainder="passthrough"): padronizá-los iguala o peso de componentes de
+        variância muito diferente na distância e reduziu essa AUPRC de 0,363 para 0,308.
 
         O ajuste deve usar apenas o conjunto de treinamento (fit_transform), e a validação ou o
-        teste recebem somente transform. Assim, mediana, quartis, médias e desvios vêm
-        exclusivamente do treino, sem vazamento de informação. A saída é um np.ndarray sem nomes
+        teste recebem somente transform. Assim, médias e desvios vêm exclusivamente do treino,
+        sem vazamento de informação. A saída é um np.ndarray sem nomes
         de colunas, na ordem log_amount, hour_sin, hour_cos e V1 a V28, porque o
         ColumnTransformer acrescenta as colunas repassadas ao final.
 
@@ -83,8 +85,7 @@ def build_preprocessor():
     """
     return ColumnTransformer(
         transformers=[
-            ("rob_scaler", RobustScaler(), ["log_amount"]),
-            ("std_scaler", StandardScaler(), ["hour_sin", "hour_cos"]),
+            ("std_scaler", StandardScaler(), ["log_amount", "hour_sin", "hour_cos"]),
         ],
         remainder="passthrough",
     )
