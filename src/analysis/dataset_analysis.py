@@ -275,6 +275,58 @@ def figure_time(df, y):
 
 
 # ===========================================================================
+# Figure 08 — Amount before and after the logarithm
+# ===========================================================================
+
+
+def figure_amount_transformation(df, y):
+    """Z-score of Amount without (a) and with (b) the logarithm, per class.
+
+    Both panels are in standard deviations from the mean, the unit the models
+    see after the Z-score, so the long tail of the raw values and its removal by
+    the logarithm can be compared directly. The shaded band holds the central
+    98% of the transactions. The statistics come from the whole dataset; in the
+    models they come from the training set of each fold.
+    """
+    import matplotlib.pyplot as plt
+
+    amount = df["Amount"].to_numpy(dtype=float)
+    panels = [
+        ("(a)", amount, 1.0, True),
+        ("(b)", np.log1p(amount), 0.1, False),
+    ]
+    legit, fraud = y == 0, y == 1
+
+    fig, axes = plt.subplots(1, 2, figsize=(ps.TEXT_WIDTH_IN, 0.42 * ps.TEXT_WIDTH_IN))
+    for ax, (label, values, width, log_y) in zip(axes, panels, strict=True):
+        z = (values - values.mean()) / values.std()
+        bins = np.arange(np.floor(z.min()), z.max() + width, width)
+        low, high = np.quantile(z, [0.01, 0.99])
+        ax.axvspan(low, high, color=ps.INK_MUTED, alpha=0.12, lw=0, label="98% centrais")
+        for mask, color, name in (
+            (legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
+            (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
+        ):
+            counts, _ = np.histogram(z[mask], bins=bins)
+            share = counts / counts.sum()
+            if log_y:
+                # empty bins break the line instead of dropping to log(0)
+                share = np.where(share > 0, share, np.nan)
+            ax.stairs(share, bins, baseline=None, color=color, label=name, lw=1.2)
+        ax.set_xlabel("Desvios padrão da média")
+        ax.set_title(label, loc="left")
+        if log_y:
+            ax.set_yscale("log")
+            ax.set_ylabel("Proporção da classe (escala log.)")
+            ps.decimal_comma(ax.xaxis)
+        else:
+            ax.set_ylabel("Proporção da classe")
+            ps.decimal_comma(ax.xaxis, ax.yaxis)
+    axes[1].legend(loc="upper right")
+    return fig
+
+
+# ===========================================================================
 # Figure 04 — Class-conditional distributions
 # ===========================================================================
 
@@ -718,6 +770,11 @@ def main():
     print("07 - local density")
     fig, density = figure_local_density(scaled, y, rng)
     print("   ", ps.save(fig, f"{OUTPUT}/07-local-density")[0])
+    plt.close(fig)
+
+    print("08 - Amount before and after the logarithm")
+    fig = figure_amount_transformation(df, y)
+    print("   ", ps.save(fig, f"{OUTPUT}/08-amount-transformation")[0])
     plt.close(fig)
 
     summary = write_summary(

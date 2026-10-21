@@ -23,6 +23,7 @@ python src/analysis/hdbscan_metrics.py    # results/figures/hdbscan
 | `05-projections` | onde as fraudes ficam, em duas dimensões |
 | `06-projection-3d` | a mesma nuvem em três dimensões, de quatro ângulos |
 | `07-local-density` | fraudes ocupam regiões menos densas? |
+| `08-amount-transformation` | o logaritmo corrige a assimetria de Amount antes do Z-score? |
 
 Números em `dataset-statistics.md`; ranking completo em
 `feature-discriminative-power.csv`.
