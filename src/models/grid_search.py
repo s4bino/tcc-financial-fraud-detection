@@ -9,6 +9,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
 from xgboost import XGBClassifier
 
+from features import engineer_features
+
 
 def manual_grid_search(
     folds_dir,
@@ -27,6 +29,10 @@ def manual_grid_search(
         Avaliar todas as combinações de hiperparâmetros do RandomForestClassifier
         usando folds internos (train/val), calcular métricas de avaliação e
         identificar os melhores parâmetros segundo uma métrica escolhida.
+
+        As variáveis de entrada são as de engineer_features, as mesmas do HDBSCAN* aprimorado:
+        V1 a V28, log_amount e a hora do dia codificada em seno e cosseno. O valor bruto de
+        Time não entra nos modelos.
 
     Parâmetros:
         folds_dir (str): Pasta contendo os arquivos de fold: fold_1_train.csv, fold_1_val.csv, etc.
@@ -93,9 +99,9 @@ def manual_grid_search(
             df_train = pd.read_csv(train_path)
             df_val = pd.read_csv(val_path)
 
-            X_train = df_train.drop(columns=[target])
+            X_train = engineer_features(df_train.drop(columns=[target]))
             y_train = df_train[target]
-            X_val = df_val.drop(columns=[target])
+            X_val = engineer_features(df_val.drop(columns=[target]))
             y_val = df_val[target]
 
             # Libera memória do dataframe bruto, já que separamos X e y
