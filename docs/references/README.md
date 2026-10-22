@@ -22,6 +22,7 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
 | `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
 | `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
+| `01-theoretical-background/evaluation-metrics.md` | 3.4 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
@@ -44,14 +45,12 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 41 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 47 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
-**Lidos mas ainda não incorporados:** `samariya2023`, `moulavi2014` e
-`alcino2022` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
-`moulavi2014` é a fonte original do DBCV, critério de seleção do grid do
-HDBSCAN — usado no método, mas ainda sem citação no texto.
+**Lidos mas ainda não incorporados:** `samariya2023` e `alcino2022` têm notas
+de leitura mas nenhuma entrada no `refbib.bib`.
 
 ### fraud-detection
 
@@ -118,7 +117,7 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `moulavi2014` | | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. Origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
+| `moulavi2014` | ✓ | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. Origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
 | `thompson2024` | | Thompson. *Partition-Free Cluster Evaluation: Extending Cluster Validation and Cluster Extraction from Hierarchies*. Dissertação de mestrado, University of Alberta, 2024. Propõe o PFCE, candidato a substituir o DBCV na seleção do grid. |
 
 ### outlier-detection
@@ -171,6 +170,17 @@ HDBSCAN — usado no método, mas ainda sem citação no texto.
 |---|:-:|---|
 | `krstajic2014` | ✓ | Krstajic, Buturovic, Leahy & Thomas. *Cross-validation pitfalls when selecting and assessing regression and classification models*. Journal of Cheminformatics, 2014. |
 | `berrar2024` | ✓ | Berrar. *Cross-validation*. Preprint da versão revisada para a 2ª edição da Encyclopedia of Bioinformatics and Computational Biology (Elsevier), 2024. A 1ª edição é de 2018, p. 542 a 545. |
+
+#### evaluation-metrics
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `fawcett2006` | ✓ | Fawcett. *An introduction to ROC analysis*. Pattern Recognition Letters, 2006. Matriz de confusão e métricas derivadas dela. |
+| `chawla2002` | ✓ | Chawla, Bowyer, Hall & Kegelmeyer. *SMOTE: Synthetic Minority Over-sampling Technique*. JAIR, 2002. Acurácia inadequada em bases desbalanceadas. |
+| `davis2006` | ✓ | Davis & Goadrich. *The relationship between Precision-Recall and ROC curves*. ICML, 2006. |
+| `campos2016` | ✓ | Campos, Zimek, Sander, Campello, Micenková, Schubert, Assent & Houle. *On the evaluation of unsupervised outlier detection: measures, datasets, and an empirical study*. Data Mining and Knowledge Discovery, 2016. |
+| `zhang2009` | ✓ | Zhang & Zhang. *Average Precision*. Encyclopedia of Database Systems, Springer, 2009. O PDF reúne todos os verbetes da letra A, e o verbete está na p. 192. |
+| `saito2015` | | Saito & Rehmsmeier. *The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets*. PLOS ONE, 2015. |
 
 #### grid-search
 
