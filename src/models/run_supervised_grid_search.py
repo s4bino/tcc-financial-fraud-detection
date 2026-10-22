@@ -32,17 +32,35 @@ if __name__ == "__main__":
 
     # ------------------------------------------------------
 
-    df_folds, df_summary, best_params = manual_grid_search(
+    model_select = "xgb"  # modelo: "rf" ou "xgb"
+    param_grid = {"rf": param_grid_rf, "xgb": param_grid_xgb}[model_select]
+    output_dir = f"results/supervised/{model_select}"  # onde salvar CSVs, um por modelo
+
+    df_folds, df_summary, _ = manual_grid_search(
         folds_dir="data/processed/inner_folds",  # pasta com CSVs
-        param_grid=param_grid_xgb,  # grid de hiperparâmetros
+        param_grid=param_grid,  # grid de hiperparâmetros
         target="Class",  # nome da coluna alvo
         metric="auprc",  # métrica para escolher o melhor modelo
-        output_dir="results/supervised",  # onde salvar CSVs
+        output_dir=output_dir,
         parallel=True,  # True para paralelizar
         n_jobs=6,  # -1 = usar todos os núcleos
-        model_select="xgb",  # modelo: "rf" ou "xgb"
+        model_select=model_select,
     )
 
-    print("Melhores parâmetros segundo a AUPRC:", best_params)
     print(df_summary.head())  # resumo por combinação
     print(df_folds.head())  # métricas por fold
+
+    # Cada rodada externa usa a configuração escolhida no fold interno de mesmo número
+    best_params_per_fold = best_params_by_fold(df_folds, param_grid, metric="auprc")
+    print("Melhores parâmetros por fold segundo a AUPRC:", best_params_per_fold)
+
+    df_final_report = supervised_outer_evaluation(
+        outer_folds_dir="data/processed/outer_folds",
+        best_params_per_fold=best_params_per_fold,
+        target="Class",
+        model_select=model_select,
+        output_dir=output_dir,
+    )
+
+    print("\nRelatório Final (Outer Folds):")
+    print(df_final_report)
