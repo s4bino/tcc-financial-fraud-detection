@@ -6,7 +6,13 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (
+    average_precision_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from xgboost import XGBClassifier
 
 from features import engineer_features
@@ -16,7 +22,7 @@ def manual_grid_search(
     folds_dir,
     param_grid,
     target="Class",
-    metric="f1",
+    metric="auprc",
     output_dir="results/supervised",
     parallel=False,
     n_jobs=-1,
@@ -34,11 +40,15 @@ def manual_grid_search(
         V1 a V28, log_amount e a hora do dia codificada em seno e cosseno. O valor bruto de
         Time não entra nos modelos.
 
+        As métricas são as mesmas registradas pelo HDBSCAN* aprimorado: a AUPRC (precisão
+        média) da probabilidade de fraude, que compara os modelos, e precisão, recall, F1, TP,
+        FP e FN das classes preditas por model.predict.
+
     Parâmetros:
         folds_dir (str): Pasta contendo os arquivos de fold: fold_1_train.csv, fold_1_val.csv, etc.
         param_grid (dict): Dicionário com listas de valores de hiperparâmetros.
         target (str): Nome da coluna alvo.
-        metric (str): Métrica usada para escolher o melhor modelo ("f1", "auc", "precision", "recall").
+        metric (str): Métrica usada para escolher o melhor modelo ("auprc", "f1", "precision", "recall").
         output_dir (str): Diretório onde os CSVs de resultados serão salvos.
         parallel (bool): Se True, executa combinações em paralelo.
         n_jobs (int): Número de jobs para paralelização (-1 = todos).
@@ -60,7 +70,7 @@ def manual_grid_search(
             folds_dir="data/processed/inner_folds",
             param_grid=param_grid,
             target="target",
-            metric="f1",
+            metric="auprc",
             output_dir="results/supervised",
             parallel=True,
             n_jobs=-1
@@ -150,20 +160,24 @@ def manual_grid_search(
             preds_proba = model.predict_proba(X_val)[:, 1]
 
             # métricas
-            auc = roc_auc_score(y_val, preds_proba)
-            f1 = f1_score(y_val, preds)
-            prec = precision_score(y_val, preds)
-            rec = recall_score(y_val, preds)
+            f1 = f1_score(y_val, preds, zero_division=0)
+            prec = precision_score(y_val, preds, zero_division=0)
+            rec = recall_score(y_val, preds, zero_division=0)
+            auprc = average_precision_score(y_val, preds_proba)
+            tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
             metrics_fold.append(
                 {
                     "combo_id": combo_id,
                     "fold": fold,
                     **params_dict,
-                    "auc": auc,
+                    "f1": f1,
                     "precision": prec,
                     "recall": rec,
-                    "f1": f1,
+                    "auprc": auprc,
+                    "TP": tp,
+                    "FP": fp,
+                    "FN": fn,
                     "train_time": train_time,
                     "test_time": test_time,
                 }
@@ -176,10 +190,10 @@ def manual_grid_search(
         metrics_summary = {
             "combo_id": combo_id,
             **params_dict,
-            "auc": np.mean([m["auc"] for m in metrics_fold]),
             "f1": np.mean([m["f1"] for m in metrics_fold]),
             "precision": np.mean([m["precision"] for m in metrics_fold]),
             "recall": np.mean([m["recall"] for m in metrics_fold]),
+            "auprc": np.mean([m["auprc"] for m in metrics_fold]),
             "train_time": np.mean([m["train_time"] for m in metrics_fold]),
             "test_time": np.mean([m["test_time"] for m in metrics_fold]),
         }

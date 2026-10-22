@@ -21,7 +21,7 @@ pytestmark = pytest.mark.slow
 RF_GRID = {"n_estimators": [5, 10], "min_samples_leaf": [1]}
 XGB_GRID = {"n_estimators": [5], "max_depth": [2]}
 
-METRIC_COLUMNS = ["auc", "precision", "recall", "f1"]
+METRIC_COLUMNS = ["auprc", "precision", "recall", "f1"]
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def result(tmp_path, inner_folds_dir):
         folds_dir=inner_folds_dir,
         param_grid=RF_GRID,
         target="Class",
-        metric="f1",
+        metric="auprc",
         output_dir=str(tmp_path / "results"),
         parallel=False,
         model_select="rf",
@@ -88,9 +88,19 @@ def test_summary_metrics_are_the_mean_across_folds(result):
 def test_best_params_maximise_the_requested_metric(result):
     df_folds, df_summary, best_params = result
 
-    best_row = df_summary.loc[df_summary["f1"].idxmax()]
+    best_row = df_summary.loc[df_summary["auprc"].idxmax()]
     for name, value in best_params.items():
         assert best_row[name] == value
+
+
+def test_confusion_counts_agree_with_precision_and_recall(result):
+    """TP, FP e FN são as contagens da mesma predição que gera a precisão e o recall."""
+    df_folds, _, _ = result
+
+    for _, row in df_folds.iterrows():
+        if row["TP"] + row["FP"] > 0:
+            assert row["precision"] == pytest.approx(row["TP"] / (row["TP"] + row["FP"]))
+        assert row["recall"] == pytest.approx(row["TP"] / (row["TP"] + row["FN"]))
 
 
 def test_best_params_contain_exactly_the_grid_keys(result):
@@ -154,13 +164,13 @@ def test_rejects_a_metric_that_is_not_reported(tmp_path, inner_folds_dir):
         manual_grid_search(
             folds_dir=inner_folds_dir,
             param_grid=RF_GRID,
-            metric="auprc",
+            metric="auc",
             output_dir=str(tmp_path / "resultados"),
             parallel=False,
         )
 
 
-@pytest.mark.parametrize("metric", ["auc", "precision", "recall", "f1"])
+@pytest.mark.parametrize("metric", ["auprc", "precision", "recall", "f1"])
 def test_accepts_every_reported_metric_as_selection_criterion(tmp_path, inner_folds_dir, metric):
     _, df_summary, best_params = manual_grid_search(
         folds_dir=inner_folds_dir,
@@ -203,7 +213,7 @@ def test_supports_the_xgboost_estimator(tmp_path, inner_folds_dir):
 
     assert len(df_summary) == 1
     assert set(best_params) == set(XGB_GRID)
-    assert df_folds["auc"].between(0.0, 1.0).all()
+    assert df_folds["auprc"].between(0.0, 1.0).all()
 
 
 def test_is_reproducible_across_runs(tmp_path, inner_folds_dir):
