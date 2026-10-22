@@ -112,3 +112,34 @@ def inner_folds_dir(tmp_path, small_dataset) -> str:
         val.to_csv(folds_dir / f"fold_{fold}_val.csv", index=False)
 
     return str(folds_dir)
+
+
+@pytest.fixture
+def outer_folds_dir(tmp_path, small_dataset) -> str:
+    """Diretório no formato consumido pela avaliação externa.
+
+    Reproduz o layout produzido por external_k_folds: para cada fold, um par
+    fold_<n>_train.csv / fold_<n>_test.csv. As duas partições preservam a
+    presença das duas classes, e os números dos folds coincidem com os de
+    inner_folds_dir, como na base real.
+    """
+    folds_dir = tmp_path / "outer_folds"
+    folds_dir.mkdir()
+
+    frauds = small_dataset[small_dataset["Class"] == 1]
+    legitimate = small_dataset[small_dataset["Class"] == 0]
+
+    for fold in (1, 2):
+        offset = fold - 1
+
+        test = pd.concat([frauds.iloc[offset::2], legitimate.iloc[offset::2]])
+        train = small_dataset.drop(index=test.index)
+
+        train.sample(frac=1, random_state=fold).to_csv(
+            folds_dir / f"fold_{fold}_train.csv", index=False
+        )
+        test.sample(frac=1, random_state=fold).to_csv(
+            folds_dir / f"fold_{fold}_test.csv", index=False
+        )
+
+    return str(folds_dir)
