@@ -64,6 +64,10 @@
 % Especificando hifenizações que por ventura LaTeX não saiba fazer
 \hyphenation{hardware software Li-nux am-bien-te diag-nos-ti-car coor-de-na-ção}
 
+% Folga extra de espaçamento, usada só nos parágrafos que não cabem na largura,
+% como os que têm termos longos em inglês que a hifenização em português não quebra
+\setlength{\emergencystretch}{1em}
+
 %==============================================================================
 % Dados da monografia, capa: autor, titulo, banca, etc... - SUBSTITUA DE ACORDO
 %==============================================================================
@@ -143,7 +147,7 @@ Em uma revisão da literatura sobre o tema, \citeonline{sulaiman2022} compararam
 
 Na comparação, os autores constataram que o aprendizado supervisionado é a prática predominante, com destaque para SVM, KNN, \textit{Naive Bayes}, Regressão Logística e Árvore de Decisão, e que as abordagens híbridas superam o uso de um único classificador. O desempenho dos estudos revisados é reportado, em sua maioria, pela acurácia. Também são apontadas limitações de alguns algoritmos em cenários reais, como a lentidão do \textit{Random Forest} no treinamento e na predição e a queda de desempenho do KNN diante de grandes volumes de dados. Como solução, os autores propõem um modelo que combina uma RNA com aprendizado federado (\textit{Federated Learning}), em que cada instituição treina o modelo localmente e somente os modelos treinados, e não os dados, são combinados em um servidor central. A proposta é descrita em etapas, sem avaliação experimental no artigo.
 
-Assim como em \citeonline{alarfaj2022}, a revisão de \citeonline{sulaiman2022} evidencia o predomínio de abordagens supervisionadas, que dependem de transações previamente rotuladas para o treinamento. Neste trabalho, o HDBSCAN* constrói o modelo sem utilizar os rótulos, que servem apenas para a escolha dos hiperparâmetros e para a avaliação, e é comparado com dois classificadores supervisionados, o \textit{Random Forest} e o XGBoost. Além disso, a acurácia é pouco informativa em bases com desbalanceamento extremo como a deste trabalho, em que as fraudes representam 0,172\% das transações, pois um modelo que classificasse todas as transações como legítimas já alcançaria 99,8\% de acurácia. Por isso, os modelos são avaliados por métricas baseadas na precisão, como discutido a seguir.
+Assim como em \citeonline{alarfaj2022}, a revisão de \citeonline{sulaiman2022} evidencia o predomínio de abordagens supervisionadas, que dependem de transações previamente rotuladas para o treinamento. Neste trabalho, o HDBSCAN* não utiliza os rótulos para construir o modelo nem para escolher os seus hiperparâmetros, que são selecionados pelo índice DBCV, uma medida da qualidade do agrupamento que dispensa rótulos \cite{moulavi2014}. Os rótulos servem apenas para a avaliação, e o HDBSCAN* é comparado com dois classificadores supervisionados, o \textit{Random Forest} e o XGBoost. Além disso, a acurácia é pouco informativa em bases com desbalanceamento extremo como a deste trabalho, em que as fraudes representam 0,172\% das transações, pois um modelo que classificasse todas as transações como legítimas já alcançaria 99,8\% de acurácia. Por isso, os modelos são avaliados por métricas baseadas na precisão, como discutido a seguir.
 
 \citeonline{jurgovsky2018} trataram a detecção de fraudes como uma tarefa de classificação de sequências, partindo da ideia de que o histórico de compras do titular ajuda a reconhecer uma transação fraudulenta. Para isso, empregaram redes neurais recorrentes do tipo \textit{Long Short-Term Memory} (LSTM), que recebem as transações anteriores de cada cartão, e as compararam com o \textit{Random Forest}, que avalia cada transação isoladamente e foi escolhido como referência por ter se mostrado um modelo de bom desempenho na tarefa e ser amplamente utilizado na área. Os experimentos usaram transações reais de cartões de crédito registradas entre março e maio de 2015 e fornecidas pela Worldline, empresa que também colaborou na coleta do conjunto de dados deste trabalho. As compras foram separadas em online e presenciais, e, no período de teste, as fraudes representavam 0,42\% e 0,05\% das transações, respectivamente. Os autores ainda testaram três conjuntos de atributos, o mais completo deles com variáveis que resumem a atividade do titular nas 24 horas anteriores. Para a avaliação, adotaram a área sob a curva de precisão e revocação (\textit{Area Under the Precision-Recall Curve}, AUPRC), justificando que a curva ROC é pouco sensível ao aumento de falsos positivos quando os exemplos negativos superam em muito os positivos, o que é indesejável na detecção de fraudes.
 
@@ -290,7 +294,7 @@ A validação cruzada aninhada executa esse procedimento em dois níveis. O cicl
     {\small Fonte: Adaptado de \citeonline{berrar2024}.}
 \end{figure}
 
-Neste trabalho, a seleção de hiperparâmetros do HDBSCAN* difere desse esquema. Cada ciclo interno indica a configuração de melhor desempenho e, dentre as configurações assim obtidas, seleciona-se a de maior desempenho, que é aplicada a todas as rodadas externas.
+Neste trabalho, a seleção de hiperparâmetros do HDBSCAN* difere desse esquema. Cada ciclo interno indica a configuração de maior DBCV, índice que avalia a qualidade do agrupamento sem utilizar rótulos (Seção \ref{sec:dbcv}), e, dentre as configurações assim obtidas, seleciona-se a de maior DBCV, que é aplicada a todas as rodadas externas.
 
 \section{Algoritmos Supervisionados}
 
@@ -343,6 +347,118 @@ O valor de $m_{pts}$ continua a influenciar o resultado. Valores maiores exigem 
 Na detecção não supervisionada de anomalias, parte-se da premissa de que as anomalias se encontram em regiões de baixa densidade do conjunto de referência \cite{ghosh2024}. Um método global clássico é o dos $k$ vizinhos mais próximos (\textit{k-Nearest Neighbors}, kNN), em que o escore de anomalia de um ponto é a distância ao seu $k$-ésimo vizinho mais próximo \cite{ramaswamy2000}, grandeza análoga à distância núcleo do HDBSCAN* \cite{campello2015}.
 
 Neste estudo, as fraudes não são identificadas apenas como os pontos rotulados como ruído. Cada transação recebe um escore de anomalia que combina a sua pertinência ao agrupamento atribuído pelo HDBSCAN* e a distância ao seu $m_{pts}$-ésimo vizinho mais próximo, e as transações de maior escore são sinalizadas como suspeitas.
+
+\section{Métricas de Avaliação}
+
+Para quantificar o desempenho dos modelos de classificação, utilizam-se métricas que comparam a classe atribuída a cada exemplo com a sua classe real. A escolha dessas métricas depende do objetivo da modelagem e da estrutura dos dados, e, na detecção de fraudes, o forte desbalanceamento entre as classes torna algumas delas pouco informativas. Além dessas métricas, a seção apresenta o índice DBCV, que avalia a qualidade de um agrupamento sem utilizar a classe real.
+
+\subsection{Matriz de Confusão}
+
+Em uma classificação binária, cada exemplo pertence a uma de duas classes, a positiva ou a negativa, e o classificador atribui a ele uma delas. Neste trabalho, a classe positiva corresponde à fraude. A matriz de confusão cruza a classe predita com a classe real e organiza as quatro combinações possíveis. Os verdadeiros positivos (VP) são as fraudes classificadas como fraude, e os falsos negativos (FN), as fraudes classificadas como legítimas. Os verdadeiros negativos (VN) são as transações legítimas classificadas como legítimas, e os falsos positivos (FP), as transações legítimas classificadas como fraude \cite{fawcett2006}. O Quadro \ref{qua:confusao} apresenta a disposição dessas contagens.
+
+\begin{quadro}[htb]
+    \centering
+    \caption{Matriz de confusão.}
+    \label{qua:confusao}
+    \vspace{2mm}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|c|}{\multirow{2}{*}{}} & \multicolumn{2}{c|}{\textbf{Classe real}} \\
+        \cline{3-4}
+        \multicolumn{2}{|c|}{} & Fraude & Legítima \\
+        \hline
+        \multirow{2}{*}{\textbf{Classe predita}} & Fraude & VP & FP \\
+        \cline{2-4}
+         & Legítima & FN & VN \\
+        \hline
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Adaptado de \citeonline{fawcett2006}.}
+\end{quadro}
+
+\subsection{Acurácia}
+
+A acurácia é a proporção de exemplos classificados corretamente (Equação \ref{eq:acuracia}) \cite{fawcett2006}.
+
+\begin{equation}
+    \text{Acurácia} = \frac{VP + VN}{VP + VN + FP + FN}
+    \label{eq:acuracia}
+\end{equation}
+
+Em bases desbalanceadas, porém, a acurácia não é uma medida adequada \cite{chawla2002}. Como a classe negativa domina as contagens, um classificador que atribui todos os exemplos à classe majoritária alcança acurácia elevada sem identificar nenhum exemplo positivo.
+
+\subsection{Precisão}
+
+A precisão é a proporção de verdadeiros positivos entre os exemplos classificados como positivos (Equação \ref{eq:precisao}) \cite{fawcett2006}. Na detecção de fraudes, ela indica quantas das transações sinalizadas como suspeitas são de fato fraudes.
+
+\begin{equation}
+    \text{Precisão} = \frac{VP}{VP + FP}
+    \label{eq:precisao}
+\end{equation}
+
+\subsection{Revocação}
+
+A revocação (\textit{recall}), também chamada de sensibilidade ou taxa de verdadeiros positivos, é a proporção dos exemplos positivos que o classificador identifica (Equação \ref{eq:revocacao}) \cite{fawcett2006}. Na detecção de fraudes, ela indica quantas das fraudes existentes são sinalizadas.
+
+\begin{equation}
+    \text{Revocação} = \frac{VP}{VP + FN}
+    \label{eq:revocacao}
+\end{equation}
+
+\subsection{Pontuação F1}
+
+A pontuação F1 (\textit{F-measure}) combina a precisão e a revocação em um único valor por meio da média harmônica entre as duas (Equação \ref{eq:f1}) \cite{fawcett2006}. Por se tratar de uma média harmônica, o valor resultante é baixo sempre que uma das duas métricas é baixa.
+
+\begin{equation}
+    F1 = 2 \cdot \frac{\text{Precisão} \cdot \text{Revocação}}{\text{Precisão} + \text{Revocação}}
+    \label{eq:f1}
+\end{equation}
+
+\subsection{Curva de Precisão e Revocação}
+
+As métricas anteriores dependem de um limiar de decisão. Os modelos utilizados neste trabalho atribuem a cada exemplo um escore, como a probabilidade estimada de fraude ou o grau de anomalia, e o exemplo é classificado como positivo quando esse escore supera o limiar \cite{fawcett2006}. Cada limiar produz um par de valores de precisão e revocação, e a curva de precisão e revocação reúne esses pares ao longo de todos os limiares possíveis \cite{davis2006}.
+
+Em problemas com grande desbalanceamento entre as classes, a curva ROC (\textit{Receiver Operating Characteristic}), que relaciona as taxas de verdadeiros e de falsos positivos, pode apresentar uma visão excessivamente otimista do desempenho, e a curva de precisão e revocação é apontada como alternativa \cite{davis2006}. Com muitos exemplos negativos, um aumento expressivo no número de falsos positivos altera pouco a taxa de falsos positivos, mas reduz a precisão, que compara os falsos positivos aos verdadeiros positivos \cite{davis2006}.
+
+\subsection{Precisão Média}
+
+A área sob a curva de precisão e revocação (AUPRC) resume a curva em um único valor, entre 0 e 1. O cálculo dessa área exige cuidado, pois a interpolação linear entre os pontos da curva de precisão e revocação é incorreta e superestima o desempenho \cite{davis2006}.
+
+Os métodos de detecção de anomalias produzem uma ordenação completa dos exemplos pelo grau de anomalia, e uma das medidas usadas para avaliar essa ordenação é a precisão média (\textit{Average Precision}, AP) \cite{campos2016}. Com os exemplos ordenados de forma decrescente pelo escore, seja $P@n$ a precisão (Equação \ref{eq:precisao}) calculada entre as $n$ primeiras posições. A precisão média é a média dos valores de $P@n$ nas posições ocupadas pelos exemplos positivos (Equação \ref{eq:ap}) \cite{zhang2009}:
+
+\begin{equation}
+    AP = \frac{1}{|O|} \sum_{o \in O} P@\text{pos}(o)
+    \label{eq:ap}
+\end{equation}
+
+em que $O$ é o conjunto de exemplos positivos, $|O|$ é o seu tamanho e $\text{pos}(o)$ é a posição do exemplo $o$ na ordenação. Como a revocação aumenta na mesma proporção a cada exemplo positivo encontrado na ordenação, a Equação \ref{eq:ap} equivale a somar, em cada um desses pontos, a precisão multiplicada pelo aumento da revocação. A precisão média corresponde, portanto, à área sob a curva de precisão e revocação calculada em degraus, sem a interpolação linear entre os pontos.
+
+Avaliar a precisão nas posições dos exemplos positivos é adequado para bases desbalanceadas \cite{campos2016}. A precisão média vale 1 quando todos os exemplos positivos ocupam as primeiras posições, e o seu valor esperado para uma ordenação aleatória é a proporção de exemplos positivos na base \cite{campos2016}. Como depende apenas da ordenação dos escores, ela avalia o modelo sem a escolha de um limiar de decisão.
+
+\subsection{Índice DBCV}
+\label{sec:dbcv}
+
+As métricas anteriores comparam as predições com a classe real e dependem, portanto, de exemplos rotulados. A qualidade de um agrupamento, por sua vez, pode ser avaliada por critérios internos, que utilizam apenas os próprios dados \cite{moulavi2014}. A maior parte desses critérios relaciona a dispersão dentro dos grupos à separação entre eles e foi concebida para grupos de formato convexo, de modo que falha diante de grupos de formato arbitrário e não é definida para pontos de ruído \cite{moulavi2014}.
+
+Para os agrupamentos baseados em densidade, \citeonline{moulavi2014} propuseram o índice de validação de agrupamentos por densidade (\textit{Density-Based Clustering Validation}, DBCV). O índice parte da ideia de que, em um bom agrupamento por densidade, a região menos densa de cada grupo ainda é mais densa que a região mais densa ao seu redor. Para medir essas densidades, cada objeto recebe uma distância núcleo calculada em relação a todos os demais objetos do seu grupo, interpretada como o inverso da sua densidade, e essa distância ocupa o lugar da distância núcleo na distância de alcançabilidade mútua (Equação \ref{eq:mrd}). Com essas distâncias, constrói-se a árvore geradora mínima de cada grupo, da qual se extraem duas grandezas, consideradas apenas as arestas e os objetos internos, isto é, os que não estão nas extremidades da árvore. A esparsidade de densidade de um grupo $C_i$, $DSC(C_i)$, é o maior peso entre as arestas internas da sua árvore e corresponde à sua região menos densa. A separação de densidade entre dois grupos $C_i$ e $C_j$, $DSPC(C_i, C_j)$, é a menor distância de alcançabilidade mútua entre os objetos internos das suas árvores e corresponde à região mais densa entre eles \cite{moulavi2014}.
+
+A validade de cada grupo compara essas duas grandezas (Equação \ref{eq:vc}) \cite{moulavi2014}:
+
+\begin{equation}
+    V_C(C_i) = \frac{\min\limits_{j \neq i} DSPC(C_i, C_j) - DSC(C_i)}{\max\left(\min\limits_{j \neq i} DSPC(C_i, C_j),\, DSC(C_i)\right)}
+    \label{eq:vc}
+\end{equation}
+
+O valor é positivo quando o grupo é mais denso em seu interior do que na região que o separa dos demais, e negativo no caso contrário. O DBCV é a média dessas validades ponderada pelo tamanho de cada grupo (Equação \ref{eq:dbcv}) \cite{moulavi2014}:
+
+\begin{equation}
+    DBCV(C) = \sum_{i=1}^{l} \frac{|C_i|}{|O|}\, V_C(C_i)
+    \label{eq:dbcv}
+\end{equation}
+
+em que $C$ é o agrupamento avaliado, $l$ é o seu número de grupos e $|O|$ é o número total de objetos, incluindo os rotulados como ruído. O índice varia entre $-1$ e 1, e valores maiores indicam agrupamentos melhores \cite{moulavi2014}. Como o denominador inclui o ruído, que não contribui com nenhuma parcela da soma, rotular objetos como ruído reduz o índice, o que penaliza as soluções que deixam grande parte dos dados fora dos grupos \cite{moulavi2014}.
+
+Por dispensar a classe real, o DBCV permite avaliar e selecionar algoritmos de agrupamento por densidade e os seus parâmetros \cite{moulavi2014}. Neste trabalho, ele orienta a escolha dos hiperparâmetros do HDBSCAN*, em busca de agrupamentos bem definidos e bem separados do ruído, região em que se espera encontrar as fraudes.
 
 %==============================================================================
 % Metodologia
