@@ -341,10 +341,12 @@ def hdbscan_enhanced_internal_grid_with_tracking(
         X_val_scaled = preprocessor.transform(X_val)
 
         t_knn = time.time()
+
         train_neighbor_distances = neighbor_distances(
             X_train_scaled, X_train_scaled, max_min_samples + 1
         )
         val_neighbor_distances = neighbor_distances(X_train_scaled, X_val_scaled, max_min_samples)
+
         print(
             f"Distâncias aos {max_min_samples} vizinhos calculadas em {time.time() - t_knn:.1f} s"
         )
