@@ -36,13 +36,13 @@ if __name__ == "__main__":
         folds_dir="data/processed/inner_folds",  # pasta com CSVs
         param_grid=param_grid_xgb,  # grid de hiperparâmetros
         target="Class",  # nome da coluna alvo
-        metric="f1",  # métrica para escolher o melhor modelo
+        metric="auprc",  # métrica para escolher o melhor modelo
         output_dir="results/supervised",  # onde salvar CSVs
         parallel=True,  # True para paralelizar
         n_jobs=6,  # -1 = usar todos os núcleos
         model_select="xgb",  # modelo: "rf" ou "xgb"
     )
 
-    print("Melhores parâmetros segundo F1:", best_params)
+    print("Melhores parâmetros segundo a AUPRC:", best_params)
     print(df_summary.head())  # resumo por combinação
     print(df_folds.head())  # métricas por fold

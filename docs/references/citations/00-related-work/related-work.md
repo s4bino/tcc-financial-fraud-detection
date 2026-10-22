@@ -5,6 +5,7 @@
 > - `jurgovsky2018`: LSTM contra Random Forest em dados da Worldline, avaliação pela AUPRC.
 > - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
+> - `moulavi2014`: citado no contraste com o Sulaiman, para o DBCV escolher os hiperparâmetros sem rótulos.
 
 ## Alarfaj et al. (2022)
 
@@ -114,6 +115,11 @@
 > > However, just the trained model is shared among all participants, not actual data.
 >
 > Página 63 da revista. Sustenta que só os modelos treinados, e não os dados, são combinados. As etapas do modelo seguem até a página 65 (Figuras 4 a 8), e o artigo não traz resultados experimentais da proposta.
+
+> [!PDF|yellow] [[moulavi2014_density-based-clustering-validation.pdf#page=1&selection=119,0,121,28&color=yellow|moulavi2014_density-based-clustering-validation, p.1]]
+> > Because internal validity criteria measure clustering quality based solely on information intrinsic to the data
+>
+> Sustenta, no contraste com o Sulaiman, que o DBCV mede a qualidade do agrupamento sem rótulos. O índice é detalhado na Seção 3.4.8, com os grifos em `01-theoretical-background/evaluation-metrics.md`.
 
 ## Jurgovsky et al. (2018)
 
