@@ -50,13 +50,19 @@ if __name__ == "__main__":
     print(df_summary.head())  # resumo por combinação
     print(df_folds.head())  # métricas por fold
 
-    # Cada rodada externa usa a configuração escolhida no fold interno de mesmo número
+    # Como no HDBSCAN* aprimorado: cada fold interno indica a sua melhor combinação, e a de
+    # maior AUPRC entre elas é aplicada a todas as rodadas externas
     best_params_per_fold = best_params_by_fold(df_folds, param_grid, metric="auprc")
     print("Melhores parâmetros por fold segundo a AUPRC:", best_params_per_fold)
 
+    best_parameter_achieved = max(
+        best_params_per_fold.values(), key=lambda fold_best: fold_best["best_score"]
+    )["params"]
+    print("Melhor parâmetro obtido no ciclo interno:", best_parameter_achieved)
+
     df_final_report = supervised_outer_evaluation(
         outer_folds_dir="data/processed/outer_folds",
-        best_params_per_fold=best_params_per_fold,
+        best_parameter_achieved=best_parameter_achieved,
         target="Class",
         model_select=model_select,
         output_dir=output_dir,

@@ -15,7 +15,7 @@ from sklearn.metrics import (
 )
 from xgboost import XGBClassifier
 
-from features import engineer_features
+from features import build_preprocessor, engineer_features
 
 
 def clean_params(params):
@@ -98,9 +98,9 @@ def manual_grid_search(
         usando folds internos (train/val), calcular métricas de avaliação e
         identificar os melhores parâmetros segundo uma métrica escolhida.
 
-        As variáveis de entrada são as de engineer_features, as mesmas do HDBSCAN* aprimorado:
-        V1 a V28, log_amount e a hora do dia codificada em seno e cosseno. O valor bruto de
-        Time não entra nos modelos.
+        As variáveis de entrada são as de engineer_features, padronizadas por build_preprocessor
+        ajustado só no treino de cada fold, como no HDBSCAN* aprimorado: V1 a V28, log_amount e
+        a hora do dia codificada em seno e cosseno. O valor bruto de Time não entra nos modelos.
 
         As métricas são as mesmas registradas pelo HDBSCAN* aprimorado: a AUPRC (precisão
         média) da probabilidade de fraude, que compara os modelos, e precisão, recall, F1, TP,
@@ -171,9 +171,11 @@ def manual_grid_search(
             df_train = pd.read_csv(train_path)
             df_val = pd.read_csv(val_path)
 
-            X_train = engineer_features(df_train.drop(columns=[target]))
+            preprocessor = build_preprocessor()
+
+            X_train = preprocessor.fit_transform(engineer_features(df_train.drop(columns=[target])))
             y_train = df_train[target]
-            X_val = engineer_features(df_val.drop(columns=[target]))
+            X_val = preprocessor.transform(engineer_features(df_val.drop(columns=[target])))
             y_val = df_val[target]
 
             # Libera memória do dataframe bruto, já que separamos X e y
@@ -274,10 +276,10 @@ def best_params_by_fold(df_folds, param_grid, metric="auprc"):
     Escolhe, em cada fold interno, a combinação de hiperparâmetros de maior métrica.
 
     Objetivo:
-        O fold interno k é uma divisão do treino do fold externo k, e a configuração que ele
-        indica é a usada na rodada externa k por supervised_outer_evaluation. A escolha pela
-        média de todos os folds internos, como em manual_grid_search, levaria à rodada k os
-        rótulos do seu próprio teste, que faz parte do treino externo das demais rodadas.
+        É a primeira etapa da seleção, a mesma do HDBSCAN* aprimorado com o DBCV: cada ciclo
+        interno indica a sua melhor combinação, e a de maior métrica entre elas é aplicada a
+        todas as rodadas externas por supervised_outer_evaluation, conforme o critério descrito
+        na Seção 3.1.3.4 da monografia.
 
     Parâmetros:
         df_folds (pd.DataFrame): métricas por fold e combinação, retornadas por manual_grid_search.
@@ -285,20 +287,31 @@ def best_params_by_fold(df_folds, param_grid, metric="auprc"):
         metric (str): métrica usada na escolha.
 
     Retorno:
-        dict {fold: hiperparâmetros}, com os tipos ajustados por clean_params.
+        dict {fold: {"params": hiperparâmetros, "best_score": valor da métrica}}, com os tipos
+        dos hiperparâmetros ajustados por clean_params.
+
+    Exemplo de uso:
+        best_params_per_fold = best_params_by_fold(df_folds, param_grid, metric="auprc")
+        best_parameter_achieved = max(
+            best_params_per_fold.values(), key=lambda fold_best: fold_best["best_score"]
+        )["params"]
     """
     best_params_per_fold = {}
 
     for fold, fold_rows in df_folds.groupby("fold"):
-        best_row = fold_rows.loc[[fold_rows[metric].idxmax()], list(param_grid)]
-        best_params_per_fold[int(fold)] = clean_params(best_row.to_dict("records")[0])
+        best_index = fold_rows[metric].idxmax()
+        best_row = fold_rows.loc[[best_index], list(param_grid)]
+        best_params_per_fold[int(fold)] = {
+            "params": clean_params(best_row.to_dict("records")[0]),
+            "best_score": float(fold_rows.loc[best_index, metric]),
+        }
 
     return best_params_per_fold
 
 
 def supervised_outer_evaluation(
     outer_folds_dir,
-    best_params_per_fold,
+    best_parameter_achieved,
     target="Class",
     model_select="rf",
     output_dir="results/supervised",
@@ -308,21 +321,22 @@ def supervised_outer_evaluation(
     Executa o ciclo externo da validação cruzada aninhada para o Random Forest ou o XGBoost.
 
     Objetivo:
-        Para cada fold externo k (fold_k_train.csv e fold_k_test.csv em outer_folds_dir), treina o
-        modelo sobre todo o treino externo com a configuração escolhida no fold interno k e o
-        avalia no teste externo. As configurações podem diferir entre as rodadas, conforme o
-        esquema descrito na Seção 3.1.3.4 da monografia, e nenhuma delas é escolhida com
-        transações do teste em que é avaliada. As variáveis de entrada vêm de
-        engineer_features, e as métricas de classification_metrics, as mesmas do ciclo interno
-        e do HDBSCAN* aprimorado.
+        Para cada fold externo (fold_k_train.csv e fold_k_test.csv em outer_folds_dir), treina o
+        modelo sobre todo o treino externo com a configuração best_parameter_achieved e o avalia
+        no teste externo. Todas as rodadas externas usam a mesma configuração, a de maior
+        métrica entre as melhores de cada ciclo interno, conforme o critério de seleção descrito
+        na Seção 3.1.3.4 da monografia e o mesmo do HDBSCAN* aprimorado. As variáveis de entrada
+        vêm de engineer_features, padronizadas por build_preprocessor ajustado só no treino
+        externo, e as métricas de classification_metrics, as mesmas do ciclo interno e do
+        HDBSCAN* aprimorado.
 
         O relatório traz uma linha por fold e uma linha final, "Média", com a média aritmética
         das métricas entre os folds, e é gravado em <model_select>_outer_final_report.csv.
 
     Parâmetros:
         outer_folds_dir (str): pasta com os arquivos fold_k_train.csv e fold_k_test.csv.
-        best_params_per_fold (dict): {fold: hiperparâmetros}, como retornado por
-            best_params_by_fold.
+        best_parameter_achieved (dict): hiperparâmetros avaliados, como o "params" de uma das
+            entradas de best_params_by_fold.
         target (str): nome da coluna alvo.
         model_select (str): "rf" para RandomForest, "xgb" para XGBoost.
         output_dir (str): pasta do relatório final.
@@ -337,9 +351,14 @@ def supervised_outer_evaluation(
             folds_dir="data/processed/inner_folds", param_grid=param_grid, model_select="xgb"
         )
 
+        best_params_per_fold = best_params_by_fold(df_folds, param_grid)
+        best_parameter_achieved = max(
+            best_params_per_fold.values(), key=lambda fold_best: fold_best["best_score"]
+        )["params"]
+
         report = supervised_outer_evaluation(
             outer_folds_dir="data/processed/outer_folds",
-            best_params_per_fold=best_params_by_fold(df_folds, param_grid),
+            best_parameter_achieved=best_parameter_achieved,
             model_select="xgb",
         )
 
@@ -354,16 +373,19 @@ def supervised_outer_evaluation(
         {int(f.split("_")[1]) for f in os.listdir(outer_folds_dir) if f.endswith("_train.csv")}
     )
 
+    params = best_parameter_achieved
+
     for fold in folds:
-        params = best_params_per_fold[fold]
         print(f"Avaliando Fold Externo {fold} | {params}")
 
         df_train = pd.read_csv(os.path.join(outer_folds_dir, f"fold_{fold}_train.csv"))
         df_test = pd.read_csv(os.path.join(outer_folds_dir, f"fold_{fold}_test.csv"))
 
-        X_train = engineer_features(df_train.drop(columns=[target]))
+        preprocessor = build_preprocessor()
+
+        X_train = preprocessor.fit_transform(engineer_features(df_train.drop(columns=[target])))
         y_train = df_train[target]
-        X_test = engineer_features(df_test.drop(columns=[target]))
+        X_test = preprocessor.transform(engineer_features(df_test.drop(columns=[target])))
         y_test = df_test[target]
 
         del df_train, df_test

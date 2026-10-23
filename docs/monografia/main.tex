@@ -232,6 +232,7 @@ A Análise de Componentes Principais é um procedimento de estatística multivar
 % Escreva sobre o Escalonamento e padronização aqui.
 
 \subsubsection{Validação Cruzada Aninhada}
+\label{sec:nested}
 
 Com o fim de mitigar o viés de otimismo na estimativa de desempenho, assegurar a estabilidade estatística, garantindo a consistência e confiabilidade dos resultados, e, também, fazer a cobertura integral do conjunto de dados durante o processo de modelagem, adotou-se a metodologia de validação cruzada aninhada (\textit{nested cross-validation}). Para \citeonline{krstajic2014}, parafraseando a literatura clássica \cite{stone1974, varma2006}, essa abordagem é indispensável quando se realiza otimização de hiperparâmetros, pois impede o vazamento de informações (\textit{data leakage}) ao separar de forma clara a etapa de calibração da etapa de generalização.
 
@@ -313,7 +314,7 @@ A validação cruzada aninhada executa esse procedimento em dois níveis. O cicl
     {\small Fonte: Adaptado de \citeonline{berrar2024}.}
 \end{figure}
 
-Neste trabalho, a seleção de hiperparâmetros do HDBSCAN* difere desse esquema. Cada ciclo interno indica a configuração de maior DBCV, índice que avalia a qualidade do agrupamento sem utilizar rótulos (Seção \ref{sec:dbcv}), e, dentre as configurações assim obtidas, seleciona-se a de maior DBCV, que é aplicada a todas as rodadas externas.
+Quanto à seleção de hiperparâmetros, cada ciclo interno indica a configuração de melhor desempenho, e, dentre as configurações assim obtidas, seleciona-se a de melhor desempenho, que é aplicada a todas as rodadas externas. O desempenho é medido pela AUPRC nos modelos supervisionados (Seção \ref{sec:ap}) e, no HDBSCAN*, pelo DBCV, índice que avalia a qualidade do agrupamento sem utilizar rótulos (Seção \ref{sec:dbcv}).
 
 \section{Algoritmos Supervisionados}
 
@@ -345,6 +346,7 @@ O DBSCAN* é uma variante do DBSCAN (\textit{Density-Based Spatial Clustering of
 A premissa fundamental do algoritmo é localizar regiões contínuas que satisfaçam essa densidade mínima, isolando-as de áreas mais esparsas do conjunto de dados \cite{schubert2017}. No DBSCAN*, os agrupamentos (\textit{clusters}) são formados apenas por pontos centrais: dois pontos centrais contidos no raio $\epsilon$ um do outro são diretamente alcançáveis e pertencem ao mesmo agrupamento, que se expande de forma transitiva para englobar os demais pontos centrais alcançáveis a partir dos seus membros. Os pontos que não são centrais são rotulados como ruído (\textit{noise}) \cite{campello2015}.
 
 \subsection{HDBSCAN*}
+\label{sec:hdbscan}
 
 O HDBSCAN* (\textit{Hierarchical DBSCAN*}) é um algoritmo hierárquico de agrupamento baseado em densidade que aprimora o método de agrupamento por densidade, o DBSCAN* \cite{campello2015}. Ao contrário do DBSCAN*, que exige a definição prévia do raio $\epsilon$, o HDBSCAN* tem como parâmetro principal o número mínimo de pontos, $m_{pts}$, equivalente ao $m_{pts}$ do DBSCAN* e tratado como um fator de suavização das estimativas de densidade \cite{campello2015}.
 
@@ -440,6 +442,7 @@ As métricas anteriores dependem de um limiar de decisão. Os modelos utilizados
 Em problemas com grande desbalanceamento entre as classes, a curva ROC (\textit{Receiver Operating Characteristic}), que relaciona as taxas de verdadeiros e de falsos positivos, pode apresentar uma visão excessivamente otimista do desempenho, e a curva de precisão e revocação é apontada como alternativa \cite{davis2006}. Com muitos exemplos negativos, um aumento expressivo no número de falsos positivos altera pouco a taxa de falsos positivos, mas reduz a precisão, que compara os falsos positivos aos verdadeiros positivos \cite{davis2006}.
 
 \subsection{Precisão Média}
+\label{sec:ap}
 
 A área sob a curva de precisão e revocação (AUPRC) resume a curva em um único valor, entre 0 e 1. O cálculo dessa área exige cuidado, pois a interpolação linear entre os pontos da curva de precisão e revocação é incorreta e superestima o desempenho \cite{davis2006}.
 
@@ -485,13 +488,15 @@ Por dispensar a classe real, o DBCV permite avaliar e selecionar algoritmos de a
 
 \chapter{Metodologia}
 
+Este capítulo descreve os procedimentos adotados no desenvolvimento do trabalho: o conjunto de dados e o seu pré-processamento, a estratégia de validação e de ajuste dos hiperparâmetros, a forma como cada modelo detecta as fraudes e o ambiente de execução. Todas as etapas aleatórias, como a divisão dos \textit{folds} e o treinamento dos modelos supervisionados, usam a mesma semente para garantir reprodutibilidade.
+
 \section{Conjunto de Dados}
 
 Os dados referentes a transações financeiras reais são sigilosos em virtude da natureza comprometedora do dado e por ser de domínio privado, visto isso, pesquisas acerca de investigações de crimes financeiros enfrentam tal barreira. Nesse sentido, o conjunto de dados utilizado possui informações limitadas acerca das colunas com o objetivo de sanar a questão da confidencialidade dos registros.
 
 Assim, o conjunto de dados manipulado neste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles, ao qual está acessível pelo site Kaggle \cite{kaggle2018}.
 
-O \textit{dataset} contém transações em cartões de crédito em setembro de 2013, feitas por titulares de cartões europeus e foram coletadas e analisadas durante uma pesquisa em colaboração com a Worldline, uma empresa francesa de serviços de pagamento e transações, fundada em 1974. Foram capturadas 284.807 transações ao longo de um período de dois dias, onde apenas 492 são classificadas como fraudulentas. Logo, o conjunto de dados é altamente desbalanceado considerando a elevada desproporção entre as classes, com a classe positiva (fraude) representando 0.172% de todas as transações.
+O \textit{dataset} contém transações em cartões de crédito em setembro de 2013, feitas por titulares de cartões europeus e foram coletadas e analisadas durante uma pesquisa em colaboração com a Worldline, uma empresa francesa de serviços de pagamento e transações, fundada em 1974. Foram capturadas 284.807 transações ao longo de um período de dois dias, onde apenas 492 são classificadas como fraudulentas. Logo, o conjunto de dados é altamente desbalanceado considerando a elevada desproporção entre as classes, com a classe positiva (fraude) representando 0,172\% de todas as transações.
 
 Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis numéricas das quais 28 (V1, V2, \dots, V28) delas foram submetidas ao processo de Análise de Componente Principal (PCA), uma técnica padrão e amplamente utilizada para reduzir a dimensionalidade de tais conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação \cite{abdi2010}. Isso acontece por meio da criação de novas variáveis não correlacionadas que maximizam sucessivamente a variância. Concomitantemente, o PCA colabora para a anonimização dos dados \cite{alarfaj2022}. As \textit{features} que não foram submetidas ao PCA são \textit{amount}, \textit{class} e \textit{time}.
 
@@ -516,6 +521,7 @@ Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis num�
 \end{table}
 
 \section{Pré-processamento}
+\label{sec:preprocessamento}
 
 Através de processos de análise exploratória acerca da base, notou-se que não há necessidade de tratamentos quanto a dados faltantes ou nulos. O conjunto de dados foi originalmente validado nesse sentido. A base contém, no entanto, 1.081 transações que repetem outra em todas as variáveis. Elas são retiradas do conjunto de treinamento do HDBSCAN*, pois cópias de um mesmo ponto ficam a distância zero umas das outras e aumentariam artificialmente a densidade estimada na sua região; os conjuntos de validação e de teste permanecem completos, para que a avaliação cubra todas as transações.
 
@@ -556,7 +562,7 @@ Para a hora do dia e para a coluna Amount foi feito o escalonamento padrão, \te
     \label{eq:zscore}
 \end{equation}
 
-em que $\mu_X$ e $\sigma_X$ são a média e o desvio padrão da variável em questão.
+em que $\mu_X$ e $\sigma_X$ são a média e o desvio padrão da variável em questão, calculados apenas sobre o conjunto de treinamento de cada \textit{fold} e aplicados, com os mesmos valores, aos conjuntos de validação e de teste. O HDBSCAN*, o \textit{Random Forest} e o XGBoost recebem as variáveis padronizadas da mesma forma.
 
 Antes do escalonamento, a variável Amount foi transformada pelo logaritmo (Equação \ref{eq:log}), uma vez que dados financeiros apresentam alta assimetria e presença severa de \textit{outliers} (valores transacionais atípicos):
 
@@ -613,12 +619,65 @@ Neste trabalho, adotou-se a Busca em Grade (\textit{Grid Search}) como mecanismo
 
 De acordo com estudos comparativos em otimização de hiperparâmetros \cite{liashchynskyi2019}, o \textit{Grid Search} demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade. Embora possua um custo computacional linearmente proporcional ao tamanho da grade, o método assegura a exploração completa do domínio de parâmetros estipulados, garantindo a localização da combinação que matematicamente maximiza a métrica de desempenho na partição de validação, sem o risco de convergência prematura para ótimos locais.
 
-\section{Modelos}
+Nos três modelos, a busca em grade é executada no ciclo interno da validação cruzada aninhada, e a seleção segue o procedimento descrito na Seção \ref{sec:nested}. Em cada uma das cinco rodadas, as combinações da grade são treinadas no treino interno e avaliadas na validação interna, e a de melhor desempenho é indicada. Dentre as cinco combinações indicadas, a de melhor desempenho é selecionada e aplicada a todas as rodadas do ciclo externo, nas quais o modelo é treinado com todo o treino externo e avaliado no teste externo. Assim, em cada rodada, o modelo avaliado é treinado sem as transações do teste. O desempenho é medido pela AUPRC no \textit{Random Forest} e no XGBoost e pelo DBCV no HDBSCAN*.
 
-Os modelos analisados neste trabalho são: de natureza Supervisionada, Random Forest e XGBoost, e de natureza Não Supervisionada, HDBSCAN*.
+No HDBSCAN*, o DBCV (Seção \ref{sec:dbcv}) é calculado sobre o agrupamento obtido no treino interno, sem os rótulos, de modo que nenhuma informação sobre as fraudes participa da escolha. O índice parte da matriz de distâncias entre todos os pares de objetos \cite{moulavi2014}. Devido a isso, tem-se uma complexidade quadrática de espaço e de tempo. Assim, o DBCV é calculado sobre uma amostra do conjunto de dados em questão, estratificada pelos grupos encontrados, incluindo o ruído.
 
-\subsection{Supervisionados}
-% Escreva sobre os modelos supervisionados aqui.
+\subsection{Grades de Hiperparâmetros}
+\label{sec:grades}
+
+As grades de hiperparâmetros foram definidas a partir das recomendações da literatura para cada algoritmo, de modo a explorar valores em torno das configurações usuais sem tornar a busca inviável.
+
+No \textit{Random Forest}, a grade abrange o número de variáveis sorteadas em cada divisão, o tamanho da amostra usada por árvore, o tamanho mínimo das folhas, o número de árvores e a ponderação das classes. Segundo \citeonline{probst2019}, os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma. O número de variáveis sorteadas é um dos hiperparâmetros centrais do algoritmo: valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas \cite{probst2019}. A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis \cite{probst2019}, e inclui frações maiores, que favorecem árvores individualmente melhores. O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações \cite{probst2019}. Por isso, a grade compara a amostra completa com frações menores do treino. O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes \cite{probst2019}, como a deste trabalho. Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste \cite{biau2016}, mas o tempo de execução cresce linearmente com ele \cite{probst2019}, o que limita a grade a poucas centenas de árvores. Por fim, como as fraudes são raras, a grade compara o treinamento sem ponderação com a ponderação das classes, que atribui à classe minoritária um peso maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo \cite{chen2004}.
+
+No XGBoost, a grade abrange o número de árvores, a profundidade máxima de cada árvore, a taxa de aprendizado e o parâmetro $\gamma$. A taxa de aprendizado (\textit{shrinkage}) multiplica por um fator a contribuição de cada nova árvore, o que reduz a influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo \cite{chen2016}. Por isso, ela é combinada na grade com diferentes números de árvores. O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste \cite{chen2016}. Com $\gamma$ nulo, nenhuma penalidade é aplicada, e valores positivos tornam as árvores mais simples. A profundidade e a taxa de aprendizado abrangem a configuração que \citeonline{chen2016} adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1. Para o desbalanceamento, as fraudes recebem no treinamento um peso igual à razão entre o número de transações legítimas e o de fraudes no treino, valor indicado pela documentação da biblioteca para classes desbalanceadas \cite{xgboost2026}.
+
+No HDBSCAN*, a grade varia o número mínimo de pontos, $m_{pts}$, que atua como fator de suavização das estimativas de densidade (Seção \ref{sec:hdbscan}) e equivale ao número mínimo de vizinhos do DBSCAN*. Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados \apud{sander1998}{schubert2017}, e valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão \cite{schubert2017}. Com as 31 variáveis deste trabalho, a recomendação corresponde a 62 vizinhos, e, como a base é grande, com cerca de 182 mil transações em cada treino interno, a grade explora valores de $m_{pts}$ acima desse ponto de partida. O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização \cite{campello2015}, e o seu valor também foi definido pela busca em grade.
+
+\section{Detecção de Fraudes}
+
+Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar \cite{fawcett2006}. O escore e o limiar, porém, são obtidos de formas diferentes nos modelos supervisionados e no HDBSCAN*.
+
+\subsection{Modelos Supervisionados}
+
+O \textit{Random Forest} e o XGBoost são treinados com as transações rotuladas do treino e estimam, para cada transação, a probabilidade de fraude, que serve de escore. No \textit{Random Forest}, essa probabilidade é a média das probabilidades estimadas pelas árvores, e a de cada árvore é a fração de transações da classe na folha em que a transação é classificada \cite{sklearn2026rf}. No XGBoost, treinado com o objetivo de regressão logística para classificação binária, a saída do modelo é a própria probabilidade \cite{xgboost2026}. A transação é classificada como fraude quando a probabilidade estimada de fraude supera a de transação legítima \cite{sklearn2026rf}. Como as fraudes são raras, os dois modelos compensam o desbalanceamento durante o treinamento pela ponderação das classes (Seção \ref{sec:grades}).
+
+\subsection{HDBSCAN*}
+
+O HDBSCAN* é ajustado sobre as transações do treino, sem os rótulos e sem as duplicatas (Seção \ref{sec:preprocessamento}), com a distância euclidiana entre as variáveis padronizadas. Cada transação recebe um grau de anomalia construído a partir de dois escores. O primeiro é o complemento da probabilidade de pertinência, que mede a intensidade com que a transação pertence ao agrupamento atribuído \apud{jain1999}{oyewole2023}. Essa probabilidade é proporcional ao quanto a transação persiste como parte do agrupamento e é nula para as transações rotuladas como ruído \cite{cuml2026}. Para as transações da validação e do teste, que não participam do ajuste, a pertinência é estimada pela atribuição aproximada de cada uma ao agrupamento obtido no treino, sem reagrupar os dados \cite{cuml2026}. O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN \cite{ramaswamy2000} e é análoga à distância núcleo do HDBSCAN* (Seção \ref{sec:hdbscan}).
+
+Os dois escores têm naturezas e escalas distintas, uma probabilidade e uma distância. Para combiná-los, cada escore é convertido no seu posto percentil em relação aos escores do treino, isto é, na fração das transações do treino com escore menor ou igual (Equação \ref{eq:posto}):
+
+\begin{equation}
+    F_j(s) = \frac{1}{n} \sum_{i=1}^{n} \mathbf{1}\left[s_{ij} \le s\right]
+    \label{eq:posto}
+\end{equation}
+
+em que $s_{ij}$ é o $j$-ésimo escore da $i$-ésima transação do treino, $n$ é o número de transações do treino e $\mathbf{1}[\cdot]$ vale 1 quando a condição entre colchetes é verdadeira e 0 caso contrário. O grau de anomalia de uma transação $x$ é a média dos postos dos dois escores (Equação \ref{eq:grau}):
+
+\begin{equation}
+    a(x) = \frac{1}{2}\left[F_1\big(1 - p(x)\big) + F_2\big(d_{m_{pts}}(x)\big)\right]
+    \label{eq:grau}
+\end{equation}
+
+em que $p(x)$ é a probabilidade de pertinência de $x$ e $d_{m_{pts}}(x)$ é a distância de $x$ ao seu $m_{pts}$-ésimo vizinho no treino. O grau de anomalia varia entre 0 e 1 e só se aproxima de 1 quando a transação é extrema, em relação ao treino, nos dois escores. Como os postos usam apenas a distribuição do treino, nenhuma estatística da validação ou do teste participa do cálculo. O rótulo de ruído, por sua vez, não é usado diretamente como regra de decisão, mas entra no grau de anomalia por meio da pertinência, que é nula para o ruído.
+
+A transação é sinalizada como fraude quando o seu grau de anomalia alcança o limiar $\tau$, o quantil de ordem $1 - \alpha$ dos graus de anomalia das transações do treino (Equação \ref{eq:limiar}):
+
+\begin{equation}
+    \tau = Q_{1-\alpha}\big(\{a(x_i)\}_{i=1}^{n}\big)
+    \label{eq:limiar}
+\end{equation}
+
+em que $Q_{1-\alpha}$ é o quantil de ordem $1 - \alpha$, $x_i$ é a $i$-ésima transação do treino e $\alpha$ é a fração de alertas. Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o que reproduz a restrição dos sistemas reais de detecção, em que os investigadores conseguem verificar apenas poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados \cite{dalpozzolo2018}. Neste trabalho, a fração de alertas foi fixada em 0,1\% das transações, da mesma ordem de grandeza da proporção de fraudes na base, de 0,172\%.
+
+\subsection{Comparação dos Modelos}
+
+A comparação entre os modelos usa a AUPRC, calculada pela precisão média (Seção \ref{sec:ap}) sobre o escore contínuo de cada modelo, a probabilidade de fraude nos supervisionados e o grau de anomalia no HDBSCAN*. Como depende apenas da ordenação das transações, a AUPRC não é afetada pelos limiares, que diferem entre os modelos. A precisão, a revocação e a pontuação F1 são calculadas sobre as classes atribuídas pela regra de decisão de cada modelo e complementam a análise, mas dependem do limiar adotado. Todas as métricas são calculadas no teste de cada rodada externa, e o desempenho de cada modelo é a média entre as cinco rodadas.
+
+\section{Ambiente de Execução e Bibliotecas}
+
+O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn \cite{pedregosa2011}, que fornece o \textit{Random Forest}, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost \cite{chen2016} e a biblioteca cuML, que oferece, em unidades de processamento gráfico (\textit{Graphics Processing Units}, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn \cite{raschka2020} e foi usada no HDBSCAN* e na busca de vizinhos mais próximos. Os experimentos dos três modelos foram executados no ambiente Google Colab, em uma máquina com uma GPU NVIDIA L4, de 22,5 GiB de memória, 53 GiB de memória RAM e 12 processadores virtuais.
 
 \chapter{Resultados e Discussão}
 % Apresente e discuta os resultados dos modelos aqui.

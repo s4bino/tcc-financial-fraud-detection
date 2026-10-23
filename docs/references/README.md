@@ -28,6 +28,9 @@ dos capítulos na listagem do Obsidian.
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
 | `02-methodology/density-based-clustering-validation.md` | 4.3 Parametrização — critério DBCV |
+| `02-methodology/hyperparameter-grids.md` | 4.3.3 Grades de Hiperparâmetros |
+| `02-methodology/fraud-detection.md` | 4.4 Detecção de Fraudes |
+| `02-methodology/execution-environment.md` | 4.5 Ambiente de Execução e Bibliotecas |
 | `03-support/bibtex-references.md` | entradas BibTeX coletadas |
 | `03-support/ideas.md` | anotações de trabalho e pontos em aberto |
 
@@ -46,7 +49,7 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 49 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 58 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
@@ -72,6 +75,8 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `rezazadeh2025` | ✓ | Rezazadeh. *Review of Machine Learning*. UJRRA, 2025. |
+| `jain1999` | ✓ | Jain, Murty & Flynn. *Data Clustering: A Review*. ACM Computing Surveys, 1999. Citado por apud de Oyewole e Thopil (2023); o PDF fica para conferência do original. |
+| `oyewole2023` | ✓ | Oyewole & Thopil. *Data clustering: application and trends*. Artificial Intelligence Review, 2023. |
 
 ### supervised-models
 
@@ -81,6 +86,7 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 |---|:-:|---|
 | `biau2016` | ✓ | Biau & Scornet. *A random forest guided tour*. TEST, 2016. |
 | `probst2019` | ✓ | Probst, Wright & Boulesteix. *Hyperparameters and tuning strategies for random forest*. WIREs Data Mining and Knowledge Discovery, 2019. |
+| `chen2004` | ✓ | Chen, Liaw & Breiman. *Using Random Forest to Learn Imbalanced Data*. Relatório técnico 666, Departamento de Estatística, UC Berkeley, 2004. |
 
 #### xgboost
 
@@ -97,6 +103,7 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 | `schubert2017` | ✓ | Schubert, Sander, Ester, Kriegel & Xu. *DBSCAN Revisited, Revisited: Why and How You Should (Still) Use DBSCAN*. ACM TODS, 2017. |
 | `akbari2016` | | Akbari & Unland. *Automated Determination of the Input Parameter of DBSCAN Based on Outlier Detection*. AIAI, 2016. |
 | `ester1996` | ✓ | Ester, Kriegel, Sander & Xu. *A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise*. KDD, 1996. Artigo original do DBSCAN. |
+| `sander1998` | ✓ | Sander, Ester, Kriegel & Xu. *Density-Based Clustering in Spatial Databases: The Algorithm GDBSCAN and Its Applications*. Data Mining and Knowledge Discovery, 1998. Sem PDF; citado por apud de Schubert et al. (2017). |
 
 #### optics
 
@@ -192,6 +199,24 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 |---|:-:|---|
 | `liashchynskyi2019` | ✓ | Liashchynskyi & Liashchynskyi. *Grid Search, Random Search, Genetic Algorithm: A Big Comparison for NAS*. 2019. |
 | `shams2024` | ✓ | Shams et al. *Water quality prediction using machine learning models based on grid search method*. 2024. |
+
+### software
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `pedregosa2011` | ✓ | Pedregosa et al. *Scikit-learn: Machine Learning in Python*. JMLR, 2011. |
+| `raschka2020` | ✓ | Raschka, Patterson & Nolet. *Machine Learning in Python: Main Developments and Technology Trends in Data Science, Machine Learning, and Artificial Intelligence*. Information, 2020. RAPIDS e cuML. |
+
+### Documentação (sem PDF)
+
+As entradas abaixo são páginas de documentação das bibliotecas, conferidas em
+23/10/2026. Os trechos citados ficam nas notas, com o link da página.
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `sklearn2026rf` | ✓ | Scikit-learn Developers. *sklearn.ensemble.RandomForestClassifier*. |
+| `xgboost2026` | ✓ | XGBoost Developers. *XGBoost Parameters*. |
+| `cuml2026` | ✓ | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. |
 
 ### figures
 
