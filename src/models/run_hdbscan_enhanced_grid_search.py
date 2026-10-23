@@ -9,7 +9,6 @@ import pandas as pd
 from cuml.cluster import HDBSCAN
 from cuml.cluster.hdbscan import approximate_predict
 from cuml.neighbors import NearestNeighbors
-from sklearn.compose import ColumnTransformer
 from sklearn.metrics import (
     average_precision_score,
     confusion_matrix,
@@ -18,9 +17,8 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 
-from features import engineer_features
+from features import build_preprocessor, engineer_features
 
 
 def to_numpy(values):
@@ -53,42 +51,6 @@ def to_numpy(values):
     if hasattr(values, "to_numpy"):
         return values.to_numpy()
     return np.asarray(values)
-
-
-def build_preprocessor():
-    """
-    Cria, ainda sem ajuste, o transformador que padroniza as variáveis derivadas por engineer_features.
-
-    Objetivo:
-        O HDBSCAN* e as distâncias aos vizinhos mais próximos usam a distância euclidiana, que é
-        sensível à escala de cada variável. O transformador aplica o StandardScaler a log_amount,
-        hour_sin e hour_cos, que passam a ter média zero e variância unitária. O logaritmo já
-        reduz a assimetria de Amount (de 16,98 para 0,16 na base completa), de modo que o
-        RobustScaler, antes usado em log_amount, não alterava o resultado: no fold interno 1, a
-        AUPRC da distância kNN mudou só na terceira casa decimal. Os componentes V1 a V28 seguem
-        sem alteração (remainder="passthrough"): padronizá-los iguala o peso de componentes de
-        variância muito diferente na distância e reduziu essa AUPRC de 0,363 para 0,308.
-
-        O ajuste deve usar apenas o conjunto de treinamento (fit_transform), e a validação ou o
-        teste recebem somente transform. Assim, médias e desvios vêm exclusivamente do treino,
-        sem vazamento de informação. A saída é um np.ndarray sem nomes
-        de colunas, na ordem log_amount, hour_sin, hour_cos e V1 a V28, porque o
-        ColumnTransformer acrescenta as colunas repassadas ao final.
-
-    Retorno:
-        sklearn.compose.ColumnTransformer ainda não ajustado.
-
-    Exemplo de uso:
-        preprocessor = build_preprocessor()
-        X_train_scaled = preprocessor.fit_transform(X_train)   # estatísticas calculadas no treino
-        X_val_scaled = preprocessor.transform(X_val)           # as mesmas estatísticas na validação
-    """
-    return ColumnTransformer(
-        transformers=[
-            ("std_scaler", StandardScaler(), ["log_amount", "hour_sin", "hour_cos"]),
-        ],
-        remainder="passthrough",
-    )
 
 
 # fds-et-19-anomaly-detection-models, célula 15, linhas 62-65
