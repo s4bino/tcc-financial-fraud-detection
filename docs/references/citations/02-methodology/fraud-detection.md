@@ -15,6 +15,8 @@
 >
 > Página 863 da revista. Sustenta que a transação é classificada como fraude quando o escore alcança o limiar. Mesmo grifo da nota de métricas de avaliação.
 
+^fawcett2006-p3
+
 ## Modelos supervisionados
 
 > [!quote] Documentação: [sklearn.ensemble.RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html), conferida em 23/10/2026
@@ -22,15 +24,21 @@
 >
 > Sustenta a probabilidade de fraude do Random Forest como a média das probabilidades das árvores.
 
+^sklearn2026rf-doc
+
 > [!quote] Documentação: [sklearn.ensemble.RandomForestClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html), conferida em 23/10/2026
 > > predict: [...] the predicted class is the one with highest mean probability estimate across the trees.
 >
 > Sustenta que a transação é classificada como fraude quando a probabilidade de fraude supera a de transação legítima.
 
+^sklearn2026rf-doc-2
+
 > [!quote] Documentação: [XGBoost Parameters](https://xgboost.readthedocs.io/en/stable/parameter.html), conferida em 23/10/2026
 > > binary:logistic: logistic regression for binary classification, output probability
 >
 > Sustenta que a saída do XGBoost, com esse objetivo, é a própria probabilidade.
+
+^xgboost2026-doc
 
 ## HDBSCAN*
 
@@ -39,25 +47,35 @@
 >
 > Página 6443 da revista, Seção 2.1.2. Sustenta, por apud de Jain et al. (1999), a pertinência como o grau com que um objeto pertence a um agrupamento.
 
+^oyewole2023-p5
+
 > [!PDF|yellow] [[jain1999_data-clustering-review.pdf#page=4&selection=73,0,75,21&color=yellow|jain1999_data-clustering-review, p.4]]
 > > fuzzy (where each pattern has a variable degree of membership in each of the output clusters).
 >
 > Página 267 da revista. Trecho original a que Oyewole e Thopil (2023) se referem. A Seção 5.5, p. 281, define a pertinência como "the grade of membership of object xi in cluster cj" e afirma que "Larger membership values indicate higher confidence in the assignment of the pattern to the cluster".
+
+^jain1999-p4
 
 > [!quote] Documentação: [cuML API Reference](https://docs.nvidia.com/cuml/latest/api/), entrada `cuml.cluster.hdbscan.HDBSCAN`, conferida em 23/10/2026
 > > probabilities_: The strength with which each sample is a member of its assigned cluster. Noise points have probability zero; points in clusters have values assigned proportional to the degree that they persist as part of the cluster.
 >
 > Sustenta que a probabilidade de pertinência é proporcional à persistência da transação no agrupamento e nula para o ruído.
 
+^cuml2026-doc
+
 > [!quote] Documentação: [cuML API Reference](https://docs.nvidia.com/cuml/latest/api/generated/cuml.cluster.hdbscan.approximate_predict/), entrada `cuml.cluster.hdbscan.approximate_predict`, conferida em 23/10/2026
 > > Predict the cluster label of new points. The returned labels will be those of the original clustering found by clusterer, and therefore are not (necessarily) the cluster labels that would be found by clustering the original data combined with points_to_predict, hence the 'approximate' label. If you simply wish to assign new points to an existing clustering in the 'best' way possible, this is the function to use.
 >
 > Sustenta que a pertinência das transações da validação e do teste é estimada pela atribuição aproximada ao agrupamento do treino, sem reagrupar os dados.
 
+^cuml2026-doc-2
+
 > [!PDF|yellow] [[ramaswamy2000_mining-outliers-large-data-sets.pdf#page=1&selection=23,0,47,15&color=yellow|ramaswamy2000_mining-outliers-large-data-sets, p.1]]
 > > In this paper, we propose a novel formulation for distance-based outliers that is based on the distance of a point from its kth nearest neighbor. We rank each point on the basis of its distance to its kth nearest neighbor and declare the top n points in this ranking to be outliers.
 >
 > Sustenta a distância ao $m_{pts}$-ésimo vizinho como escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
+
+^ramaswamy2000-p1
 
 ## Fração de alertas
 
@@ -65,3 +83,6 @@
 > > these ignore the fact that only few alerts can be controlled everyday, and that companies are very concerned of the precision of the generated alerts.
 >
 > Página 3785 da revista. Sustenta a restrição dos sistemas reais: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
+
+^dalpozzolo2018-p2
+

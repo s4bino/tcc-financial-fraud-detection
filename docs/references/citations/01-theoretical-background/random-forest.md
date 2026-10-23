@@ -7,20 +7,28 @@
 >
 > Página 199 na numeração da revista. Sustenta a instabilidade das estimativas de uma árvore isolada como a limitação que o RF supera.
 
+^biau2016-p3
+
 > [!PDF|yellow] [[biau2016_random-forest-guided-tour.pdf#page=16|biau2016, p.16]]
 > > The idea of generating many bootstrap samples and averaging predictors is called bagging (bootstrap-aggregating). It was suggested by Breiman (1996) as a simple way to improve the performance of weak or unstable learners.
 >
 > Página 212 na numeração da revista. Reforça o trecho anterior: o *bagging* existe para melhorar aprendizes instáveis.
+
+^biau2016-p16
 
 > [!PDF|yellow] [[biau2016_random-forest-guided-tour.pdf#page=5|biau2016, p.5]]
 > > Prior to the construction of each tree, $a_n$ observations are drawn at random with (or without) replacement from the original data set. [...] Then, at each cell of each tree, a split is performed by maximizing the CART-criterion (see below) over mtry directions chosen uniformly at random among the p original ones.
 >
 > Página 201 na numeração da revista. Sustenta o sorteio de um subconjunto de variáveis a cada divisão de nó.
 
+^biau2016-p5
+
 > [!PDF|yellow] [[biau2016_random-forest-guided-tour.pdf#page=9|biau2016, p.9]]
 > > It is easy to see that the forest's variance decreases as M grows. Thus, more accurate predictions are likely to be obtained by choosing a large number of trees. Interestingly, picking a large M does not lead to overfitting.
 >
 > Página 205 na numeração da revista. Sustenta a redução da variância com o número de árvores, sem sobreajuste.
+
+^biau2016-p9
 
 > [!PDF|yellow] [[biau2016_random-forest-guided-tour.pdf#page=20|biau2016, p.20]]
 > > A seminal result by Breiman (2001) shows that the error of the forest is small as soon as the predictive power of each tree is good and the correlation between the tree errors is low. [...] Similarly, Friedman et al. (2009) decompose the variance of the forest as a product of the correlation between trees and the variance of a single tree.
@@ -30,6 +38,8 @@
 > *A random forest guided tour*
 > Biau e Scornet
 
+^biau2016-p20
+
 > [!PDF|yellow] [[probst2019_hyperparameters-tuning-random-forest.pdf#page=3|probst2019, p.3]]
 > > Lower values of mtry lead to more different, less correlated trees, yielding better stability when aggregating.
 >
@@ -37,3 +47,6 @@
 >
 > *Hyperparameters and tuning strategies for random forest*
 > Probst, Wright e Boulesteix
+
+^probst2019-p3
+
