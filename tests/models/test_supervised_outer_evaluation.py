@@ -1,10 +1,11 @@
 """Testes da avaliação externa dos modelos supervisionados.
 
-best_params_by_fold escolhe a configuração de cada rodada externa a partir do
-fold interno de mesmo número, e supervised_outer_evaluation treina o modelo no
-treino externo e o avalia no teste externo. Se uma rodada receber a
-configuração de outro fold, ou for avaliada em outro teste, o desempenho
-reportado no trabalho não corresponde à validação cruzada aninhada descrita.
+best_params_by_fold indica a melhor configuração de cada fold interno, com a
+métrica obtida, e supervised_outer_evaluation treina o modelo com uma única
+configuração no treino de cada fold externo e o avalia no teste externo, como
+no HDBSCAN* aprimorado. Se uma rodada for avaliada em outro teste, ou com outra
+configuração, o desempenho reportado no trabalho não corresponde à validação
+cruzada aninhada descrita.
 
 As funções auxiliares clean_params e build_model, compartilhadas com a busca
 em grade, também são testadas aqui.
@@ -24,11 +25,7 @@ from grid_search import (
 
 METRIC_COLUMNS = ["auprc", "precision", "recall", "f1"]
 
-# Uma configuração diferente por fold, para verificar que cada rodada usa a sua.
-RF_PARAMS_PER_FOLD = {
-    1: {"n_estimators": 5, "min_samples_leaf": 1},
-    2: {"n_estimators": 10, "min_samples_leaf": 2},
-}
+RF_PARAMS = {"n_estimators": 5, "min_samples_leaf": 2}
 
 
 def test_clean_params_turns_nan_into_none():
@@ -74,7 +71,10 @@ def test_best_params_by_fold_picks_the_best_combination_of_each_fold():
 
     best = best_params_by_fold(df_folds, {"n_estimators": [100, 200]})
 
-    assert best == {1: {"n_estimators": 100}, 2: {"n_estimators": 200}}
+    assert best == {
+        1: {"params": {"n_estimators": 100}, "best_score": 0.8},
+        2: {"params": {"n_estimators": 200}, "best_score": 0.7},
+    }
 
 
 def test_best_params_by_fold_uses_the_requested_metric():
@@ -89,7 +89,7 @@ def test_best_params_by_fold_uses_the_requested_metric():
 
     best = best_params_by_fold(df_folds, {"n_estimators": [100, 200]}, metric="f1")
 
-    assert best == {1: {"n_estimators": 200}}
+    assert best == {1: {"params": {"n_estimators": 200}, "best_score": 0.5}}
 
 
 def test_best_params_by_fold_restores_the_hyperparameter_types():
@@ -99,7 +99,7 @@ def test_best_params_by_fold_restores_the_hyperparameter_types():
 
     best = best_params_by_fold(df_folds, {"n_estimators": [300], "max_samples": [None]})
 
-    assert best == {1: {"n_estimators": 300, "max_samples": None}}
+    assert best[1]["params"] == {"n_estimators": 300, "max_samples": None}
 
 
 def test_best_params_by_fold_keeps_integer_columns_as_integers():
@@ -108,14 +108,14 @@ def test_best_params_by_fold_keeps_integer_columns_as_integers():
 
     best = best_params_by_fold(df_folds, {"min_samples_leaf": [1]})
 
-    assert isinstance(best[1]["min_samples_leaf"], int)
+    assert isinstance(best[1]["params"]["min_samples_leaf"], int)
 
 
 @pytest.fixture
 def report(tmp_path, outer_folds_dir):
     return supervised_outer_evaluation(
         outer_folds_dir=outer_folds_dir,
-        best_params_per_fold=RF_PARAMS_PER_FOLD,
+        best_parameter_achieved=RF_PARAMS,
         target="Class",
         model_select="rf",
         output_dir=str(tmp_path / "results"),
@@ -133,12 +133,9 @@ def test_reports_one_row_per_outer_fold_and_the_mean(report):
 
 
 @pytest.mark.slow
-def test_each_round_uses_the_configuration_of_its_own_fold(report):
-    rows = fold_rows(report).set_index("fold")
-
-    for fold, params in RF_PARAMS_PER_FOLD.items():
-        for name, value in params.items():
-            assert rows.loc[fold, name] == value
+def test_every_round_uses_the_same_configuration(report):
+    for name, value in RF_PARAMS.items():
+        assert (fold_rows(report)[name] == value).all()
 
 
 @pytest.mark.slow
@@ -175,11 +172,10 @@ def test_mean_row_is_the_average_of_the_folds(report):
 @pytest.mark.slow
 def test_writes_the_report_named_after_the_model(tmp_path, outer_folds_dir):
     output_dir = tmp_path / "resultados"
-    params = {"n_estimators": 5, "max_depth": 2}
 
     supervised_outer_evaluation(
         outer_folds_dir=outer_folds_dir,
-        best_params_per_fold={1: params, 2: params},
+        best_parameter_achieved={"n_estimators": 5, "max_depth": 2},
         model_select="xgb",
         output_dir=str(output_dir),
         n_jobs=1,
@@ -190,11 +186,11 @@ def test_writes_the_report_named_after_the_model(tmp_path, outer_folds_dir):
 
 
 @pytest.mark.slow
-def test_runs_on_the_configurations_chosen_by_the_grid_search(
+def test_runs_on_the_configuration_chosen_by_the_grid_search(
     tmp_path, inner_folds_dir, outer_folds_dir
 ):
-    """O fluxo do script principal: busca em grade, escolha por fold e avaliação externa."""
-    grid = {"n_estimators": [5, 10], "min_samples_leaf": [1]}
+    """O fluxo do script principal: busca em grade, melhor de cada fold e a maior entre elas."""
+    grid = {"n_estimators": [5, 10], "min_samples_leaf": [1, 3]}
     df_folds, _, _ = manual_grid_search(
         folds_dir=inner_folds_dir,
         param_grid=grid,
@@ -202,12 +198,17 @@ def test_runs_on_the_configurations_chosen_by_the_grid_search(
         parallel=False,
     )
 
+    best_params_per_fold = best_params_by_fold(df_folds, grid)
+    best_fold = max(best_params_per_fold, key=lambda fold: best_params_per_fold[fold]["best_score"])
+    best_parameter_achieved = best_params_per_fold[best_fold]["params"]
+
     report = supervised_outer_evaluation(
         outer_folds_dir=outer_folds_dir,
-        best_params_per_fold=best_params_by_fold(df_folds, grid),
+        best_parameter_achieved=best_parameter_achieved,
         output_dir=str(tmp_path / "outer"),
         n_jobs=1,
     )
 
-    assert len(fold_rows(report)) == 2
-    assert fold_rows(report)["n_estimators"].isin(grid["n_estimators"]).all()
+    assert best_params_per_fold[best_fold]["best_score"] == pytest.approx(df_folds["auprc"].max())
+    for name, value in best_parameter_achieved.items():
+        assert (fold_rows(report)[name] == value).all()
