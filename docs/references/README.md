@@ -12,6 +12,7 @@ dos capítulos na listagem do Obsidian.
 
 | Nota | Seção correspondente na monografia |
 |---|---|
+| `citation-summary.md` | sumário de todas as citações do `main.tex`, em ordem, com links para os grifos |
 | `00-introduction/introduction.md` | 1 Introdução |
 | `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
 | `01-theoretical-background/machine-learning.md` | 3.1 Aprendizado de Máquina |

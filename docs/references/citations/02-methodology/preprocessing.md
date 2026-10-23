@@ -7,7 +7,12 @@
 >
 > Página 183 da revista. Sustenta que $g_1$ é a medida tradicional de assimetria amostral.
 
+^joanes1998-p1
+
 > [!PDF|yellow] [[joanes1998_comparing-measures-sample-skewness-kurtosis.pdf#page=2&selection=0,7,60,1&color=yellow|joanes1998_comparing-measures-sample-skewness-kurtosis, p.2]]
 > > is typical of many older texts in defining such coefficients as $g_1 = m_3/m_2^{3/2}$ and $g_2 = m_4/m_2^2 - 3$, where the sample moments for samples of size n are given by $m_r = \frac{1}{n}\sum(x_i - \bar{x})^r$.
 >
 > Página 184 da revista. Sustenta a equação do coeficiente de assimetria: o momento amostral de ordem 3 dividido pelo de ordem 2 elevado a 3/2. É a definição calculada pelo `scipy.stats.skew` na configuração padrão, usada para obter os valores de Amount.
+
+^joanes1998-p2
+

@@ -9,6 +9,8 @@
 > shams et al 2024
 > 
 
+^shams2024-p13
+
 
 
 > [!PDF|yellow] [[liashchynskyi2019_grid-search-random-search-genetic-algorithm.pdf#page=3&selection=28,59,30,68&color=yellow|liashchynskyi2019, p.3]]
@@ -17,4 +19,6 @@
 > Grid Search, Random Search, Genetic Algorithm: A Big Comparison for NAS
 > Liashchynskyi Liashchynskyi  2019
 >
+
+^liashchynskyi2019-p3
 

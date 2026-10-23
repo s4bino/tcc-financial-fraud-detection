@@ -11,12 +11,19 @@
 >
 > Página 2826 da revista, resumo. Sustenta o scikit-learn como biblioteca Python de algoritmos de aprendizado de máquina.
 
+^pedregosa2011-p2
+
 > [!PDF|yellow] [[chen2016_xgboost-scalable-tree-boosting.pdf#page=1&selection=16,17,17,43&color=yellow|chen2016_xgboost-scalable-tree-boosting, p.1]]
 > > In this paper, we describe a scalable end-to-end tree boosting system called XGBoost,
 >
 > Resumo. Sustenta a biblioteca XGBoost.
 
+^chen2016-p1
+
 > [!PDF|yellow] [[raschka2020_machine-learning-python-trends-rapids.pdf#page=15&selection=30,0,51,68&color=yellow|raschka2020_machine-learning-python-trends-rapids, p.15]]
 > > RAPIDS core libraries include near drop-in replacements for the Pandas, Scikit-learn, and Network-X libraries named cuDF, cuML, and cuGraph, respectively.
 >
 > Seção 4.2. Sustenta o cuML como implementação em GPU equivalente ao scikit-learn.
+
+^raschka2020-p15
+
