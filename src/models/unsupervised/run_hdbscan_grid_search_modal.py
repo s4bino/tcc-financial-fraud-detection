@@ -54,10 +54,10 @@ USO
     modal volume put tcc-hdbscan-dados data/processed/outer_folds  /data/processed/outer_folds
 
     # teste rápido das imagens, antes de gastar tempo de GPU
-    modal run src/models/run_hdbscan_grid_search_modal.py::smoke
+    modal run src/models/unsupervised/run_hdbscan_grid_search_modal.py::smoke
 
     # execução; --detach mantém o job vivo com o terminal fechado
-    modal run --detach src/models/run_hdbscan_grid_search_modal.py
+    modal run --detach src/models/unsupervised/run_hdbscan_grid_search_modal.py
 
     # resultados de volta
     modal volume get tcc-hdbscan-dados /results/unsupervised results/

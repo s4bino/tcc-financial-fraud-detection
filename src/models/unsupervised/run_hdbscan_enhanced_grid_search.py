@@ -1,7 +1,9 @@
 import itertools
 import json
 import os
+import sys
 import time
+from pathlib import Path
 
 import dbcv
 import numpy as np
@@ -18,7 +20,11 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 
-from features import build_preprocessor, engineer_features
+# features.py fica em src/models/, um nível acima deste diretório. No Colab, os dois arquivos
+# sobem juntos para /content, e o diretório do próprio script já o contém.
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from features import build_preprocessor, engineer_features  # noqa: E402
 
 
 def to_numpy(values):

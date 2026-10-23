@@ -1,8 +1,13 @@
 import os
+import sys
+from pathlib import Path
 
 import psutil
 
-from grid_search import *
+# grid_search importa o features.py de src/models/, um nível acima deste diretório
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+from grid_search import *  # noqa: E402
 
 if __name__ == "__main__":
     # Detectando núcleos da máquina

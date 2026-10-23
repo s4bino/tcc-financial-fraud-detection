@@ -37,9 +37,15 @@ e coloque em `data/raw/creditcard.csv`.
 │   │   └── run_fold_generation.py            # entrada: constrói toda a árvore de folds
 │   │
 │   ├── models/
-│   │   ├── grid_search.py                    # busca em grade (Random Forest / XGBoost)
-│   │   ├── run_supervised_grid_search.py     # entrada: modelos supervisionados
-│   │   └── run_hdbscan_grid_search.py        # entrada: HDBSCAN (grid por DBCV + avaliação externa)
+│   │   ├── features.py                       # variáveis de entrada e padronização comuns aos modelos
+│   │   ├── supervised/
+│   │   │   ├── grid_search.py                # busca em grade (Random Forest / XGBoost)
+│   │   │   └── run_supervised_grid_search.py # entrada: modelos supervisionados
+│   │   └── unsupervised/
+│   │       ├── run_hdbscan_grid_search.py    # entrada: HDBSCAN (grid por DBCV + avaliação externa)
+│   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado
+│   │       ├── run_hdbscan_grid_search_modal.py     # HDBSCAN na infraestrutura da Modal
+│   │       └── run_dbscan_grid_search.py     # entrada: DBSCAN
 │   │
 │   └── utils/                                # vazia — reservada para utilitários
 │
@@ -53,6 +59,7 @@ e coloque em `data/raw/creditcard.csv`.
 │   ├── conftest.py                           # fixtures: base sintética e folds
 │   ├── preprocessing/
 │   └── models/
+│       └── supervised/
 │
 ├── docs/
 │   ├── monografia/                           # texto do TCC (LaTeX)
@@ -112,7 +119,7 @@ Produz `data/processed/outer_folds/` (227.845 treino / 56.961 teste por fold) e
 **2. Grid search supervisionado** — Random Forest ou XGBoost, seleção por F1:
 
 ```bash
-uv run python src/models/run_supervised_grid_search.py
+uv run python src/models/supervised/run_supervised_grid_search.py
 ```
 
 O modelo (`"rf"` ou `"xgb"`) e a grade são definidos no bloco `__main__`.
@@ -121,7 +128,7 @@ Resultados em `results/supervised/results_by_fold.csv` e `results_summary.csv`.
 **3. HDBSCAN** — grid interno otimizado por DBCV e avaliação nos folds externos:
 
 ```bash
-python src/models/run_hdbscan_grid_search.py
+python src/models/unsupervised/run_hdbscan_grid_search.py
 ```
 
 Requer GPU. As constantes `INTERNAL_FOLDS_DIR`, `OUTER_FOLDS_DIR` e `RESULTS_DIR`
@@ -194,7 +201,7 @@ A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
 | `preprocessing/test_stratified_folds.py` | folds externos: exclusividade, cobertura e estratificação |
 | `preprocessing/test_external_k_folds.py` | materialização dos folds externos e metadados |
 | `preprocessing/test_internal_k_folds.py` | folds internos e isolamento do teste externo |
-| `models/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
+| `models/supervised/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
 
 As fixtures constroem uma base sintética com a mesma estrutura de
 `creditcard.csv` — 31 colunas, `Amount` assimétrica, `V1`–`V28` com variâncias
