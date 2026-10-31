@@ -278,7 +278,7 @@ def gpu_fold_stage(fold: int):
             min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
         )
         model.fit(X_train_scaled)
-        train_time = time.time() - t0
+        train_time_min = (time.time() - t0) / 60
 
         labels = model.labels_.to_numpy() if hasattr(model.labels_, "to_numpy") else model.labels_
         n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
@@ -298,7 +298,7 @@ def gpu_fold_stage(fold: int):
         # ==============================================================
         t1 = time.time()
         val_labels, val_probs = approximate_predict(model, X_val_scaled)
-        val_time = time.time() - t1
+        val_time_min = (time.time() - t1) / 60
 
         if hasattr(val_labels, "get"):
             val_labels = val_labels.get()
@@ -334,8 +334,8 @@ def gpu_fold_stage(fold: int):
                 "TP": tp,
                 "FP": fp,
                 "FN": fn,
-                "train_time": train_time,
-                "val_time": val_time,
+                "train_time_min": train_time_min,
+                "val_time_min": val_time_min,
             }
         )
 
@@ -572,13 +572,13 @@ def outer_stage(best_parameter_achieved: dict):
 
         t0 = time.time()
         model.fit(X_train_scaled)  # Treina com a versão escalonada
-        train_time = time.time() - t0
+        train_time_min = (time.time() - t0) / 60
 
         t1 = time.time()
         test_labels, test_probabilities = approximate_predict(
             model, X_test_scaled
         )  # Avalia na versão escalonada
-        predict_time = time.time() - t1
+        predict_time_min = (time.time() - t1) / 60
 
         if hasattr(test_labels, "get"):
             test_labels = test_labels.get()
@@ -608,8 +608,8 @@ def outer_stage(best_parameter_achieved: dict):
                 "TP": tp,
                 "FP": fp,
                 "FN": fn,
-                "train_time": train_time,
-                "predict_time": predict_time,
+                "train_time_min": train_time_min,
+                "predict_time_min": predict_time_min,
             }
         )
 

@@ -9,8 +9,6 @@ import dbcv
 import numpy as np
 import pandas as pd
 from cuml.cluster import HDBSCAN
-from cuml.cluster.hdbscan import approximate_predict
-from cuml.neighbors import NearestNeighbors
 from sklearn.metrics import (
     average_precision_score,
     confusion_matrix,
@@ -20,147 +18,20 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 
-# features.py fica em src/models/, um nível acima deste diretório. No Colab, os dois arquivos
-# sobem juntos para /content, e o diretório do próprio script já o contém.
+# features.py, metrics.py e paths.py ficam em src/models/, um nível acima deste diretório. No
+# Colab, os quatro arquivos sobem juntos para /content, e o diretório do próprio script já os
+# contém.
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import paths  # noqa: E402
 from features import build_preprocessor, engineer_features  # noqa: E402
-
-
-def to_numpy(values):
-    """
-    Converte para np.ndarray, na memória do host, as saídas do cuML e de outras bibliotecas.
-
-    Objetivo:
-        O cuML pode devolver rótulos, probabilidades e distâncias como arrays da GPU. A função
-        testa três casos, nesta ordem: objetos com o método get(), como os arrays do CuPy, cujo
-        get() copia os dados da GPU para a memória principal; objetos que oferecem to_numpy();
-        e qualquer outro objeto aceito por np.asarray, como listas e arrays do NumPy. Assim, o
-        restante do pipeline opera sempre sobre arrays do NumPy, qualquer que seja o tipo de
-        saída configurado no cuML.
-
-        Como pandas.Series e pandas.DataFrame também têm um método get(), que exige uma chave,
-        a função não se destina a objetos do pandas; para eles, usar .to_numpy() diretamente.
-
-    Parâmetros:
-        values: array da GPU, array do NumPy, sequência ou objeto com to_numpy().
-
-    Retorno:
-        np.ndarray com os mesmos valores, na memória do host.
-
-    Exemplo de uso:
-        labels = to_numpy(model.labels_)   # rótulos do HDBSCAN* como np.ndarray
-        to_numpy([0.2, 0.7])               # array([0.2, 0.7])
-    """
-    if hasattr(values, "get"):
-        return values.get()
-    if hasattr(values, "to_numpy"):
-        return values.to_numpy()
-    return np.asarray(values)
-
-
-# fds-et-19-anomaly-detection-models, célula 15, linhas 62-65
-def neighbor_distances(X_reference, X_query, n_neighbors):
-    """
-    Calcula, para cada ponto consultado, as distâncias aos n_neighbors vizinhos mais próximos na referência.
-
-    Objetivo:
-        Ajusta um NearestNeighbors do cuML, na GPU e com a métrica euclidiana padrão, sobre
-        X_reference e consulta os pontos de X_query. A coluna j da saída contém a distância ao
-        (j+1)-ésimo vizinho mais próximo, em ordem crescente. No pipeline, a distância ao vizinho
-        de ordem min_samples no treino funciona como medida local de densidade, análoga à
-        distância núcleo do HDBSCAN* de Campello, Moulavi e Sander (2013): quanto maior a
-        distância, mais esparsa a vizinhança e mais anômalo o ponto.
-
-        Quando X_query é o próprio X_reference, cada ponto é o seu vizinho mais próximo, à
-        distância zero. Por isso, no treino pede-se um vizinho a mais e lê-se a coluna
-        min_samples, enquanto na validação e no teste, cujos pontos não pertencem à referência,
-        lê-se a coluna min_samples - 1. As duas leituras correspondem ao mesmo vizinho de ordem
-        min_samples, sem contar o próprio ponto.
-
-    Parâmetros:
-        X_reference (np.ndarray): pontos que formam o índice de busca, em geral o treino padronizado.
-        X_query (np.ndarray): pontos cujas distâncias serão calculadas.
-        n_neighbors (int): número de vizinhos retornados por ponto.
-
-    Retorno:
-        np.ndarray de forma (len(X_query), n_neighbors), com as distâncias em ordem crescente.
-
-    Exemplo de uso:
-        d_train = neighbor_distances(X_train_scaled, X_train_scaled, 301)
-        d_train[:, 300]   # distância de cada ponto do treino ao 300º vizinho, sem contar ele mesmo
-        d_val = neighbor_distances(X_train_scaled, X_val_scaled, 300)
-        d_val[:, 299]     # distância de cada ponto da validação ao seu 300º vizinho no treino
-    """
-    nn = NearestNeighbors(n_neighbors=n_neighbors)
-    nn.fit(X_reference)
-    distances, _ = nn.kneighbors(X_query)
-    return to_numpy(distances)
-
-
-# fds-et-19-anomaly-detection-models, célula 15, linhas 1-4 (lá min-max no teste; aqui posto relativo ao treino)
-def percentile_rank(reference, values):
-    """
-    Converte valores no posto percentil que ocupam na distribuição de referência.
-
-    Objetivo:
-        Para cada valor v, retorna a fração dos elementos de reference menores ou iguais a v, isto
-        é, a função de distribuição acumulada empírica da referência avaliada em v. O resultado
-        fica em [0, 1]: valores abaixo do mínimo da referência recebem 0, e valores iguais ou
-        acima do máximo recebem 1. A ordenação custa O(n log n), e cada consulta, O(log n), por
-        busca binária (np.searchsorted).
-
-        No pipeline, a referência é sempre a distribuição do treino. Isso leva escores de
-        naturezas diferentes, como uma probabilidade e uma distância, a uma escala comum sem usar
-        nenhuma estatística da validação ou do teste, ao contrário de uma normalização min-max
-        calculada sobre o próprio conjunto avaliado.
-
-    Parâmetros:
-        reference (np.ndarray): valores que definem a distribuição, como os escores do treino.
-        values (np.ndarray): valores a converter.
-
-    Retorno:
-        np.ndarray do mesmo tamanho de values, com postos em [0, 1].
-
-    Exemplo de uso:
-        percentile_rank(np.array([1, 2, 3, 4]), np.array([0.5, 2, 3.5, 10]))
-        # array([0.  , 0.5 , 0.75, 1.  ])
-    """
-    return np.searchsorted(np.sort(reference), values, side="right") / len(reference)
-
-
-# fds-et-19-anomaly-detection-models, célula 31, linha 10
-def ensemble_score(train_scores, scores):
-    """
-    Combina vários escores de anomalia em um escore único pela média dos postos percentis.
-
-    Objetivo:
-        Cada escore de scores é convertido no seu posto percentil em relação ao escore
-        correspondente de train_scores (percentile_rank), e o escore combinado de cada ponto é a
-        média aritmética desses postos, com pesos iguais. Os dois escores usados no pipeline, 1
-        menos a probabilidade de pertinência ao cluster e a distância ao vizinho de ordem
-        min_samples, crescem com o grau de anomalia; o resultado, portanto, também cresce com
-        ele e fica em [0, 1]. Por operar sobre postos, a combinação independe da escala e da
-        forma da distribuição de cada escore, e o valor combinado só se aproxima de 1 quando o
-        ponto é extremo, em relação ao treino, nos dois critérios.
-
-    Parâmetros:
-        train_scores (list[np.ndarray]): distribuição de cada escore no treino, usada como referência.
-        scores (list[np.ndarray]): os mesmos escores, na mesma ordem, para os pontos avaliados
-            (o próprio treino, a validação ou o teste).
-
-    Retorno:
-        np.ndarray com um escore combinado por ponto, em [0, 1].
-
-    Exemplo de uso:
-        train_scores = [np.array([0.1, 0.2, 0.4, 0.9]), np.array([1.0, 2.0, 3.0, 4.0])]
-        ensemble_score(train_scores, [np.array([0.95]), np.array([2.5])])
-        # array([0.75]): posto 1.0 no primeiro escore e 0.5 no segundo
-    """
-    return np.mean(
-        [percentile_rank(reference, values) for reference, values in zip(train_scores, scores)],
-        axis=0,
-    )
+from metrics import (  # noqa: E402
+    alert_threshold,
+    glosh_anomaly_score,
+    glosh_neighbors,
+    read_legitimate_weight,
+    to_numpy,
+)
 
 
 def hdbscan_enhanced_internal_grid_with_tracking(
@@ -186,21 +57,23 @@ def hdbscan_enhanced_internal_grid_with_tracking(
         1. Remove a coluna alvo, elimina as transações duplicadas apenas do treino, deriva as
            variáveis com engineer_features e as padroniza com build_preprocessor ajustado só no
            treino.
-        2. Calcula uma única vez as distâncias aos vizinhos mais próximos até o maior min_samples
-           da grade, reaproveitadas por todas as combinações.
+        2. Busca uma única vez, com glosh_neighbors, os vizinhos mais próximos no treino para o
+           maior min_samples da grade, reaproveitados por todas as combinações.
         3. Para cada combinação pendente, treina o HDBSCAN* do cuML (CAMPELLO; MOULAVI; SANDER,
-           2013) com prediction_data=True e calcula sobre o treino o DBCV (MOULAVI et al., 2014),
+           2013) e calcula sobre o treino o DBCV (MOULAVI et al., 2014),
            índice interno de validação de agrupamentos por densidade, em [-1, 1], que não usa
            rótulos. Por ter custo quadrático, o DBCV é calculado sobre os pontos distintos e,
            acima de max_dbcv_sample_size, sobre uma amostra estratificada pelos rótulos dos
            clusters (random_state=42), ou aleatória simples quando a estratificação não é
            possível. Sem cluster válido ou em caso de erro, o DBCV recebe -1.
-        4. Na validação, combina com ensemble_score dois escores de anomalia: 1 menos a
-           probabilidade de pertinência dada por approximate_predict e a distância ao vizinho de
-           ordem min_samples no treino. O limiar é o quantil 1 - alert_rate do escore combinado
-           do treino, e as transações da validação com escore igual ou superior a ele são
-           sinalizadas como fraude. Registram-se precisão, recall, F1, AUPRC do escore combinado
-           e de cada componente, TP, FP, FN e os tempos de treino e de validação.
+        4. Calcula com glosh_anomaly_score o GLOSH (CAMPELLO et al., 2015) do treino, a partir
+           da árvore condensada do modelo, e o da validação, pela inserção de cada transação na
+           hierarquia do treino. O limiar é o quantil 1 - alert_rate do GLOSH do treino,
+           calculado por alert_threshold, que na base subamostrada pondera as legítimas pelo
+           peso de read_legitimate_weight, lido do fold_k_internal_info.json. As transações da
+           validação com escore igual ou superior a ele, os outliers de maior escore, são
+           sinalizadas como fraude. Registram-se precisão, recall, F1, AUPRC do GLOSH, TP, FP,
+           FN e os tempos de treino e de validação, em minutos.
 
         Os rótulos da validação servem apenas ao acompanhamento: a escolha da configuração de cada
         fold usa somente o DBCV, o que preserva o caráter não supervisionado da seleção. Após cada
@@ -298,6 +171,12 @@ def hdbscan_enhanced_internal_grid_with_tracking(
         X_train = engineer_features(df_train.drop(columns=[target]).drop_duplicates())
         X_val = engineer_features(df_val.drop(columns=[target]))
         y_val = df_val[target]
+        # os rótulos do treino entram só nos pesos do limiar de alerta da base subamostrada
+        y_train = df_train.loc[X_train.index, target]
+        legitimate_weight = read_legitimate_weight(
+            os.path.join(internal_folds_dir, f"fold_{fold}_internal_info.json")
+        )
+        print(f"Peso de cada legítima no limiar de alerta: {legitimate_weight:.4f}")
         del df_train, df_val
 
         # ==============================================================
@@ -309,14 +188,10 @@ def hdbscan_enhanced_internal_grid_with_tracking(
         X_val_scaled = preprocessor.transform(X_val)
 
         t_knn = time.time()
-
-        train_neighbor_distances = neighbor_distances(
-            X_train_scaled, X_train_scaled, max_min_samples + 1
-        )
-        val_neighbor_distances = neighbor_distances(X_train_scaled, X_val_scaled, max_min_samples)
-
+        neighbors = glosh_neighbors(X_train_scaled, X_val_scaled, max_min_samples)
         print(
-            f"Distâncias aos {max_min_samples} vizinhos calculadas em {time.time() - t_knn:.1f} s"
+            f"Vizinhos do treino ({max_min_samples}) e da validação ({2 * max_min_samples}) "
+            f"calculados em {(time.time() - t_knn) / 60:.2f} min"
         )
 
         # ==============================================================
@@ -335,11 +210,9 @@ def hdbscan_enhanced_internal_grid_with_tracking(
             # 3. TREINAMENTO
             # ==============================================================
             t0 = time.time()
-            model = HDBSCAN(
-                min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
-            )
+            model = HDBSCAN(min_cluster_size=min_cluster_size, min_samples=min_samples)
             model.fit(X_train_scaled)
-            train_time = time.time() - t0
+            train_time_min = (time.time() - t0) / 60
 
             labels = to_numpy(model.labels_)
             n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
@@ -392,29 +265,24 @@ def hdbscan_enhanced_internal_grid_with_tracking(
             # 5. AVALIAÇÃO PREDITIVA NA VALIDAÇÃO (Tracking oculto)
             # ==============================================================
             t1 = time.time()
-            _, val_probs = approximate_predict(model, X_val_scaled)
-
-            train_scores = [
-                1.0 - to_numpy(model.probabilities_),
-                train_neighbor_distances[:, min_samples],
-            ]
-            val_scores = [1.0 - to_numpy(val_probs), val_neighbor_distances[:, min_samples - 1]]
-
-            train_ensemble = ensemble_score(train_scores, train_scores)
-            val_ensemble = ensemble_score(train_scores, val_scores)
+            train_glosh, val_glosh = glosh_anomaly_score(
+                model.condensed_tree_.to_numpy(),
+                X_train_scaled,
+                X_val_scaled,
+                min_samples,
+                neighbors=neighbors,
+            )
             # credit-card-fraud-detection-ds, célula 36, linha 2; credit-card-fraud-detection, célula 55, linhas 2-5
-            alert_threshold = np.quantile(train_ensemble, 1.0 - alert_rate)
-            val_time = time.time() - t1
+            threshold = alert_threshold(train_glosh, alert_rate, y_train, legitimate_weight)
+            val_time_min = (time.time() - t1) / 60
 
             # fds-et-19-anomaly-detection-models, célula 17, linha 3
-            preds = (val_ensemble >= alert_threshold).astype(int)
+            preds = (val_glosh >= threshold).astype(int)
 
             f1 = f1_score(y_val, preds, zero_division=0)
             prec = precision_score(y_val, preds, zero_division=0)
             rec = recall_score(y_val, preds, zero_division=0)
-            auprc = average_precision_score(y_val, val_ensemble)
-            auprc_membership = average_precision_score(y_val, val_scores[0])
-            auprc_density = average_precision_score(y_val, val_scores[1])
+            auprc = average_precision_score(y_val, val_glosh)
             tn, fp, fn, tp = confusion_matrix(y_val, preds, labels=[0, 1]).ravel()
 
             all_trials_history.append(
@@ -430,13 +298,11 @@ def hdbscan_enhanced_internal_grid_with_tracking(
                     "precision": prec,
                     "recall": rec,
                     "auprc": auprc,
-                    "auprc_membership": auprc_membership,
-                    "auprc_density": auprc_density,
                     "TP": tp,
                     "FP": fp,
                     "FN": fn,
-                    "train_time": train_time,
-                    "val_time": val_time,
+                    "train_time_min": train_time_min,
+                    "val_time_min": val_time_min,
                 }
             )
 
@@ -444,12 +310,12 @@ def hdbscan_enhanced_internal_grid_with_tracking(
 
             print(
                 f"Combo {combo_id} [{combo_id + 1}/{len(df_param_combinations)}] | min_cluster={min_cluster_size} | min_samples={min_samples} | "
-                f"clusters={n_clusters} | ruído={n_noise} ({n_noise / len(labels):.1%}) | DBCV={dbcv_score:.4f} | {time.time() - t0:.0f} s\n"
-                f"    AUPRC Val={auprc:.4f} (pertinência={auprc_membership:.4f}, kNN={auprc_density:.4f}) | "
+                f"clusters={n_clusters} | ruído={n_noise} ({n_noise / len(labels):.1%}) | DBCV={dbcv_score:.4f} | {(time.time() - t0) / 60:.1f} min\n"
+                f"    AUPRC Val (GLOSH)={auprc:.4f} | "
                 f"Precisão={prec:.3f} | Recall={rec:.3f} | F1 Val={f1:.4f} | TP={tp} FP={fp} FN={fn}"
             )
 
-        del X_train, X_val, y_val, train_neighbor_distances, val_neighbor_distances
+        del X_train, X_val, y_train, y_val, neighbors
 
         print(f"Fold interno {fold} concluído e gravado.")
 
@@ -500,11 +366,10 @@ def hdbscan_enhanced_outer_evaluation(
         Para cada fold externo (fold_k_train.csv e fold_k_test.csv em outer_folds_dir), treina o
         HDBSCAN* com o min_cluster_size e o min_samples de best_parameter_achieved sobre todo o
         treino externo, depois de remover as duplicatas, derivar as variáveis e padronizá-las com
-        estatísticas do treino. O teste segue a mesma regra de decisão do ciclo interno: o escore
-        combinado de ensemble_score, formado por 1 menos a probabilidade de pertinência de
-        approximate_predict e pela distância ao vizinho de ordem min_samples no treino, é
-        comparado ao quantil 1 - alert_rate do escore combinado do treino. Os rótulos do teste
-        entram apenas no cálculo das métricas.
+        estatísticas do treino. O teste segue a mesma regra de decisão do ciclo interno: o GLOSH
+        de cada transação do teste, calculado por glosh_anomaly_score, é comparado ao quantil
+        1 - alert_rate do GLOSH do treino, ponderado na base subamostrada com o peso lido do
+        fold_k_info.json. Os rótulos do teste entram apenas no cálculo das métricas.
 
         Todas as rodadas externas usam a mesma configuração, conforme o critério de seleção
         adotado no trabalho e descrito na Seção 3.1.3.4 da monografia. O relatório traz uma linha
@@ -519,8 +384,8 @@ def hdbscan_enhanced_outer_evaluation(
         alert_rate (float): fração esperada de alertas, que define o limiar no escore do treino.
 
     Retorno:
-        pd.DataFrame com precisão, recall, F1, AUPRC (combinada e por componente), TP, FP, FN e
-        tempos de treino e de predição de cada fold, seguido da linha "Média".
+        pd.DataFrame com precisão, recall, F1, AUPRC do GLOSH, TP, FP, FN e tempos de treino e
+        de predição, em minutos, de cada fold, seguido da linha "Média".
 
     Exemplo de uso:
         best = {"min_cluster_size": 50, "min_samples": 300}
@@ -561,47 +426,39 @@ def hdbscan_enhanced_outer_evaluation(
         X_train = engineer_features(df_train.drop(columns=[target]).drop_duplicates())
         X_test = engineer_features(df_test.drop(columns=[target]))
         y_test = df_test[target]
+        # os rótulos do treino entram só nos pesos do limiar de alerta da base subamostrada
+        y_train = df_train.loc[X_train.index, target]
+        legitimate_weight = read_legitimate_weight(
+            os.path.join(outer_folds_dir, f"fold_{fold}_info.json")
+        )
+        print(f"Peso de cada legítima no limiar de alerta: {legitimate_weight:.4f}")
 
         preprocessor = build_preprocessor()
 
         X_train_scaled = preprocessor.fit_transform(X_train)
         X_test_scaled = preprocessor.transform(X_test)
 
-        model = HDBSCAN(
-            min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
-        )
+        model = HDBSCAN(min_cluster_size=min_cluster_size, min_samples=min_samples)
 
         t0 = time.time()
         model.fit(X_train_scaled)
-        train_time = time.time() - t0
+        train_time_min = (time.time() - t0) / 60
 
         t1 = time.time()
-        _, test_probabilities = approximate_predict(model, X_test_scaled)
-
-        train_scores = [
-            1.0 - to_numpy(model.probabilities_),
-            neighbor_distances(X_train_scaled, X_train_scaled, min_samples + 1)[:, min_samples],
-        ]
-        test_scores = [
-            1.0 - to_numpy(test_probabilities),
-            neighbor_distances(X_train_scaled, X_test_scaled, min_samples)[:, min_samples - 1],
-        ]
-
-        train_ensemble = ensemble_score(train_scores, train_scores)
-        test_ensemble = ensemble_score(train_scores, test_scores)
+        train_glosh, test_glosh = glosh_anomaly_score(
+            model.condensed_tree_.to_numpy(), X_train_scaled, X_test_scaled, min_samples
+        )
         # credit-card-fraud-detection-ds, célula 36, linha 2; credit-card-fraud-detection, célula 55, linhas 2-5
-        alert_threshold = np.quantile(train_ensemble, 1.0 - alert_rate)
-        predict_time = time.time() - t1
+        threshold = alert_threshold(train_glosh, alert_rate, y_train, legitimate_weight)
+        predict_time_min = (time.time() - t1) / 60
 
         # fds-et-19-anomaly-detection-models, célula 17, linha 3
-        preds = (test_ensemble >= alert_threshold).astype(int)
+        preds = (test_glosh >= threshold).astype(int)
 
         f1 = f1_score(y_test, preds, zero_division=0)
         prec = precision_score(y_test, preds, zero_division=0)
         rec = recall_score(y_test, preds, zero_division=0)
-        auprc = average_precision_score(y_test, test_ensemble)
-        auprc_membership = average_precision_score(y_test, test_scores[0])
-        auprc_density = average_precision_score(y_test, test_scores[1])
+        auprc = average_precision_score(y_test, test_glosh)
         tn, fp, fn, tp = confusion_matrix(y_test, preds, labels=[0, 1]).ravel()
 
         final_metrics.append(
@@ -613,13 +470,11 @@ def hdbscan_enhanced_outer_evaluation(
                 "recall": rec,
                 "f1": f1,
                 "auprc": auprc,
-                "auprc_membership": auprc_membership,
-                "auprc_density": auprc_density,
                 "TP": tp,
                 "FP": fp,
                 "FN": fn,
-                "train_time": train_time,
-                "predict_time": predict_time,
+                "train_time_min": train_time_min,
+                "predict_time_min": predict_time_min,
             }
         )
 
@@ -653,17 +508,15 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    INTERNAL_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/internal_folds"
-    OUTER_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/folds_output"
-
-    RESULTS_DIR = "/content/drive/MyDrive/RESULTS"
+    # base desta execução: paths.FULL_PATH (todas as transações) ou paths.UNDERSAMPLED_PATH
+    FOLDS = paths.UNDERSAMPLED_PATH
 
     # fds-et-19-anomaly-detection-models, célula 5, linha 4 (top-1%)
     ALERT_RATE = 0.001
 
     param_grid_hdbscan = {
         "min_cluster_size": [50],
-        "min_samples": [150, 200, 250, 300, 350, 400, 500],
+        "min_samples": [225, 250, 275, 300, 325, 350],
     }
 
     n_cores_disponiveis = os.cpu_count() or 1
@@ -671,10 +524,11 @@ if __name__ == "__main__":
 
     print("=== ETAPA 1: Grid Search Interno (Treino + Tracking na Validação) ===")
     df_folds, df_summary, best_params_per_fold = hdbscan_enhanced_internal_grid_with_tracking(
-        internal_folds_dir=INTERNAL_FOLDS_DIR,
+        internal_folds_dir=FOLDS.internal_folds_dir,
         param_grid=param_grid_hdbscan,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/grid_results_hdbscan_enhanced",
+        # pasta própria do GLOSH: com --resume, a do grau de anomalia seria lida como concluída
+        output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "grid_results_hdbscan_glosh"),
         n_processes=n_cores_disponiveis,
         max_dbcv_sample_size=28000,
         alert_rate=ALERT_RATE,
@@ -694,10 +548,10 @@ if __name__ == "__main__":
 
     print("\n=== ETAPA 2: Avaliação Externa (Verificando Fraudes com Labels Reais) ===")
     df_final_report = hdbscan_enhanced_outer_evaluation(
-        outer_folds_dir=OUTER_FOLDS_DIR,
+        outer_folds_dir=FOLDS.outer_folds_dir,
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan_enhanced",
+        output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "final_reports_hdbscan_glosh"),
         alert_rate=ALERT_RATE,
     )
 

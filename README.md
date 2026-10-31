@@ -43,12 +43,15 @@ e coloque em `data/raw/creditcard.csv`.
 │   │
 │   ├── models/
 │   │   ├── features.py                       # variáveis de entrada e padronização comuns aos modelos
+│   │   ├── metrics.py                        # grau de anomalia, GLOSH e limiar de alerta
+│   │   ├── paths.py                          # caminhos dos folds (base completa e subamostrada)
 │   │   ├── supervised/
 │   │   │   ├── grid_search.py                # busca em grade (Random Forest / XGBoost)
 │   │   │   └── run_supervised_grid_search.py # entrada: modelos supervisionados
 │   │   └── unsupervised/
 │   │       ├── run_hdbscan_grid_search.py    # entrada: HDBSCAN (grid por DBCV + avaliação externa)
-│   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado
+│   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado, com o GLOSH
+│   │       ├── run_hdbscan_enhanced_anomaly_degree_grid_search.py  # aprimorado com o grau de anomalia
 │   │       ├── run_hdbscan_grid_search_modal.py     # HDBSCAN na infraestrutura da Modal
 │   │       └── run_dbscan_grid_search.py     # entrada: DBSCAN
 │   │
@@ -224,6 +227,8 @@ A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
 | `preprocessing/test_internal_k_folds.py` | folds internos e isolamento do teste externo |
 | `preprocessing/test_undersampling.py` | subamostragem: fraudes intactas, avaliação inalterada e aninhamento |
 | `models/supervised/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
+| `models/test_metrics.py` | grau de anomalia, GLOSH e limiar de alerta ponderado da base subamostrada |
+| `models/test_paths.py` | caminhos das duas bases, leitura dos folds e do peso das legítimas, locais e no espelho do Drive |
 
 As fixtures constroem uma base sintética com a mesma estrutura de
 `creditcard.csv` — 31 colunas, `Amount` assimétrica, `V1`–`V28` com variâncias

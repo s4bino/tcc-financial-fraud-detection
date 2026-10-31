@@ -8,6 +8,9 @@
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 > - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
 
+> [!todo] Status: texto em revisão
+> - `dalpozzolo2015`: ainda fora do `refbib.bib`. Sustenta o limiar de alerta ponderado da base subamostrada, citado nas docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. O texto da monografia sobre a subamostragem e o limiar ainda não foi escrito.
+
 ## Escore e limiar
 
 > [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=3&selection=147,0,155,1&color=yellow|fawcett2006_introduction-roc-analysis, p.3]]
@@ -85,4 +88,41 @@
 > Página 3785 da revista. Sustenta a restrição dos sistemas reais: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
 
 ^dalpozzolo2018-p2
+
+## Limiar na base subamostrada
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=2&selection=132,0,134,45&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.2]]
+> > Rebalancing unbalanced data is just the sample selection bias problem with a known selection bias introduced by design (rather than by constraint or accident) [19].
+>
+> Sustenta que a probabilidade de uma transação ficar no treino subamostrado é conhecida, porque foi definida no próprio sorteio. A referência [19] é Quiñonero-Candela, Sugiyama, Schwaighofer e Lawrence (2009), *Dataset Shift in Machine Learning*, MIT Press.
+
+^dalpozzolo2015-p2
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=2&selection=277,0,327,57&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.2]]
+> > We assume that the selection variable s is independent of the input x given the class y (class-dependent selection): p(s|y,x) = p(s|y). This assumption implies p(x|y,s) = p(x|y), i.e. by removing observation at random in the majority class we do not change within-class distributions.
+>
+> Sustenta que o sorteio das legítimas, que depende só da classe, preserva a distribuição das variáveis dentro de cada classe, de modo que as legítimas mantidas representam as descartadas.
+
+^dalpozzolo2015-p2-2
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=3&selection=0,0,15,38&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.3]]
+> > Let us denote β = p(s = 1|−) as the probability of selecting a negative instance with undersampling
+>
+> Sustenta o peso de cada legítima no limiar como o inverso de β, a probabilidade de uma legítima ser mantida. As fraudes são todas mantidas, p(s = 1|+) = 1, como o artigo assume na p. 2, e pesam 1.
+
+^dalpozzolo2015-p3
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=4&selection=256,0,258,51&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.4]]
+> > removing negative samples with undersampling increases the positive posterior probability, moving the classification boundary so that more samples are classified as positive.
+>
+> Sustenta que, sem correção, a subamostragem desloca a fronteira de decisão e faz mais transações serem classificadas como fraude.
+
+^dalpozzolo2015-p4
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=5&selection=551,0,559,1&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.5]]
+> > The optimal threshold to use with p′ is equal to the one for p.
+>
+> Sustenta que o limiar corrigido coincide com o do treino antes da subamostragem. No artigo, a correção é feita sobre a probabilidade a posteriori, e o limiar volta à proporção original de fraudes. No código, o escore é o GLOSH, que não é uma probabilidade, e a correção é feita sobre o quantil do escore, com os pesos.
+
+^dalpozzolo2015-p5
 

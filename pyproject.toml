@@ -41,7 +41,8 @@ dependencies = [
 #------------------------------------------------------------------------------
 # Dependências de GPU, fora do uv.lock
 #
-# run_hdbscan_grid_search.py, run_hdbscan_enhanced_grid_search.py e
+# run_hdbscan_grid_search.py, run_hdbscan_enhanced_grid_search.py,
+# run_hdbscan_enhanced_anomaly_degree_grid_search.py e
 # run_dbscan_grid_search.py usam cuML e dbcv, que exigem Linux com GPU NVIDIA
 # (CUDA 12). Os experimentos rodam no Google Colab, onde o ambiente é
 # preparado à parte:
@@ -49,6 +50,10 @@ dependencies = [
 #   cuml-cu12   fixado em 26.02 antes de cada execução (a 26.06 quebra o
 #               HDBSCAN)
 #   dbcv        pip install "git+https://github.com/FelSiq/DBCV"
+#   hdbscan     pip install "hdbscan==0.8.39". O condensed_tree_ do cuML, de
+#               que o GLOSH de run_hdbscan_enhanced_grid_search.py precisa,
+#               devolve o CondensedTree dessa biblioteca com três
+#               argumentos, assinatura que a 0.8.40 trocou
 #
 # run_hdbscan_grid_search_modal.py depende ainda do pacote modal.
 #------------------------------------------------------------------------------
@@ -112,6 +117,7 @@ select = [
 "src/models/supervised/grid_search.py" = ["E501"]
 "src/models/supervised/run_supervised_grid_search.py" = ["F403", "F405"]
 "src/models/unsupervised/run_dbscan_grid_search.py" = ["E501", "F841"]
+"src/models/unsupervised/run_hdbscan_enhanced_anomaly_degree_grid_search.py" = ["E501"]
 "src/models/unsupervised/run_hdbscan_enhanced_grid_search.py" = ["B905", "E501"]
 "src/models/unsupervised/run_hdbscan_grid_search.py" = ["E501", "F841"]
 "src/models/unsupervised/run_hdbscan_grid_search_modal.py" = ["E501", "F841"]

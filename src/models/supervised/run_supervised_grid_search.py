@@ -4,9 +4,11 @@ from pathlib import Path
 
 import psutil
 
-# grid_search importa o features.py de src/models/, um nível acima deste diretório
+# grid_search importa o features.py de src/models/, um nível acima deste diretório, onde
+# também fica o paths.py
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+import paths  # noqa: E402
 from grid_search import *  # noqa: E402
 
 if __name__ == "__main__":
@@ -39,10 +41,15 @@ if __name__ == "__main__":
 
     model_select = "xgb"  # modelo: "rf" ou "xgb"
     param_grid = {"rf": param_grid_rf, "xgb": param_grid_xgb}[model_select]
-    output_dir = f"results/supervised/{model_select}"  # onde salvar CSVs, um por modelo
+
+    # base desta execução: paths.LOCAL_FULL_PATH (todas as transações) ou
+    # paths.LOCAL_UNDERSAMPLED_PATH
+    folds = paths.LOCAL_FULL_PATH
+    # onde salvar CSVs, um por modelo, numa pasta própria de cada base
+    output_dir = folds.results_dir(paths.LOCAL_RESULTS_DIR, "supervised") / model_select
 
     df_folds, df_summary, _ = manual_grid_search(
-        folds_dir="data/processed/inner_folds",  # pasta com CSVs
+        folds_dir=folds.internal_folds_dir,  # pasta com CSVs
         param_grid=param_grid,  # grid de hiperparâmetros
         target="Class",  # nome da coluna alvo
         metric="auprc",  # métrica para escolher o melhor modelo
@@ -66,7 +73,7 @@ if __name__ == "__main__":
     print("Melhor parâmetro obtido no ciclo interno:", best_parameter_achieved)
 
     df_final_report = supervised_outer_evaluation(
-        outer_folds_dir="data/processed/outer_folds",
+        outer_folds_dir=folds.outer_folds_dir,
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
         model_select=model_select,
