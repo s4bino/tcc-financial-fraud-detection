@@ -12,6 +12,10 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
+# Folds com as legítimas subamostradas nas partições de treino
+data/undersampled/*
+!data/undersampled/.gitkeep
+
 # Formatos pesados de dados intermediários
 *.parquet
 *.feather

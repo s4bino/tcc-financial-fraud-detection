@@ -118,8 +118,8 @@ def test_metrics_stay_within_their_valid_range(result):
 def test_records_training_and_inference_times(result):
     df_folds, _, _ = result
 
-    assert (df_folds["train_time"] > 0).all()
-    assert (df_folds["test_time"] >= 0).all()
+    assert (df_folds["train_time_min"] > 0).all()
+    assert (df_folds["test_time_min"] >= 0).all()
 
 
 def test_writes_both_result_files(tmp_path, inner_folds_dir):

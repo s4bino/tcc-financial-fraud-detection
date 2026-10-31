@@ -27,23 +27,33 @@ e coloque em `data/raw/creditcard.csv`.
 ├── data/
 │   ├── raw/                                  # base original (não versionada)
 │   │   └── creditcard.csv
-│   └── processed/                            # artefatos gerados (não versionados)
-│       ├── outer_folds/                      # folds externos: treino/teste
-│       └── inner_folds/                      # folds internos: treino/validação
+│   ├── processed/                            # artefatos gerados (não versionados)
+│   │   ├── outer_folds/                      # folds externos: treino/teste
+│   │   └── inner_folds/                      # folds internos: treino/validação
+│   └── undersampled/                         # os mesmos folds, com as legítimas
+│       ├── outer_folds/                      #   subamostradas só no treino
+│       └── inner_folds/                      #   (não versionados)
 │
 ├── src/
 │   ├── preprocessing/
 │   │   ├── cross_validation.py               # geração de folds estratificados
-│   │   └── run_fold_generation.py            # entrada: constrói toda a árvore de folds
+│   │   ├── run_fold_generation.py            # entrada: constrói toda a árvore de folds
+│   │   ├── undersampling.py                  # subamostragem das legítimas no treino
+│   │   └── run_undersampled_fold_generation.py  # entrada: folds subamostrados
 │   │
 │   ├── models/
 │   │   ├── features.py                       # variáveis de entrada e padronização comuns aos modelos
+│   │   ├── metrics.py                        # grau de anomalia, GLOSH e limiar de alerta
+│   │   ├── disco.py                          # métrica de validação DISCO (docs/metrics/disco.md)
+│   │   ├── paths.py                          # caminhos dos folds (base completa e subamostrada)
 │   │   ├── supervised/
 │   │   │   ├── grid_search.py                # busca em grade (Random Forest / XGBoost)
 │   │   │   └── run_supervised_grid_search.py # entrada: modelos supervisionados
 │   │   └── unsupervised/
 │   │       ├── run_hdbscan_grid_search.py    # entrada: HDBSCAN (grid por DBCV + avaliação externa)
-│   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado
+│   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado, com o GLOSH
+│   │       ├── run_hdbscan_enhanced_pipeline.py     # versão modular, na base subamostrada e com seleção pelo DISCO
+│   │       ├── run_hdbscan_enhanced_anomaly_degree_grid_search.py  # aprimorado com o grau de anomalia
 │   │       ├── run_hdbscan_grid_search_modal.py     # HDBSCAN na infraestrutura da Modal
 │   │       └── run_dbscan_grid_search.py     # entrada: DBSCAN
 │   │
@@ -116,6 +126,22 @@ uv run python src/preprocessing/run_fold_generation.py
 Produz `data/processed/outer_folds/` (227.845 treino / 56.961 teste por fold) e
 `data/processed/inner_folds/` (182.276 treino / 45.569 validação), com metadados em JSON.
 
+**1.1. Folds subamostrados**, a partir dos folds do passo 1:
+
+```bash
+uv run python src/preprocessing/run_undersampled_fold_generation.py
+```
+
+Produz `data/undersampled/`, com os mesmos arquivos de `data/processed/`. Os
+treinos, externo e interno, mantêm todas as fraudes e uma amostra aleatória
+simples das legítimas, na fração que levaria a base inteira a 100.000 legítimas
+(0,3517): cerca de 80.000 legítimas e 394 fraudes no treino externo e 64.000 e
+315 no interno. A validação interna e o teste externo são cópias dos originais,
+na proporção real de fraudes (0,17%), de modo que os resultados seguem
+comparáveis fold a fold. O treino interno continua contido no treino externo, e
+os metadados registram os índices na base original, a semente de cada fold e o
+teste de Kolmogorov-Smirnov entre as legítimas mantidas e as removidas.
+
 **2. Grid search supervisionado** — Random Forest ou XGBoost, seleção por F1:
 
 ```bash
@@ -130,6 +156,10 @@ Resultados em `results/supervised/results_by_fold.csv` e `results_summary.csv`.
 ```bash
 python src/models/unsupervised/run_hdbscan_grid_search.py
 ```
+
+O pipeline modular `run_hdbscan_enhanced_pipeline.py` roda na base subamostrada e
+seleciona a configuração pelo DISCO, com o DBCV registrado no histórico. A métrica
+está documentada em [`docs/metrics/disco.md`](docs/metrics/disco.md).
 
 Requer GPU. As constantes `INTERNAL_FOLDS_DIR`, `OUTER_FOLDS_DIR` e `RESULTS_DIR`
 no bloco `__main__` apontam para o Google Drive, refletindo o ambiente Colab em que
@@ -201,7 +231,12 @@ A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
 | `preprocessing/test_stratified_folds.py` | folds externos: exclusividade, cobertura e estratificação |
 | `preprocessing/test_external_k_folds.py` | materialização dos folds externos e metadados |
 | `preprocessing/test_internal_k_folds.py` | folds internos e isolamento do teste externo |
+| `preprocessing/test_undersampling.py` | subamostragem: fraudes intactas, avaliação inalterada e aninhamento |
 | `models/supervised/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
+| `models/test_metrics.py` | grau de anomalia, GLOSH e limiar de alerta ponderado da base subamostrada |
+| `models/test_disco.py` | DISCO: equações e casos especiais do artigo, e valores do código oficial |
+| `models/test_pipeline_disco.py` | DISCO no pipeline modular: base, seleção, árvore por fold e retomada |
+| `models/test_paths.py` | caminhos das duas bases, leitura dos folds e do peso das legítimas, locais e no espelho do Drive |
 
 As fixtures constroem uma base sintética com a mesma estrutura de
 `creditcard.csv` — 31 colunas, `Amount` assimétrica, `V1`–`V28` com variâncias

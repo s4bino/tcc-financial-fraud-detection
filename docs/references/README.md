@@ -54,8 +54,8 @@ Atualmente as 58 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
-**Lidos mas ainda não incorporados:** `samariya2023` e `alcino2022` têm notas
-de leitura mas nenhuma entrada no `refbib.bib`.
+**Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022` e
+`dalpozzolo2015` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
 
 ### fraud-detection
 
@@ -131,6 +131,7 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 |---|:-:|---|
 | `moulavi2014` | ✓ | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. Origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
 | `thompson2024` | | Thompson. *Partition-Free Cluster Evaluation: Extending Cluster Validation and Cluster Extraction from Hierarchies*. Dissertação de mestrado, University of Alberta, 2024. Propõe o PFCE, candidato a substituir o DBCV na seleção do grid. |
+| `beer2025` | | Beer, Krieger, Weber, Ritzert, Assent & Plant. *Internal Evaluation of Density-Based Clusterings with Noise*. arXiv:2503.00127, 2025. Propõe o DISCO, índice interno que avalia também a qualidade da atribuição de ruído; código em https://github.com/pasiweber/DISCO. Critério de seleção do pipeline modular do HDBSCAN\* aprimorado, documentado em `docs/metrics/disco.md`. |
 
 ### outlier-detection
 
@@ -167,6 +168,12 @@ de leitura mas nenhuma entrada no `refbib.bib`.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `huang2015` | ✓ | Huang et al. *An empirical analysis of data preprocessing for machine learning-based software cost estimation*. 2015. |
+
+#### undersampling
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `dalpozzolo2015` | | Dal Pozzolo, Caelen, Johnson & Bontempi. *Calibrating Probability with Undersampling for Unbalanced Classification*. IEEE Symposium Series on Computational Intelligence (SSCI), 2015. Artigo de origem do dataset (p. 6) e base do limiar de alerta ponderado da base subamostrada. O PDF é a versão final dos autores, sem a numeração dos anais. |
 
 ### statistics
 

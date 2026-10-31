@@ -195,12 +195,12 @@ def manual_grid_search(
             # treino
             t0 = time.time()
             model.fit(X_train, y_train)
-            train_time = time.time() - t0
+            train_time_min = (time.time() - t0) / 60
 
             # teste
             t1 = time.time()
             preds = model.predict(X_val)
-            test_time = time.time() - t1
+            test_time_min = (time.time() - t1) / 60
             preds_proba = model.predict_proba(X_val)[:, 1]
 
             metrics_fold.append(
@@ -209,8 +209,8 @@ def manual_grid_search(
                     "fold": fold,
                     **params_dict,
                     **classification_metrics(y_val, preds, preds_proba),
-                    "train_time": train_time,
-                    "test_time": test_time,
+                    "train_time_min": train_time_min,
+                    "test_time_min": test_time_min,
                 }
             )
 
@@ -225,8 +225,8 @@ def manual_grid_search(
             "precision": np.mean([m["precision"] for m in metrics_fold]),
             "recall": np.mean([m["recall"] for m in metrics_fold]),
             "auprc": np.mean([m["auprc"] for m in metrics_fold]),
-            "train_time": np.mean([m["train_time"] for m in metrics_fold]),
-            "test_time": np.mean([m["test_time"] for m in metrics_fold]),
+            "train_time_min": np.mean([m["train_time_min"] for m in metrics_fold]),
+            "test_time_min": np.mean([m["test_time_min"] for m in metrics_fold]),
         }
 
         return metrics_fold, metrics_summary
@@ -344,7 +344,7 @@ def supervised_outer_evaluation(
 
     Retorno:
         pd.DataFrame com os hiperparâmetros, precisão, recall, F1, AUPRC, TP, FP, FN e tempos de
-        treino e de predição de cada fold, seguido da linha "Média".
+        treino e de predição, em minutos, de cada fold, seguido da linha "Média".
 
     Exemplo de uso:
         df_folds, _, _ = manual_grid_search(
@@ -394,20 +394,20 @@ def supervised_outer_evaluation(
 
         t0 = time.time()
         model.fit(X_train, y_train)
-        train_time = time.time() - t0
+        train_time_min = (time.time() - t0) / 60
 
         t1 = time.time()
         preds = model.predict(X_test)
         preds_proba = model.predict_proba(X_test)[:, 1]
-        predict_time = time.time() - t1
+        predict_time_min = (time.time() - t1) / 60
 
         final_metrics.append(
             {
                 "fold": fold,
                 **params,
                 **classification_metrics(y_test, preds, preds_proba),
-                "train_time": train_time,
-                "predict_time": predict_time,
+                "train_time_min": train_time_min,
+                "predict_time_min": predict_time_min,
             }
         )
 
@@ -423,8 +423,8 @@ def supervised_outer_evaluation(
         "TP",
         "FP",
         "FN",
-        "train_time",
-        "predict_time",
+        "train_time_min",
+        "predict_time_min",
     ]
     mean_metrics = df_final[mean_columns].mean().to_dict()
     mean_metrics["fold"] = "Média"

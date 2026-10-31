@@ -1,7 +1,9 @@
 import itertools
 import json
 import os
+import sys
 import time
+from pathlib import Path
 
 import dbcv
 import numpy as np
@@ -19,6 +21,12 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler, StandardScaler
+
+# paths.py fica em src/models/, um nível acima deste diretório. No Colab, sobe para /content
+# junto com o script, e o diretório do próprio script já o contém.
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+import paths  # noqa: E402
 
 
 def hdbscan_internal_grid_with_tracking(
@@ -126,7 +134,7 @@ def hdbscan_internal_grid_with_tracking(
                 min_cluster_size=min_cluster_size, min_samples=min_samples, prediction_data=True
             )
             model.fit(X_train_scaled)
-            train_time = time.time() - t0
+            train_time_min = (time.time() - t0) / 60
 
             labels = (
                 model.labels_.to_numpy() if hasattr(model.labels_, "to_numpy") else model.labels_
@@ -182,7 +190,7 @@ def hdbscan_internal_grid_with_tracking(
             # ==============================================================
             t1 = time.time()
             val_labels, val_probs = approximate_predict(model, X_val_scaled)
-            val_time = time.time() - t1
+            val_time_min = (time.time() - t1) / 60
 
             if hasattr(val_labels, "get"):
                 val_labels = val_labels.get()
@@ -216,8 +224,8 @@ def hdbscan_internal_grid_with_tracking(
                     "TP": tp,
                     "FP": fp,
                     "FN": fn,
-                    "train_time": train_time,
-                    "val_time": val_time,
+                    "train_time_min": train_time_min,
+                    "val_time_min": val_time_min,
                 }
             )
 
@@ -308,13 +316,13 @@ def hdbscan_outer_evaluation(
 
         t0 = time.time()
         model.fit(X_train_scaled)  # Treina com a versão escalonada
-        train_time = time.time() - t0
+        train_time_min = (time.time() - t0) / 60
 
         t1 = time.time()
         test_labels, test_probabilities = approximate_predict(
             model, X_test_scaled
         )  # Avalia na versão escalonada
-        predict_time = time.time() - t1
+        predict_time_min = (time.time() - t1) / 60
 
         if hasattr(test_labels, "get"):
             test_labels = test_labels.get()
@@ -344,8 +352,8 @@ def hdbscan_outer_evaluation(
                 "TP": tp,
                 "FP": fp,
                 "FN": fn,
-                "train_time": train_time,
-                "predict_time": predict_time,
+                "train_time_min": train_time_min,
+                "predict_time_min": predict_time_min,
             }
         )
 
@@ -377,10 +385,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    INTERNAL_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/internal_folds"
-    OUTER_FOLDS_DIR = "/content/drive/MyDrive/TCC - DADOS CV/folds_output"
-
-    RESULTS_DIR = "/content/drive/MyDrive/RESULTS"
+    # base desta execução: paths.FULL_PATH (todas as transações) ou paths.UNDERSAMPLED_PATH
+    FOLDS = paths.FULL_PATH
 
     param_grid_hdbscan = {
         "min_cluster_size": [5, 25, 50],
@@ -392,10 +398,10 @@ if __name__ == "__main__":
 
     print("=== ETAPA 1: Grid Search Interno (Treino + Tracking na Validação) ===")
     df_folds, df_summary, best_params_per_fold = hdbscan_internal_grid_with_tracking(
-        internal_folds_dir=INTERNAL_FOLDS_DIR,
+        internal_folds_dir=FOLDS.internal_folds_dir,
         param_grid=param_grid_hdbscan,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/grid_results_hdbscan",
+        output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "grid_results_hdbscan"),
         n_processes=n_cores_disponiveis,
         max_dbcv_sample_size=28000,
         resume=args.resume,
@@ -414,10 +420,10 @@ if __name__ == "__main__":
 
     print("\n=== ETAPA 2: Avaliação Externa (Verificando Fraudes com Labels Reais) ===")
     df_final_report = hdbscan_outer_evaluation(
-        outer_folds_dir=OUTER_FOLDS_DIR,
+        outer_folds_dir=FOLDS.outer_folds_dir,
         best_parameter_achieved=best_parameter_achieved,
         target="Class",
-        output_dir=f"{RESULTS_DIR}/final_reports_hdbscan",
+        output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "final_reports_hdbscan"),
     )
 
     print("\nRelatório Final (Outer Folds):")
