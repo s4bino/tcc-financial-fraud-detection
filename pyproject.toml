@@ -43,6 +43,7 @@ dependencies = [
 # Dependências de GPU, fora do uv.lock
 #
 # run_hdbscan_grid_search.py, run_hdbscan_enhanced_grid_search.py,
+# run_hdbscan_enhanced_pipeline.py,
 # run_hdbscan_enhanced_anomaly_degree_grid_search.py e
 # run_dbscan_grid_search.py usam cuML e dbcv, que exigem Linux com GPU NVIDIA
 # (CUDA 12). Os experimentos rodam no Google Colab, onde o ambiente é
@@ -124,3 +125,6 @@ select = [
 "src/models/unsupervised/run_hdbscan_grid_search_modal.py" = ["E501", "F841"]
 "src/preprocessing/run_fold_generation.py" = ["B015", "B018"]
 "tests/preprocessing/test_stratified_folds.py" = ["B905"]
+# Os imports de features e metrics vêm depois do ajuste do sys.path (E402), que
+# os demais scripts marcam com noqa e este, escrito sem comentários, libera aqui.
+"src/models/unsupervised/run_hdbscan_enhanced_pipeline.py" = ["E402"]

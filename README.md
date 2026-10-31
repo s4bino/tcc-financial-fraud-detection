@@ -52,6 +52,7 @@ e coloque em `data/raw/creditcard.csv`.
 │   │   └── unsupervised/
 │   │       ├── run_hdbscan_grid_search.py    # entrada: HDBSCAN (grid por DBCV + avaliação externa)
 │   │       ├── run_hdbscan_enhanced_grid_search.py  # entrada: HDBSCAN* aprimorado, com o GLOSH
+│   │       ├── run_hdbscan_enhanced_pipeline.py     # versão modular, na base subamostrada e com seleção pelo DISCO
 │   │       ├── run_hdbscan_enhanced_anomaly_degree_grid_search.py  # aprimorado com o grau de anomalia
 │   │       ├── run_hdbscan_grid_search_modal.py     # HDBSCAN na infraestrutura da Modal
 │   │       └── run_dbscan_grid_search.py     # entrada: DBSCAN
@@ -156,6 +157,10 @@ Resultados em `results/supervised/results_by_fold.csv` e `results_summary.csv`.
 python src/models/unsupervised/run_hdbscan_grid_search.py
 ```
 
+O pipeline modular `run_hdbscan_enhanced_pipeline.py` roda na base subamostrada e
+seleciona a configuração pelo DISCO, com o DBCV registrado no histórico. A métrica
+está documentada em [`docs/metrics/disco.md`](docs/metrics/disco.md).
+
 Requer GPU. As constantes `INTERNAL_FOLDS_DIR`, `OUTER_FOLDS_DIR` e `RESULTS_DIR`
 no bloco `__main__` apontam para o Google Drive, refletindo o ambiente Colab em que
 o experimento foi executado; ajuste-as para `data/processed/` e `results/unsupervised/`
@@ -230,6 +235,7 @@ A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
 | `models/supervised/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
 | `models/test_metrics.py` | grau de anomalia, GLOSH e limiar de alerta ponderado da base subamostrada |
 | `models/test_disco.py` | DISCO: equações e casos especiais do artigo, e valores do código oficial |
+| `models/test_pipeline_disco.py` | DISCO no pipeline modular: base, seleção, árvore por fold e retomada |
 | `models/test_paths.py` | caminhos das duas bases, leitura dos folds e do peso das legítimas, locais e no espelho do Drive |
 
 As fixtures constroem uma base sintética com a mesma estrutura de
