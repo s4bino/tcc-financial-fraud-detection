@@ -131,6 +131,7 @@ de status com essa informação e a seção onde a obra é citada.
 |---|:-:|---|
 | `moulavi2014` | ✓ | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. Origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
 | `thompson2024` | | Thompson. *Partition-Free Cluster Evaluation: Extending Cluster Validation and Cluster Extraction from Hierarchies*. Dissertação de mestrado, University of Alberta, 2024. Propõe o PFCE, candidato a substituir o DBCV na seleção do grid. |
+| `beer2025` | | Beer, Krieger, Weber, Ritzert, Assent & Plant. *Internal Evaluation of Density-Based Clusterings with Noise*. arXiv:2503.00127, 2025. Propõe o DISCO, índice interno que avalia também a qualidade da atribuição de ruído; código em https://github.com/pasiweber/DISCO. Critério de seleção do pipeline modular do HDBSCAN\* aprimorado, documentado em `docs/metrics/disco.md`. |
 
 ### outlier-detection
 

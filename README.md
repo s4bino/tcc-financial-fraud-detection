@@ -44,6 +44,7 @@ e coloque em `data/raw/creditcard.csv`.
 │   ├── models/
 │   │   ├── features.py                       # variáveis de entrada e padronização comuns aos modelos
 │   │   ├── metrics.py                        # grau de anomalia, GLOSH e limiar de alerta
+│   │   ├── disco.py                          # métrica de validação DISCO (docs/metrics/disco.md)
 │   │   ├── paths.py                          # caminhos dos folds (base completa e subamostrada)
 │   │   ├── supervised/
 │   │   │   ├── grid_search.py                # busca em grade (Random Forest / XGBoost)
@@ -228,6 +229,7 @@ A suíte cobre uma unidade por arquivo, espelhando a estrutura de `src/`:
 | `preprocessing/test_undersampling.py` | subamostragem: fraudes intactas, avaliação inalterada e aninhamento |
 | `models/supervised/test_manual_grid_search.py` | busca em grade, agregação por combinação e seleção |
 | `models/test_metrics.py` | grau de anomalia, GLOSH e limiar de alerta ponderado da base subamostrada |
+| `models/test_disco.py` | DISCO: equações e casos especiais do artigo, e valores do código oficial |
 | `models/test_paths.py` | caminhos das duas bases, leitura dos folds e do peso das legítimas, locais e no espelho do Drive |
 
 As fixtures constroem uma base sintética com a mesma estrutura de

@@ -33,7 +33,8 @@ dependencies = [
     "tqdm>=4.65",
     # Detecção de núcleos físicos (src/models/supervised/run_supervised_grid_search.py)
     "psutil>=5.9",
-    # Figuras e testes estatísticos da análise exploratória (src/analysis/)
+    # Figuras e testes estatísticos da análise exploratória (src/analysis/) e a
+    # árvore do DISCO (src/models/disco.py)
     "matplotlib>=3.8",
     "scipy>=1.11",
 ]
