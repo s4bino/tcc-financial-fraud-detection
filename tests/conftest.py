@@ -110,6 +110,8 @@ def inner_folds_dir(tmp_path, small_dataset) -> str:
 
         train.to_csv(folds_dir / f"fold_{fold}_train.csv", index=False)
         val.to_csv(folds_dir / f"fold_{fold}_val.csv", index=False)
+        # como na base completa: sem o bloco "undersampling", o peso das legítimas é 1
+        (folds_dir / f"fold_{fold}_internal_info.json").write_text("{}", encoding="utf-8")
 
     return str(folds_dir)
 
@@ -141,5 +143,6 @@ def outer_folds_dir(tmp_path, small_dataset) -> str:
         test.sample(frac=1, random_state=fold).to_csv(
             folds_dir / f"fold_{fold}_test.csv", index=False
         )
+        (folds_dir / f"fold_{fold}_info.json").write_text("{}", encoding="utf-8")
 
     return str(folds_dir)

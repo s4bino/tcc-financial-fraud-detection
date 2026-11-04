@@ -14,7 +14,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from grid_search import manual_grid_search
+import grid_search
+from grid_search import best_params_by_fold, manual_grid_search
 
 pytestmark = pytest.mark.slow
 
@@ -228,20 +229,82 @@ def test_is_reproducible_across_runs(tmp_path, inner_folds_dir):
 
 
 def test_an_empty_folds_directory_fails_instead_of_returning_empty_results(tmp_path):
-    """Caracteriza a limitação atual.
-
-    Sem nenhum fold, a função não emite um erro descritivo: o dicionário de
-    parâmetros só é criado dentro do laço de folds, e o resumo o referencia em
-    seguida. O teste registra o comportamento observado para que uma futura
-    mudança nessa área seja percebida.
-    """
     empty = tmp_path / "vazio"
     empty.mkdir()
 
-    with pytest.raises(NameError):
+    with pytest.raises(ValueError, match="Nenhum fold"):
         manual_grid_search(
             folds_dir=str(empty),
             param_grid=RF_GRID,
             output_dir=str(tmp_path / "resultados"),
             parallel=False,
         )
+
+
+def test_resume_skips_the_combinations_already_saved(tmp_path, inner_folds_dir, monkeypatch):
+    """Uma execução interrompida retoma do CSV e chega ao mesmo resultado da completa."""
+    common = dict(folds_dir=inner_folds_dir, param_grid=RF_GRID, parallel=False)
+    full_folds, full_summary, _ = manual_grid_search(**common, output_dir=str(tmp_path / "full"))
+
+    interrupted = tmp_path / "interrupted"
+    interrupted.mkdir()
+    full_folds[full_folds["combo_id"] == 0].to_csv(interrupted / "results_by_fold.csv", index=False)
+    fitted = []
+    original_build = grid_search.build_model
+    monkeypatch.setattr(
+        grid_search,
+        "build_model",
+        lambda *args, **kwargs: fitted.append(args[1]) or original_build(*args, **kwargs),
+    )
+
+    folds, summary, _ = manual_grid_search(**common, output_dir=str(interrupted), resume=True)
+
+    assert {params["n_estimators"] for params in fitted} == {RF_GRID["n_estimators"][1]}
+    assert len(folds) == len(full_folds)
+    for metric in METRIC_COLUMNS:
+        np.testing.assert_allclose(summary[metric], full_summary[metric])
+
+
+def test_saved_hyperparameters_keep_their_types_on_resume(tmp_path, inner_folds_dir):
+    """O CSV devolve None como NaN, e a retomada não pode levar isso ao modelo."""
+    grid = {"n_estimators": [5], "max_features": ["sqrt", 0.5], "class_weight": [None, "balanced"]}
+    common = dict(folds_dir=inner_folds_dir, param_grid=grid, parallel=False)
+    output_dir = str(tmp_path / "results")
+    manual_grid_search(**common, output_dir=output_dir)
+
+    folds, _, _ = manual_grid_search(**common, output_dir=output_dir, resume=True)
+
+    assert set(folds["max_features"]) == {"sqrt", 0.5}
+    chosen = [fold_best["params"] for fold_best in best_params_by_fold(folds, grid).values()]
+    assert all(params["class_weight"] in (None, "balanced") for params in chosen)
+
+
+def test_resume_refuses_results_of_another_grid(tmp_path, inner_folds_dir):
+    output_dir = str(tmp_path / "results")
+    manual_grid_search(
+        folds_dir=inner_folds_dir, param_grid=RF_GRID, output_dir=output_dir, parallel=False
+    )
+
+    with pytest.raises(ValueError, match="outra grade"):
+        manual_grid_search(
+            folds_dir=inner_folds_dir,
+            param_grid={"n_estimators": [7, 10], "min_samples_leaf": [1]},
+            output_dir=output_dir,
+            parallel=False,
+            resume=True,
+        )
+
+
+def test_a_new_run_without_resume_starts_from_scratch(tmp_path, inner_folds_dir):
+    output_dir = tmp_path / "results"
+    output_dir.mkdir()
+    pd.DataFrame([{"combo_id": 0, "fold": 1, "n_estimators": 999}]).to_csv(
+        output_dir / "results_by_fold.csv", index=False
+    )
+
+    folds, _, _ = manual_grid_search(
+        folds_dir=inner_folds_dir, param_grid=RF_GRID, output_dir=str(output_dir), parallel=False
+    )
+
+    assert 999 not in set(folds["n_estimators"])
+    assert len(folds) == 4

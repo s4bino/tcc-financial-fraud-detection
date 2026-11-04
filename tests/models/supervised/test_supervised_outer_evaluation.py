@@ -15,12 +15,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import grid_search
 from grid_search import (
     best_params_by_fold,
     build_model,
     clean_params,
     manual_grid_search,
     supervised_outer_evaluation,
+    training_weights,
 )
 
 METRIC_COLUMNS = ["auprc", "precision", "recall", "f1"]
@@ -48,16 +50,38 @@ def test_clean_params_keeps_categorical_values():
     }
 
 
-def test_xgboost_weights_the_frauds_by_the_class_ratio():
-    y_train = pd.Series([0] * 90 + [1] * 10)
-    model = build_model("xgb", {"n_estimators": 5}, y_train)
+def test_xgboost_restores_the_class_proportion_of_the_full_base():
+    """Com legítimas subamostradas, cada uma pesa pelas que representa, como no HDBSCAN*."""
+    model = build_model("xgb", {"n_estimators": 5}, legitimate_weight=2.84)
 
-    assert model.get_params()["scale_pos_weight"] == pytest.approx(9.0)
+    assert model.get_params()["scale_pos_weight"] == pytest.approx(1 / 2.84)
+
+
+def test_xgboost_is_not_reweighted_on_the_full_base():
+    model = build_model("xgb", {"n_estimators": 5})
+
+    assert model.get_params()["scale_pos_weight"] == pytest.approx(1.0)
+
+
+def test_random_forest_without_class_weight_restores_the_class_proportion():
+    """Cada legítima pesa pelas que representa, e cada fraude pesa 1, como no HDBSCAN*."""
+    weights = training_weights("rf", {"class_weight": None}, pd.Series([0, 1, 0]), 2.84)
+
+    np.testing.assert_allclose(weights, [2.84, 1.0, 2.84])
+
+
+@pytest.mark.parametrize(
+    "model_select, params",
+    [("rf", {"class_weight": "balanced_subsample"}), ("xgb", {"n_estimators": 5})],
+    ids=["classes já igualadas", "XGBoost, reponderado pelo scale_pos_weight"],
+)
+def test_other_models_are_not_reweighted_in_the_fit(model_select, params):
+    assert training_weights(model_select, params, pd.Series([0, 1, 0]), 2.84) is None
 
 
 def test_build_model_rejects_an_unknown_model():
     with pytest.raises(ValueError, match="não reconhecido"):
-        build_model("svm", {}, pd.Series([0, 1]))
+        build_model("svm", {})
 
 
 def test_best_params_by_fold_picks_the_best_combination_of_each_fold():
@@ -212,3 +236,44 @@ def test_runs_on_the_configuration_chosen_by_the_grid_search(
     assert best_params_per_fold[best_fold]["best_score"] == pytest.approx(df_folds["auprc"].max())
     for name, value in best_parameter_achieved.items():
         assert (fold_rows(report)[name] == value).all()
+
+
+@pytest.mark.slow
+def test_outer_resume_skips_the_folds_already_saved(tmp_path, outer_folds_dir, monkeypatch):
+    output_dir = tmp_path / "results"
+    common = dict(
+        outer_folds_dir=outer_folds_dir,
+        best_parameter_achieved=RF_PARAMS,
+        model_select="rf",
+        output_dir=str(output_dir),
+        n_jobs=1,
+    )
+    full = supervised_outer_evaluation(**common)
+    full[full["fold"] == 1].to_csv(output_dir / "rf_outer_final_report.csv", index=False)
+    fitted = []
+    original_build = grid_search.build_model
+    monkeypatch.setattr(
+        grid_search,
+        "build_model",
+        lambda *args, **kwargs: fitted.append(args) or original_build(*args, **kwargs),
+    )
+
+    resumed = supervised_outer_evaluation(**common, resume=True)
+
+    assert len(fitted) == 1
+    assert list(resumed["fold"]) == [1, 2, "Média"]
+    for metric in METRIC_COLUMNS:
+        np.testing.assert_allclose(resumed[metric].astype(float), full[metric].astype(float))
+
+
+@pytest.mark.slow
+def test_outer_resume_refuses_another_configuration(tmp_path, outer_folds_dir):
+    common = dict(
+        outer_folds_dir=outer_folds_dir, model_select="rf", output_dir=str(tmp_path), n_jobs=1
+    )
+    supervised_outer_evaluation(**common, best_parameter_achieved=RF_PARAMS)
+
+    with pytest.raises(ValueError, match="outra grade ou configuração"):
+        supervised_outer_evaluation(
+            **common, best_parameter_achieved={**RF_PARAMS, "n_estimators": 7}, resume=True
+        )

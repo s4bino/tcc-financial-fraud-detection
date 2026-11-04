@@ -160,11 +160,11 @@ CONFIG = PipelineConfig(
     ...
     disco_min_points=5,
     selection_metric="disco",
-    extra_validation_metrics=("dbcv",),
+    extra_validation_metrics=(),
 )
 ```
 
-O ciclo interno escolhe, em cada fold, a combinação de maior `disco_score`, e o DBCV fica registrado na coluna `dbcv_score`, sem papel na seleção. O DISCO usa o treino inteiro, enquanto o DBCV segue limitado a uma amostra de 28.000 pontos. A árvore é construída uma vez por fold e reaproveitada entre as combinações. Os resultados vão para `grid_results_hdbscan_glosh_disco_undersampled` e `final_reports_hdbscan_glosh_disco_undersampled`.
+O ciclo interno escolhe, em cada fold, a combinação de maior `disco_score`. O DBCV fica desligado e volta ao histórico, na coluna `dbcv_score` e sem papel na seleção, com `extra_validation_metrics=("dbcv",)`. O DISCO usa o treino inteiro, enquanto o DBCV é limitado a uma amostra de 28.000 pontos. A árvore é construída uma vez por fold e reaproveitada entre as combinações. Os resultados vão para `grid_results_hdbscan_glosh_disco_undersampled` e `final_reports_hdbscan_glosh_disco_undersampled`.
 
 O DBCV do pipeline converte qualquer erro em -1. O DISCO não faz isso: como está definido para qualquer partição, um erro indica um defeito e interrompe a execução. Uma partição só de ruído vale -1 pela própria definição.
 

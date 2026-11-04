@@ -1,5 +1,6 @@
 import itertools
 import os
+import threading
 import time
 
 import numpy as np
@@ -16,6 +17,7 @@ from sklearn.metrics import (
 from xgboost import XGBClassifier
 
 from features import build_preprocessor, engineer_features
+from metrics import read_legitimate_weight
 
 
 def clean_params(params):
@@ -37,29 +39,126 @@ def clean_params(params):
     return params
 
 
-def build_model(model_select, params, y_train, n_jobs=1):
+def comparable_value(value):
+    """
+    Normaliza um hiperparâmetro para comparar o lido de um CSV com o da grade.
+
+    O CSV devolve None como NaN, inteiros como float e números de colunas mistas como texto, de
+    modo que 0, 0.0 e "0" precisam virar o mesmo valor.
+    """
+    if value is None or (pd.api.types.is_scalar(value) and pd.isna(value)):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def saved_rows_of_this_grid(path, expected_params, key):
+    """
+    Lê as linhas gravadas por uma execução anterior, para retomá-la.
+
+    Objetivo:
+        Confere que cada linha gravada tem os hiperparâmetros esperados para a sua chave, a
+        posição na grade (combo_id) na busca em grade ou o fold no ciclo externo. Uma grade ou
+        uma configuração diferente faria a retomada misturar execuções, e por isso levanta erro.
+        Os hiperparâmetros das linhas devolvidas vêm de expected_params, com os tipos certos, e
+        só as métricas vêm do CSV, que perde os tipos das colunas mistas.
+
+    Parâmetros:
+        path (str): CSV gravado pela execução anterior.
+        expected_params (dict): {chave: hiperparâmetros esperados}.
+        key (str): coluna que identifica a linha, "combo_id" ou "fold".
+
+    Retorno:
+        list[dict] com as linhas gravadas, ou lista vazia se o arquivo não existe.
+    """
+    if not os.path.exists(path):
+        return []
+
+    saved = pd.read_csv(path)
+    saved = saved[saved[key].astype(str) != "Média"]
+    rows = []
+    for _, row in saved.iterrows():
+        identifier = int(row[key])
+        params = expected_params.get(identifier)
+        if params is None or any(
+            comparable_value(row[name]) != comparable_value(value) for name, value in params.items()
+        ):
+            raise ValueError(
+                f"{path} tem resultados de outra grade ou configuração em {key}={identifier}. "
+                "Arquive o arquivo ou rode sem resume."
+            )
+        rows.append(
+            {
+                name: identifier if name == key else params.get(name, row[name])
+                for name in saved.columns
+            }
+        )
+    return rows
+
+
+def build_model(model_select, params, legitimate_weight=1.0, n_jobs=1):
     """
     Instancia o RandomForestClassifier ("rf") ou o XGBClassifier ("xgb") com os hiperparâmetros
     dados e random_state fixo em 42.
 
-    O XGBoost recebe scale_pos_weight igual à razão entre transações legítimas e fraudes de
-    y_train, que compensa o desbalanceamento das classes.
+    O XGBoost recebe scale_pos_weight igual a 1 / legitimate_weight, o mesmo peso das legítimas
+    que o HDBSCAN* aprimorado usa no limiar de alerta (read_legitimate_weight). Pesar as fraudes
+    por esse inverso equivale a pesar cada legítima pelo número de legítimas do treino original
+    que ela representa, de modo que o treino volta à proporção de classes de antes da
+    subamostragem, a mesma da validação e do teste. Na base completa, o peso é 1 e o treino não
+    é reponderado. Nos folds internos subamostrados, essa escolha deu F1 médio de 0,881 na
+    validação, contra 0,836 com scale_pos_weight igual à razão entre legítimas e fraudes do
+    treino subamostrado, que superestima a probabilidade de fraude no limiar de 0,5.
     """
     if model_select == "rf":
         return RandomForestClassifier(**params, random_state=42, n_jobs=n_jobs)
 
     if model_select == "xgb":
-        scale_weight = (len(y_train) - y_train.sum()) / y_train.sum()
         return XGBClassifier(
             **params,
             objective="binary:logistic",
             eval_metric="logloss",
             random_state=42,
-            scale_pos_weight=scale_weight,
+            scale_pos_weight=1.0 / legitimate_weight,
             n_jobs=n_jobs,
         )
 
     raise ValueError(f"Modelo '{model_select}' não reconhecido! Escolha entre 'rf' e 'xgb'.")
+
+
+def training_weights(model_select, params, y_train, legitimate_weight):
+    """
+    Peso de cada transação do treino no fit do modelo.
+
+    Objetivo:
+        Só o Random Forest sem class_weight é reponderado: cada legítima pesa legitimate_weight,
+        o número de legítimas do treino original que ela representa (read_legitimate_weight),
+        e cada fraude pesa 1. O treino volta à proporção de classes de antes da subamostragem,
+        a mesma da validação e do teste, como o scale_pos_weight faz no XGBoost (build_model) e
+        o peso das legítimas faz no limiar de alerta do HDBSCAN* aprimorado. Com
+        class_weight="balanced_subsample", as classes já são igualadas em cada amostra, e o
+        peso das legítimas desfaria esse equilíbrio, já que o scikit-learn multiplica os dois.
+        Na base completa, o peso é 1 e nada muda.
+
+    Parâmetros:
+        model_select (str): "rf" ou "xgb".
+        params (dict): hiperparâmetros do modelo, já tratados por clean_params.
+        y_train (pd.Series): rótulos do treino, 0 para legítima e 1 para fraude.
+        legitimate_weight (float): peso de cada legítima, de read_legitimate_weight.
+
+    Retorno:
+        np.ndarray com o peso de cada transação, na ordem de y_train, ou None quando o modelo
+        não é reponderado.
+
+    Exemplo de uso:
+        training_weights("rf", {"class_weight": None}, pd.Series([0, 0, 1]), 2.84)
+        # array([2.84, 2.84, 1.  ])
+    """
+    if model_select == "rf" and params.get("class_weight") is None:
+        return np.where(y_train == 0, legitimate_weight, 1.0)
+    return None
 
 
 def classification_metrics(y_true, preds, preds_proba):
@@ -89,6 +188,7 @@ def manual_grid_search(
     parallel=False,
     n_jobs=-1,
     model_select: str = "rf",
+    resume=False,
 ):
     """
     Realiza um grid search manual usando folds internos e retorna métricas por fold e médias por combinação.
@@ -115,6 +215,10 @@ def manual_grid_search(
         parallel (bool): Se True, executa combinações em paralelo.
         n_jobs (int): Número de jobs para paralelização (-1 = todos).
         model_select (str): Modelo a ser usado: "rf" para RandomForest, "xgb" para XGBoost.
+        resume (bool): Se True, retoma o results_by_fold.csv gravado em output_dir e pula as
+            combinações já avaliadas. Se False, começa do zero. O arquivo é regravado ao fim de
+            cada combinação, de modo que uma execução interrompida perde só as combinações em
+            andamento.
 
     Retorno:
         df_folds (pd.DataFrame): Métricas detalhadas por fold e combinação.
@@ -147,6 +251,8 @@ def manual_grid_search(
     folds = sorted(
         {int(f.split("_")[1]) for f in os.listdir(folds_dir) if f.endswith("_train.csv")}
     )
+    if not folds:
+        raise ValueError(f"Nenhum fold_k_train.csv em {folds_dir}")
     print(f"Folds encontrados: {folds}")
 
     # --- 2) criar todas as combinações de hiperparâmetros ---
@@ -157,6 +263,30 @@ def manual_grid_search(
         all_combinations, columns=param_names
     )  # primeiro montou a combinação de grid depois caminhou sobre ela
     print(f"Total de combinações: {len(df_param_combinations)}")
+
+    # --- 2.1) retomada: combinações gravadas por uma execução anterior ---
+    folds_path = os.path.join(output_dir, "results_by_fold.csv")
+    grid_params = {
+        combo_id: clean_params(combo.to_dict())
+        for combo_id, combo in df_param_combinations.iterrows()
+    }
+    if resume:
+        saved_rows = saved_rows_of_this_grid(folds_path, grid_params, "combo_id")
+    else:
+        saved_rows = []
+        if os.path.exists(folds_path):
+            os.remove(folds_path)
+    completed = {row["combo_id"] for row in saved_rows}
+    pending = df_param_combinations.drop(index=list(completed))
+    print(f"Combinações já gravadas: {len(completed)} | pendentes: {len(pending)}")
+    save_lock = threading.Lock()
+
+    def save_combo(metrics_fold):
+        with save_lock:
+            saved_rows.extend(metrics_fold)
+            pd.DataFrame(saved_rows).sort_values(["combo_id", "fold"]).to_csv(
+                folds_path, index=False
+            )
 
     # --- função que avalia uma combinação ---
     def evaluate_combo(combo_id, combo, model_select):
@@ -186,7 +316,10 @@ def manual_grid_search(
 
             # ---------------------------------------------------------------------------------
 
-            model = build_model(model_select, params_dict, y_train)
+            weight = read_legitimate_weight(
+                os.path.join(folds_dir, f"fold_{fold}_internal_info.json")
+            )
+            model = build_model(model_select, params_dict, weight)
 
             print(f"Evaluando combo_id {combo_id} no fold {fold}...")
 
@@ -194,7 +327,11 @@ def manual_grid_search(
 
             # treino
             t0 = time.time()
-            model.fit(X_train, y_train)
+            model.fit(
+                X_train,
+                y_train,
+                sample_weight=training_weights(model_select, params_dict, y_train, weight),
+            )
             train_time_min = (time.time() - t0) / 60
 
             # teste
@@ -217,43 +354,39 @@ def manual_grid_search(
             # Limpeza final de memória do loop
             del X_train, y_train, X_val, y_val, model
 
-        # médias por combinação
-        metrics_summary = {
-            "combo_id": combo_id,
-            **params_dict,
-            "f1": np.mean([m["f1"] for m in metrics_fold]),
-            "precision": np.mean([m["precision"] for m in metrics_fold]),
-            "recall": np.mean([m["recall"] for m in metrics_fold]),
-            "auprc": np.mean([m["auprc"] for m in metrics_fold]),
-            "train_time_min": np.mean([m["train_time_min"] for m in metrics_fold]),
-            "test_time_min": np.mean([m["test_time_min"] for m in metrics_fold]),
-        }
-
-        return metrics_fold, metrics_summary
+        save_combo(metrics_fold)
+        mean_auprc = np.mean([m["auprc"] for m in metrics_fold])
+        mean_f1 = np.mean([m["f1"] for m in metrics_fold])
+        print(f"Combo {combo_id} | AUPRC={mean_auprc:.4f} | F1={mean_f1:.4f}", flush=True)
 
     # --- 3) executar combinações ---
     if parallel:
-        results = Parallel(n_jobs=n_jobs, verbose=10, backend="threading")(
+        Parallel(n_jobs=n_jobs, verbose=10, backend="threading")(
             delayed(evaluate_combo)(combo_id, combo, model_select)
-            for combo_id, combo in df_param_combinations.iterrows()
+            for combo_id, combo in pending.iterrows()
         )
     else:
-        results = [
+        for combo_id, combo in pending.iterrows():
             evaluate_combo(combo_id, combo, model_select)
-            for combo_id, combo in df_param_combinations.iterrows()
-        ]
 
     print("Grid search concluído.")
 
-    # separar fold-wise e summary
-    rows_folds = [m for combo_metrics, _ in results for m in combo_metrics]
-    rows_summary = [summary for _, summary in results]
-
-    df_folds = pd.DataFrame(rows_folds)
-    df_summary = pd.DataFrame(rows_summary)
+    # métricas por fold, as gravadas antes e as desta execução, e as médias por combinação
+    df_folds = pd.DataFrame(saved_rows).sort_values(["combo_id", "fold"]).reset_index(drop=True)
+    summary_columns = ["f1", "precision", "recall", "auprc", "train_time_min", "test_time_min"]
+    df_summary = pd.DataFrame(
+        [
+            {
+                "combo_id": combo_id,
+                **grid_params[combo_id],
+                **combo_rows[summary_columns].mean().to_dict(),
+            }
+            for combo_id, combo_rows in df_folds.groupby("combo_id")
+        ]
+    )
 
     # --- salvar CSVs ---
-    df_folds.to_csv(os.path.join(output_dir, "results_by_fold.csv"), index=False)
+    df_folds.to_csv(folds_path, index=False)
     df_summary.to_csv(os.path.join(output_dir, "results_summary.csv"), index=False)
     print("\nResultados salvos em:")
     print(os.path.join(output_dir, "results_by_fold.csv"))
@@ -316,6 +449,7 @@ def supervised_outer_evaluation(
     model_select="rf",
     output_dir="results/supervised",
     n_jobs=-1,
+    resume=False,
 ):
     """
     Executa o ciclo externo da validação cruzada aninhada para o Random Forest ou o XGBoost.
@@ -341,6 +475,8 @@ def supervised_outer_evaluation(
         model_select (str): "rf" para RandomForest, "xgb" para XGBoost.
         output_dir (str): pasta do relatório final.
         n_jobs (int): número de núcleos usados no treino de cada modelo (-1 = todos).
+        resume (bool): se True, retoma o relatório gravado em output_dir e pula os folds já
+            avaliados com a mesma configuração. O relatório é regravado ao fim de cada fold.
 
     Retorno:
         pd.DataFrame com os hiperparâmetros, precisão, recall, F1, AUPRC, TP, FP, FN e tempos de
@@ -365,7 +501,7 @@ def supervised_outer_evaluation(
         print(report[report["fold"] == "Média"][["precision", "recall", "f1", "auprc"]])
     """
     os.makedirs(output_dir, exist_ok=True)
-    final_metrics = []
+    report_path = os.path.join(output_dir, f"{model_select}_outer_final_report.csv")
 
     print(f"\n--- Iniciando Avaliação Externa (Outer Folds) do modelo {model_select} ---")
 
@@ -375,7 +511,17 @@ def supervised_outer_evaluation(
 
     params = best_parameter_achieved
 
+    final_metrics = (
+        saved_rows_of_this_grid(report_path, {fold: params for fold in folds}, "fold")
+        if resume
+        else []
+    )
+    completed = {row["fold"] for row in final_metrics}
+
     for fold in folds:
+        if fold in completed:
+            print(f"Fold Externo {fold} já gravado, pulado")
+            continue
         print(f"Avaliando Fold Externo {fold} | {params}")
 
         df_train = pd.read_csv(os.path.join(outer_folds_dir, f"fold_{fold}_train.csv"))
@@ -390,10 +536,15 @@ def supervised_outer_evaluation(
 
         del df_train, df_test
 
-        model = build_model(model_select, params, y_train, n_jobs=n_jobs)
+        weight = read_legitimate_weight(os.path.join(outer_folds_dir, f"fold_{fold}_info.json"))
+        model = build_model(model_select, params, weight, n_jobs=n_jobs)
 
         t0 = time.time()
-        model.fit(X_train, y_train)
+        model.fit(
+            X_train,
+            y_train,
+            sample_weight=training_weights(model_select, params, y_train, weight),
+        )
         train_time_min = (time.time() - t0) / 60
 
         t1 = time.time()
@@ -412,8 +563,9 @@ def supervised_outer_evaluation(
         )
 
         del X_train, y_train, X_test, y_test, model
+        pd.DataFrame(final_metrics).sort_values("fold").to_csv(report_path, index=False)
 
-    df_final = pd.DataFrame(final_metrics)
+    df_final = pd.DataFrame(final_metrics).sort_values("fold").reset_index(drop=True)
     # A média cobre só as métricas e os tempos, já que os hiperparâmetros podem variar por fold
     mean_columns = [
         "precision",
@@ -430,7 +582,6 @@ def supervised_outer_evaluation(
     mean_metrics["fold"] = "Média"
     df_final = pd.concat([df_final, pd.DataFrame([mean_metrics])], ignore_index=True)
 
-    report_path = os.path.join(output_dir, f"{model_select}_outer_final_report.csv")
     df_final.to_csv(report_path, index=False)
     print(f"\nResultados preditivos finais reportados em: {report_path}")
 
