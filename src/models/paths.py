@@ -6,8 +6,8 @@ subamostrada, com as legítimas reduzidas só nas partições de treino
 destes conjuntos de caminhos às funções que iniciam o pipeline. Os resultados de cada base vão
 para pastas próprias, para que o --resume de uma não leia os da outra como concluídos.
 
-No Colab, este arquivo sobe para /content junto com o script, o features.py, o metrics.py e o
-disco.py.
+No Colab, este arquivo sobe para /content junto com o script, o features.py e o metrics.py, mais o
+disco.py no HDBSCAN* e o grid_search.py nos supervisionados.
 """
 
 from dataclasses import dataclass
@@ -47,7 +47,8 @@ class FoldPaths:
         return Path(root) / f"{name}{self.results_suffix}"
 
 
-# Google Drive montado no Colab, onde rodam os modelos não supervisionados
+# Google Drive montado no Colab, onde rodam os modelos não supervisionados e, com --drive, os
+# supervisionados
 DRIVE_DIR = Path("/content/drive/MyDrive")
 DRIVE_DATA_DIR = DRIVE_DIR / "TCC - DADOS CV"
 RESULTS_DIR = DRIVE_DIR / "RESULTS"
@@ -63,7 +64,7 @@ UNDERSAMPLED_PATH = FoldPaths(
     results_suffix="_undersampled",
 )
 
-# Repositório local, relativo à raiz, onde rodam os modelos supervisionados
+# Repositório local, relativo à raiz, onde rodam os modelos supervisionados sem --drive
 LOCAL_RESULTS_DIR = Path("results")
 
 LOCAL_FULL_PATH = FoldPaths(

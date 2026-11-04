@@ -1,17 +1,28 @@
+import argparse
 import os
 import sys
 from pathlib import Path
 
 import psutil
 
-# grid_search importa o features.py de src/models/, um nível acima deste diretório, onde
-# também fica o paths.py
+# grid_search importa o features.py e o metrics.py de src/models/, um nível acima deste
+# diretório, onde também fica o paths.py
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import paths  # noqa: E402
 from grid_search import *  # noqa: E402
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Busca em grade dos modelos supervisionados.")
+    parser.add_argument("--model", choices=["rf", "xgb"], required=True, help="modelo a executar")
+    parser.add_argument(
+        "--resume", action="store_true", help="retoma os CSVs gravados e pula o que já foi feito"
+    )
+    parser.add_argument(
+        "--drive", action="store_true", help="lê os folds e grava os resultados no Drive (Colab)"
+    )
+    args = parser.parse_args()
+
     # Detectando núcleos da máquina
     num_cores = os.cpu_count()
     num_physical = psutil.cpu_count(logical=False)
@@ -23,7 +34,7 @@ if __name__ == "__main__":
     param_grid_rf = {
         "n_estimators": [100, 200, 300],
         "max_features": ["sqrt", 0.5, 0.7],
-        "class_weight": [None, "balanced", "balanced_subsample"],
+        "class_weight": [None, "balanced_subsample"],
         "max_samples": [0.1, 0.2, None],
         "min_samples_leaf": [1, 2, 3],
     }
@@ -39,14 +50,15 @@ if __name__ == "__main__":
 
     # ------------------------------------------------------
 
-    model_select = "xgb"  # modelo: "rf" ou "xgb"
+    model_select = args.model
     param_grid = {"rf": param_grid_rf, "xgb": param_grid_xgb}[model_select]
 
-    # base desta execução: paths.LOCAL_FULL_PATH (todas as transações) ou
-    # paths.LOCAL_UNDERSAMPLED_PATH
-    folds = paths.LOCAL_FULL_PATH
+    # base desta execução: a completa (FULL_PATH) ou a subamostrada (UNDERSAMPLED_PATH), no
+    # repositório local ou no Drive montado no Colab
+    folds = paths.UNDERSAMPLED_PATH if args.drive else paths.LOCAL_UNDERSAMPLED_PATH
+    results_root = paths.RESULTS_DIR if args.drive else paths.LOCAL_RESULTS_DIR
     # onde salvar CSVs, um por modelo, numa pasta própria de cada base
-    output_dir = folds.results_dir(paths.LOCAL_RESULTS_DIR, "supervised") / model_select
+    output_dir = folds.results_dir(results_root, "supervised") / model_select
 
     df_folds, df_summary, _ = manual_grid_search(
         folds_dir=folds.internal_folds_dir,  # pasta com CSVs
@@ -55,8 +67,9 @@ if __name__ == "__main__":
         metric="auprc",  # métrica para escolher o melhor modelo
         output_dir=output_dir,
         parallel=True,  # True para paralelizar
-        n_jobs=6,  # -1 = usar todos os núcleos
+        n_jobs=num_physical,  # uma combinação por núcleo físico
         model_select=model_select,
+        resume=args.resume,
     )
 
     print(df_summary.head())  # resumo por combinação
@@ -78,6 +91,7 @@ if __name__ == "__main__":
         target="Class",
         model_select=model_select,
         output_dir=output_dir,
+        resume=args.resume,
     )
 
     print("\nRelatório Final (Outer Folds):")
