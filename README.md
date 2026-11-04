@@ -60,7 +60,8 @@ e coloque em `data/raw/creditcard.csv`.
 │   └── utils/                                # vazia — reservada para utilitários
 │
 ├── results/
-│   ├── supervised/                           # saída de run_supervised_grid_search.py
+│   ├── supervised/                           # saída de run_supervised_grid_search.py na base completa
+│   ├── supervised_undersampled/              # saída de run_supervised_grid_search.py na base subamostrada
 │   └── unsupervised/                         # saída de run_hdbscan_grid_search.py
 │       ├── hdbscan_grid_best_summary.csv
 │       └── hdbscan_grid_results_by_fold.csv
@@ -142,14 +143,26 @@ comparáveis fold a fold. O treino interno continua contido no treino externo, e
 os metadados registram os índices na base original, a semente de cada fold e o
 teste de Kolmogorov-Smirnov entre as legítimas mantidas e as removidas.
 
-**2. Grid search supervisionado** — Random Forest ou XGBoost, seleção por F1:
+**2. Grid search supervisionado** — Random Forest ou XGBoost, seleção pela AUPRC:
 
 ```bash
-uv run python src/models/supervised/run_supervised_grid_search.py
+uv run python src/models/supervised/run_supervised_grid_search.py --model rf
 ```
 
-O modelo (`"rf"` ou `"xgb"`) e a grade são definidos no bloco `__main__`.
-Resultados em `results/supervised/results_by_fold.csv` e `results_summary.csv`.
+`--model` escolhe o modelo (`rf` ou `xgb`), e a grade fica no bloco `__main__`. O
+script roda na base subamostrada e grava em `results/supervised_undersampled/<modelo>/`
+as métricas por fold e combinação (`results_by_fold.csv`), as médias por combinação
+(`results_summary.csv`) e o relatório do ciclo externo (`<modelo>_outer_final_report.csv`).
+Com `--drive`, lê os folds e grava os resultados no Google Drive montado no Colab.
+Com `--resume`, retoma esses CSVs, regravados ao fim de cada combinação e de cada
+fold externo, e pula o que já foi avaliado. Resultados de outra grade interrompem a
+execução.
+
+No treino, cada legítima pesa o número de legítimas do treino original que ela
+representa, o mesmo peso do limiar de alerta do HDBSCAN\* aprimorado, e o treino
+volta à proporção de classes da validação e do teste. O XGBoost recebe esse peso
+pelo `scale_pos_weight`, e o Random Forest sem `class_weight`, pelo peso de cada
+transação. Na base completa, o peso é 1.
 
 **3. HDBSCAN** — grid interno otimizado por DBCV e avaliação nos folds externos:
 
@@ -158,8 +171,9 @@ python src/models/unsupervised/run_hdbscan_grid_search.py
 ```
 
 O pipeline modular `run_hdbscan_enhanced_pipeline.py` roda na base subamostrada e
-seleciona a configuração pelo DISCO, com o DBCV registrado no histórico. A métrica
-está documentada em [`docs/metrics/disco.md`](docs/metrics/disco.md).
+seleciona a configuração pelo DISCO. O DBCV entra no histórico quando incluído em
+`extra_validation_metrics`. A métrica está documentada em
+[`docs/metrics/disco.md`](docs/metrics/disco.md).
 
 Requer GPU. As constantes `INTERNAL_FOLDS_DIR`, `OUTER_FOLDS_DIR` e `RESULTS_DIR`
 no bloco `__main__` apontam para o Google Drive, refletindo o ambiente Colab em que
