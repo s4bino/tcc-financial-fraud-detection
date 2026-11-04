@@ -4,6 +4,7 @@ O pipeline importa o cuML e o dbcv, que só existem na VM com GPU. Os testes os 
 módulos vazios: nenhum deles agrupa os dados, só conferem o caminho da métrica até a seleção.
 """
 
+import dataclasses
 import importlib.util
 import sys
 import types
@@ -60,16 +61,17 @@ def test_config_runs_on_the_undersampled_base(pipeline):
     assert pipeline.CONFIG.report_output_dir.name.endswith("_undersampled")
 
 
-def test_config_selects_by_disco_and_keeps_dbcv_in_the_history(pipeline):
-    assert pipeline.validation_metric_names(pipeline.CONFIG) == ("disco", "dbcv")
+def test_config_selects_only_by_disco(pipeline):
+    assert pipeline.validation_metric_names(pipeline.CONFIG) == ("disco",)
     assert pipeline.selection_column(pipeline.CONFIG) == "disco_score"
     pipeline.validate_config(pipeline.CONFIG)
 
 
-def test_validation_scores_have_both_metrics(pipeline, partition):
+def test_dbcv_is_plugged_in_by_the_config(pipeline, partition):
     X, labels = partition
+    config = dataclasses.replace(pipeline.CONFIG, extra_validation_metrics=("dbcv",))
 
-    scores = pipeline.compute_validation_scores(X, labels, pipeline.CONFIG)
+    scores = pipeline.compute_validation_scores(X, labels, config)
 
     assert scores["dbcv_score"] == FAKE_DBCV_SCORE
     assert scores["disco_score"] == pytest.approx(disco_score(X, labels))

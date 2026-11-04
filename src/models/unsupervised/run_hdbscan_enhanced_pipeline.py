@@ -2,9 +2,10 @@
 
 Segue a lógica de run_hdbscan_enhanced_grid_search.py, na base subamostrada e com o DISCO como
 métrica de seleção. O ciclo interno escolhe a configuração de cada fold pela métrica de validação,
-e o ciclo externo mede a detecção de fraudes com o escore de anomalia configurado. O DBCV continua
-registrado no histórico, sem papel na seleção. A origem de cada trecho nos notebooks do Kaggle está
-registrada nos comentários de run_hdbscan_enhanced_grid_search.py.
+e o ciclo externo mede a detecção de fraudes com o escore de anomalia configurado. O DBCV entra
+no histórico, sem papel na seleção, quando incluído em extra_validation_metrics. A origem de cada
+trecho nos notebooks do Kaggle está registrada nos comentários de
+run_hdbscan_enhanced_grid_search.py.
 """
 
 import argparse
@@ -117,15 +118,15 @@ CONFIG = PipelineConfig(
     grid_output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "grid_results_hdbscan_glosh_disco"),
     report_output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "final_reports_hdbscan_glosh_disco"),
     target="Class",
-    param_grid={"min_cluster_size": [50], "min_samples": [100, 150, 200, 250, 300, 350, 400]},
+    param_grid={"min_cluster_size": [50], "min_samples": [200, 225, 250, 275, 300, 325, 350]},
     n_folds=5,
-    alert_rate=0.0006,
+    alert_rate=0.0008,
     random_state=42,
     dbcv_max_sample_size=28_000,
     n_processes=os.cpu_count() or 1,
     disco_min_points=5,
     selection_metric="disco",
-    extra_validation_metrics=("dbcv",),
+    extra_validation_metrics=(),
     anomaly_score="glosh",
     extra_anomaly_scores=(),
 )
