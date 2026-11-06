@@ -24,6 +24,7 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
 | `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
 | `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
+| `01-theoretical-background/mahalanobis-distance.md` | estudo da distância de Mahalanobis, ainda sem seção no `main.tex` |
 | `01-theoretical-background/evaluation-metrics.md` | 3.4 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
@@ -54,8 +55,9 @@ Atualmente as 58 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
-**Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022` e
-`dalpozzolo2015` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
+**Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022`,
+`dalpozzolo2015`, `ghorbani2019`, `demaesschalck2000`, `todeschini2013`,
+`evans2001` e `xie2024` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
 
 ### fraud-detection
 
@@ -70,6 +72,7 @@ de status com essa informação e a seção onde a obra é citada.
 | `dalpozzolo2018` | ✓ | Dal Pozzolo, Boracchi, Caelen, Alippi & Bontempi. *Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy*. IEEE Transactions on Neural Networks and Learning Systems, 2018. |
 | `santos2025` | | Santos, Bueno dos Santos & Toma. *Detecção de transações fraudulentas com cartão de crédito: uma abordagem comparativa baseada em aprendizado de máquina*. Revista Foco, 2025. |
 | `alcino2022` | | Alcino. *Modelos de classificação em fraudes financeiras: comparação de desempenho em casos de crime de smurfing*. Dissertação, UFLA, 2022. |
+| `xie2024` | | Xie & Huang. *A Credit Card Fraud Detection Method Based on Mahalanobis Distance Hybrid Sampling and Random Forest Algorithm*. IEEE Access, v. 12, p. 162788 a 162798, 2024. Usa a mesma base de cartões, mas reamostra antes de dividir treino e teste, e as métricas iguais a 1 não servem de comparação. |
 
 ### machine-learning-foundations
 
@@ -140,6 +143,16 @@ de status com essa informação e a seção onde a obra é citada.
 | `samariya2023` | | Samariya. *A Comprehensive Survey of Anomaly Detection Algorithms*. 2023. |
 | `boukerche2020` | | Boukerche, Zheng & Alfandi. *Outlier Detection: Methods, Models, and Classification*. ACM Computing Surveys, 2020. |
 | `ramaswamy2000` | ✓ | Ramaswamy, Rastogi & Shim. *Efficient Algorithms for Mining Outliers from Large Data Sets*. ACM SIGMOD, 2000. Origem do escore de anomalia pela distância ao k-ésimo vizinho. |
+
+#### mahalanobis-distance
+
+| Chave | bib | Referência |
+|---|:-:|---|
+| `ghorbani2019` | | Ghorbani. *Mahalanobis Distance and Its Application for Detecting Multivariate Outliers*. Facta Universitatis, Series: Mathematics and Informatics, v. 34, n. 3, p. 583 a 595, 2019. |
+| `demaesschalck2000` | | De Maesschalck, Jouan-Rimbaud & Massart. *The Mahalanobis distance*. Chemometrics and Intelligent Laboratory Systems, v. 50, p. 1 a 18, 2000. Tutorial sobre as distâncias euclidiana e de Mahalanobis no espaço original e no dos componentes principais. |
+| `todeschini2013` | | Todeschini, Ballabio, Consonni, Sahigara & Filzmoser. *Locally centred Mahalanobis distance: A new distance measure with salient features towards outlier detection*. Analytica Chimica Acta, v. 787, p. 1 a 9, 2013. |
+| `evans2001` | | Evans. *Statistical aspects of the detection of fraud*. In: Lock, Wells & Farthing (org.). *Fraud and Misconduct in Biomedical Research*. 3. ed. BMJ Books, 2001, cap. 14, p. 186 a 206. O PDF é o livro inteiro: a numeração do PDF coincide com a do livro até a p. 198 e fica uma página atrás depois dela. |
+| `laca` | | Laca, Rubiano, Sulit, Magon, Concepcion & Bandala. *Runtime Optimization of Mahalanobis Distance for Anomalies in Credit Card Fraud Detection Dataset*. Sem PDF: o `.txt` traz o resumo e o começo da introdução. Ano e veículo não localizados. Renomear com o ano quando o artigo for obtido. |
 
 ### preprocessing
 
@@ -233,7 +246,8 @@ Figuras de trabalho, geradas durante a análise: `auc-variation.png` e
 
 ## Versionamento
 
-Os PDFs (`articles/`) somam cerca de 48 MB e são material de editoras, cuja
-redistribuição em geral não é permitida — por isso não são versionados. O que
+Os PDFs (`articles/`) somam cerca de 91 MB e são material de editoras, cuja
+redistribuição em geral não é permitida, por isso não são versionados. O mesmo
+vale para os resumos copiados em `.txt` quando o PDF não está disponível. O que
 vai para o repositório são as notas de `citations/`, este índice e o
 `refbib.bib`. A configuração local do Obsidian (`.obsidian/`) também fica fora.
