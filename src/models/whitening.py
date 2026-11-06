@@ -13,10 +13,14 @@ from sklearn.covariance import MinCovDet
 from sklearn.utils.validation import check_is_fitted
 
 COVARIANCE_ESTIMATORS = ("empirical", "mcd")
-# Valores do diagnóstico nos folds internos da base completa (06/11/2026). Com 99% dos pontos, a
-# AUPRC da distância ao centro do MCD fica num platô que vai até 100%, estável entre sementes, e
-# uma amostra de 30 mil pontos rende o mesmo que o treino inteiro em cerca de um sétimo do tempo.
-DEFAULT_SUPPORT_FRACTION = 0.99
+# Valores do diagnóstico nos folds internos da base completa (06/11/2026). De 99% a 100% dos
+# pontos, a AUPRC da distância ao centro do MCD fica num platô (0,775), e o ganho vem da
+# repesagem. Abaixo de 100%, o FastMCD sorteia subconjuntos e chega a ótimos diferentes conforme a
+# versão do scikit-learn: com 99%, a AUPRC do fold 1 foi 0,804 na 1.9.1 e 0,744 na 1.6.1. Com
+# 100%, a estimativa bruta é a de todos os pontos da amostra, nada é sorteado no ajuste, e as duas
+# versões dão a mesma AUPRC nos cinco folds. Uma amostra de 30 mil pontos rende o mesmo que o
+# treino inteiro em cerca de um sétimo do tempo.
+DEFAULT_SUPPORT_FRACTION = 1.0
 DEFAULT_SAMPLE_SIZE = 30_000
 # Piso dos autovalores, relativo ao maior: só age numa covariância degenerada. Pisos de 1e-5 em
 # diante já apagam parte do sinal das direções de pouca variância.
@@ -70,9 +74,10 @@ class MahalanobisWhitener(TransformerMixin, BaseEstimator):
         Com covariance="empirical", μ é a média e Σ a covariância amostral de todo o treino. Com
         covariance="mcd", os dois vêm do MinCovDet do scikit-learn (FastMCD, com a correção e a
         repesagem finais), ajustado numa amostra de até sample_size pontos do treino. A
-        covariância empírica é sensível às próprias anomalias que se quer detectar. O MCD
-        estima Σ com o núcleo dos dados, e a repesagem descarta os pontos além do quantil 0,975
-        da qui-quadrado.
+        covariância empírica é sensível às próprias anomalias que se quer detectar. O MCD parte
+        da estimativa do suporte bruto, com support_fraction dos pontos, e a repesagem descarta
+        os pontos além do quantil 0,975 da qui-quadrado e reestima μ e Σ com os demais. Com o
+        padrão de 100%, a estimativa bruta é a de toda a amostra, e o ganho vem só da repesagem.
 
         Nada aqui usa rótulos: o ajuste vê só as variáveis do treino, e a validação e o teste
         recebem só transform.
