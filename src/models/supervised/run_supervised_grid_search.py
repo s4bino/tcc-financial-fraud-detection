@@ -10,11 +10,15 @@ import psutil
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import paths  # noqa: E402
+from features import EXCLUDED_FEATURES  # noqa: E402
 from grid_search import *  # noqa: E402
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Busca em grade dos modelos supervisionados.")
     parser.add_argument("--model", choices=["rf", "xgb"], required=True, help="modelo a executar")
+    parser.add_argument(
+        "--base", choices=list(paths.FOLD_PATHS), required=True, help="base dos folds"
+    )
     parser.add_argument(
         "--resume", action="store_true", help="retoma os CSVs gravados e pula o que já foi feito"
     )
@@ -53,12 +57,27 @@ if __name__ == "__main__":
     model_select = args.model
     param_grid = {"rf": param_grid_rf, "xgb": param_grid_xgb}[model_select]
 
-    # base desta execução: a completa (FULL_PATH) ou a subamostrada (UNDERSAMPLED_PATH), no
-    # repositório local ou no Drive montado no Colab
-    folds = paths.UNDERSAMPLED_PATH if args.drive else paths.LOCAL_UNDERSAMPLED_PATH
-    results_root = paths.RESULTS_DIR if args.drive else paths.LOCAL_RESULTS_DIR
-    # onde salvar CSVs, um por modelo, numa pasta própria de cada base
-    output_dir = folds.results_dir(results_root, "supervised") / model_select
+    # base desta execução, a completa ou a subamostrada, no repositório local ou no Drive montado
+    # no Colab
+    folds = (paths.FOLD_PATHS if args.drive else paths.LOCAL_FOLD_PATHS)[args.base]
+    results_root = (paths.RESULTS_DIR if args.drive else paths.LOCAL_RESULTS_DIR) / (
+        paths.FINAL_RUNS_DIR_NAME
+    )
+    # onde salvar CSVs: uma pasta por modelo e por base, como supervised_rf_undersampled
+    output_dir = folds.results_dir(results_root, f"supervised_{model_select}")
+    paths.guard_run_config(
+        output_dir,
+        {
+            "model": model_select,
+            "base": args.base,
+            "internal_folds_dir": folds.internal_folds_dir,
+            "outer_folds_dir": folds.outer_folds_dir,
+            "param_grid": param_grid,
+            "excluded_features": EXCLUDED_FEATURES,
+            "metric": "auprc",
+        },
+        args.resume,
+    )
 
     df_folds, df_summary, _ = manual_grid_search(
         folds_dir=folds.internal_folds_dir,  # pasta com CSVs
@@ -70,6 +89,7 @@ if __name__ == "__main__":
         n_jobs=num_physical,  # uma combinação por núcleo físico
         model_select=model_select,
         resume=args.resume,
+        excluded_features=EXCLUDED_FEATURES,
     )
 
     print(df_summary.head())  # resumo por combinação
@@ -92,6 +112,7 @@ if __name__ == "__main__":
         model_select=model_select,
         output_dir=output_dir,
         resume=args.resume,
+        excluded_features=EXCLUDED_FEATURES,
     )
 
     print("\nRelatório Final (Outer Folds):")

@@ -48,6 +48,19 @@ def test_transforms_new_data_with_the_training_statistics(train_and_test):
     np.testing.assert_allclose(preprocessor.transform(test)[:, :3], expected.to_numpy())
 
 
+def test_scales_only_the_given_derived_variables(train_and_test):
+    """Sem a hora, só log_amount é padronizado, e V1 a V28 seguem repassados."""
+    train, _ = train_and_test
+    without_hour = train.drop(columns=["hour_sin", "hour_cos"])
+
+    scaled = build_preprocessor(["log_amount"]).fit_transform(without_hour)
+
+    assert scaled.shape == (len(train), 29)
+    np.testing.assert_allclose(scaled[:, 0].mean(), 0.0, atol=1e-12)
+    np.testing.assert_allclose(scaled[:, 0].std(), 1.0)
+    np.testing.assert_allclose(scaled[:, 1:], train[V_COLUMNS].to_numpy())
+
+
 def test_leaves_the_pca_components_of_new_data_unchanged(train_and_test):
     train, test = train_and_test
     preprocessor = build_preprocessor()

@@ -1,8 +1,10 @@
 """Validação cruzada aninhada do HDBSCAN* aprimorado, em versão modular.
 
-Segue a lógica de run_hdbscan_enhanced_grid_search.py, na base subamostrada e com o DISCO como
-métrica de seleção. O ciclo interno escolhe a configuração de cada fold pela métrica de validação,
-e o ciclo externo mede a detecção de fraudes com o escore de anomalia configurado. O DBCV entra
+Segue a lógica de run_hdbscan_enhanced_grid_search.py, com o DISCO como métrica de seleção, na
+base e com a distância escolhidas por --base e --distance. O resto da configuração é fixo em
+build_config, o mesmo em todas as execuções da rodada final. O ciclo interno escolhe a
+configuração de cada fold pela métrica de validação, e o ciclo externo mede a detecção de fraudes
+com o escore de anomalia configurado. O DBCV entra
 no histórico, sem papel na seleção, quando incluído em extra_validation_metrics. A origem de cada
 trecho nos notebooks do Kaggle está registrada nos comentários de
 run_hdbscan_enhanced_grid_search.py.
@@ -17,7 +19,7 @@ import sys
 import time
 import warnings
 from collections.abc import Callable, Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import NamedTuple
 
@@ -39,15 +41,30 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import paths
 from disco import DCTree, disco_score
-from features import build_preprocessor, engineer_features
+from features import (
+    DERIVED_COLUMNS,
+    EXCLUDED_FEATURES,
+    V_COLUMNS,
+    build_preprocessor,
+    model_features,
+    scaled_columns,
+)
 from metrics import (
+    MEAN_ROW_LABEL,
     alert_threshold,
+    append_fold_summary,
     glosh_anomaly_score,
     glosh_neighbors,
     knn_distances,
     manual_anomaly_score,
     read_legitimate_weight,
     to_numpy,
+)
+from whitening import (
+    DEFAULT_EIGEN_FLOOR,
+    DEFAULT_SAMPLE_SIZE,
+    DEFAULT_SUPPORT_FRACTION,
+    MahalanobisWhitener,
 )
 
 
@@ -67,6 +84,22 @@ class PipelineConfig:
         Pasta do relatório do ciclo externo.
     target : str
         Coluna alvo.
+    excluded_features : tuple[str, ...]
+        Variáveis de engineer_features retiradas antes da padronização, e por isso fora da
+        distância do HDBSCAN*, das métricas de validação e dos escores. A exclusão acontece na
+        memória, ao ler cada fold: os arquivos dos folds não mudam.
+    standardize_v_columns : bool
+        Se True, V1 a V28 também são padronizados com as estatísticas do treino, e cada
+        componente passa a ter o mesmo peso na distância. Se False, os V entram sem alteração,
+        como em build_preprocessor.
+    distance : str
+        Distância entre as transações no HDBSCAN*, nas métricas de validação e nos escores.
+        "euclidean" usa os dados padronizados. "mahalanobis" e "mahalanobis_mcd" branqueiam o
+        fold depois da padronização, com a covariância do treino ou com a covariância robusta
+        do MCD, de modo que a euclidiana sobre os dados branqueados é a distância de
+        Mahalanobis. O branqueamento é ajustado só no treino de cada fold, e os parâmetros do
+        MCD são os fixos de whitening.py. O estudo da escolha está em
+        docs/scratch/notes/mahalanobis-distance-study.md.
     param_grid : dict[str, list[int]]
         Valores inteiros de cada hiperparâmetro do HDBSCAN*, combinados em produto cartesiano.
     n_folds : int
@@ -74,8 +107,12 @@ class PipelineConfig:
     alert_rate : float
         Fração de alertas, que fixa o limiar no quantil 1 - alert_rate do escore do treino,
         ponderado na base subamostrada por alert_threshold.
+    extra_alert_rates : tuple[float, ...]
+        Outras frações de alerta, registradas no histórico e no relatório pela precisão, pelo
+        recall, pelo F1, por TP e por FP. Só o limiar muda: o modelo e o escore são os mesmos
+        de alert_rate, e a seleção não depende delas.
     random_state : int
-        Semente da amostragem do DBCV.
+        Semente da amostragem do DBCV e da amostra e do ajuste do MCD.
     dbcv_max_sample_size : int
         Número máximo de pontos usados no DBCV.
     n_processes : int
@@ -97,9 +134,13 @@ class PipelineConfig:
     grid_output_dir: Path
     report_output_dir: Path
     target: str
+    excluded_features: tuple[str, ...]
+    standardize_v_columns: bool
+    distance: str
     param_grid: dict[str, list[int]]
     n_folds: int
     alert_rate: float
+    extra_alert_rates: tuple[float, ...]
     random_state: int
     dbcv_max_sample_size: int
     n_processes: int
@@ -110,27 +151,81 @@ class PipelineConfig:
     extra_anomaly_scores: tuple[str, ...]
 
 
-FOLDS = paths.UNDERSAMPLED_PATH
+# A mesma grade nas duas bases. A subamostrada mantém 35,17% das legítimas, e a densidade dela é
+# cerca de 2,84 vezes menor: min_samples de 50 e 100 nela equivalem a cerca de 140 e 280 na
+# completa, dentro da faixa que a grade cobre na completa.
+PARAM_GRID = {"min_cluster_size": [50], "min_samples": [50, 100, 200, 300]}
 
-CONFIG = PipelineConfig(
-    internal_folds_dir=FOLDS.internal_folds_dir,
-    outer_folds_dir=FOLDS.outer_folds_dir,
-    grid_output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "grid_results_hdbscan_glosh_disco"),
-    report_output_dir=FOLDS.results_dir(paths.RESULTS_DIR, "final_reports_hdbscan_glosh_disco"),
-    target="Class",
-    param_grid={"min_cluster_size": [50], "min_samples": [200, 225, 250, 275, 300, 325, 350]},
-    n_folds=5,
-    alert_rate=0.0008,
-    random_state=42,
-    dbcv_max_sample_size=28_000,
-    n_processes=os.cpu_count() or 1,
-    disco_min_points=5,
-    selection_metric="disco",
-    extra_validation_metrics=(),
-    anomaly_score="glosh",
-    extra_anomaly_scores=(),
-)
 
+def build_config(base: str, distance: str) -> PipelineConfig:
+    """Monta a configuração de uma execução da rodada final.
+
+    Só a base e a distância variam entre as execuções. Os resultados vão para uma pasta própria
+    de cada combinação, hdbscan_<distância> dentro de paths.FINAL_RUNS_DIR_NAME, com o sufixo da
+    base subamostrada, e o histórico do ciclo interno e o relatório do externo ficam juntos.
+
+    Parameters
+    ----------
+    base : str
+        Chave de paths.FOLD_PATHS, "full" ou "undersampled".
+    distance : str
+        Uma de DISTANCES.
+
+    Returns
+    -------
+    PipelineConfig
+        Configuração completa da execução.
+    """
+    folds = paths.FOLD_PATHS[base]
+    run_dir = folds.results_dir(
+        paths.RESULTS_DIR / paths.FINAL_RUNS_DIR_NAME, f"hdbscan_{distance}"
+    )
+    return PipelineConfig(
+        internal_folds_dir=folds.internal_folds_dir,
+        outer_folds_dir=folds.outer_folds_dir,
+        grid_output_dir=run_dir,
+        report_output_dir=run_dir,
+        target="Class",
+        excluded_features=EXCLUDED_FEATURES,
+        standardize_v_columns=False,
+        distance=distance,
+        param_grid=PARAM_GRID,
+        n_folds=5,
+        alert_rate=0.0008,
+        extra_alert_rates=(0.0005, 0.0012, 0.0017, 0.0025, 0.0035),
+        random_state=42,
+        dbcv_max_sample_size=28_000,
+        n_processes=os.cpu_count() or 1,
+        disco_min_points=5,
+        selection_metric="disco",
+        extra_validation_metrics=(),
+        anomaly_score="manual_anomaly_score_glosh",
+        extra_anomaly_scores=("glosh", "manual_anomaly_score", "center_distance"),
+    )
+
+
+def run_config_record(config: PipelineConfig) -> dict:
+    """Configuração gravada por paths.guard_run_config, sem o que não altera os resultados.
+
+    Parameters
+    ----------
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    dict
+        Os campos de config, menos n_processes, que só depende da máquina.
+    """
+    record = asdict(config)
+    record.pop("n_processes")
+    return record
+
+
+EUCLIDEAN = "euclidean"
+# Covariância do branqueamento de cada distância de Mahalanobis, em MahalanobisWhitener
+WHITENING_BY_DISTANCE = {"mahalanobis": "empirical", "mahalanobis_mcd": "mcd"}
+DISTANCES = (EUCLIDEAN, *WHITENING_BY_DISTANCE)
 NOISE_LABEL = -1
 INVALID_VALIDATION_SCORE = -1.0
 CLASS_LABELS = (0, 1)
@@ -147,7 +242,7 @@ OUTER_REPORT_FILE = "hdbscan_enhanced_outer_final_report.csv"
 INNER_DETECTION_COLUMNS = ("f1", "precision", "recall", "auprc")
 OUTER_DETECTION_COLUMNS = ("precision", "recall", "f1", "auprc")
 CONFUSION_COLUMNS = ("TP", "FP", "FN")
-MEAN_ROW_LABEL = "Média"
+ALERT_RATE_COLUMNS = ("precision", "recall", "f1", "TP", "FP")
 INNER_STAGE = "Fold interno"
 OUTER_STAGE = "Fold externo"
 JSON_INDENT = 4
@@ -193,7 +288,7 @@ class ScorePair(NamedTuple):
     evaluated: np.ndarray
 
 
-Neighbors = tuple[np.ndarray, ...]
+Neighbors = tuple[np.ndarray | tuple[np.ndarray, ...], ...]
 ValidationMetric = Callable[[np.ndarray, np.ndarray, PipelineConfig], float]
 
 
@@ -238,8 +333,17 @@ def discover_folds(folds_dir: Path, n_folds: int) -> list[int]:
     return folds
 
 
-def load_fold(folds_dir: Path, fold: int, eval_file: str, info_file: str, target: str) -> FoldData:
+def load_fold(
+    folds_dir: Path,
+    fold: int,
+    eval_file: str,
+    info_file: str,
+    target: str,
+    excluded_features: tuple[str, ...],
+) -> FoldData:
     """Lê um fold e deriva as variáveis, sem as duplicatas do treino.
+
+    Os arquivos do fold são só lidos: a exclusão de variáveis acontece nas cópias em memória.
 
     Parameters
     ----------
@@ -253,43 +357,124 @@ def load_fold(folds_dir: Path, fold: int, eval_file: str, info_file: str, target
         Modelo do nome do JSON do fold, de onde vem o peso das legítimas no limiar de alerta.
     target : str
         Coluna alvo.
+    excluded_features : tuple[str, ...]
+        Variáveis de engineer_features que não entram no modelo.
 
     Returns
     -------
     FoldData
-        Variáveis de engineer_features no treino e no conjunto avaliado, os rótulos dos dois e
-        o peso das legítimas.
+        Variáveis de model_features no treino e no conjunto avaliado, os rótulos dos dois e o
+        peso das legítimas.
     """
     train = pd.read_csv(folds_dir / TRAIN_FILE.format(fold=fold))
     evaluated = pd.read_csv(folds_dir / eval_file.format(fold=fold))
-    X_train = engineer_features(train.drop(columns=[target]).drop_duplicates())
+    X_train = model_features(train.drop(columns=[target]).drop_duplicates(), excluded_features)
     return FoldData(
         X_train=X_train,
-        X_eval=engineer_features(evaluated.drop(columns=[target])),
+        X_eval=model_features(evaluated.drop(columns=[target]), excluded_features),
         y_eval=evaluated[target],
         y_train=train.loc[X_train.index, target],
         legitimate_weight=read_legitimate_weight(folds_dir / info_file.format(fold=fold)),
     )
 
 
-def standardize(fold_data: FoldData) -> FoldData:
+def standardized_columns(config: PipelineConfig) -> list[str]:
+    """Lista as variáveis que a padronização do fold recebe.
+
+    Parameters
+    ----------
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    list[str]
+        Variáveis derivadas e, com standardize_v_columns, V1 a V28, sem as retiradas por
+        model_features, que build_preprocessor não deve procurar.
+    """
+    return scaled_columns(
+        config.excluded_features, V_COLUMNS if config.standardize_v_columns else ()
+    )
+
+
+def standardize(fold_data: FoldData, scaled_columns: Iterable[str]) -> FoldData:
     """Padroniza o fold com estatísticas calculadas só no treino.
 
     Parameters
     ----------
     fold_data : FoldData
-        Fold com as variáveis de engineer_features.
+        Fold com as variáveis de model_features.
+    scaled_columns : Iterable[str]
+        Variáveis padronizadas, de standardized_columns. As demais entram sem alteração.
 
     Returns
     -------
     FoldData
-        O mesmo fold, com as variáveis padronizadas por build_preprocessor.
+        O mesmo fold, com scaled_columns padronizadas por build_preprocessor.
     """
-    preprocessor = build_preprocessor()
+    preprocessor = build_preprocessor(scaled_columns)
     return fold_data._replace(
         X_train=preprocessor.fit_transform(fold_data.X_train),
         X_eval=preprocessor.transform(fold_data.X_eval),
     )
+
+
+def whiten(fold_data: FoldData, config: PipelineConfig) -> FoldData:
+    """Leva o fold ao espaço da distância configurada, com o centro do treino na origem.
+
+    Com uma distância de Mahalanobis, branqueia o fold com a covariância só do treino: a
+    distância euclidiana entre as transações passa a ser a de Mahalanobis. Com a euclidiana, só
+    subtrai a média do treino, o que não altera nenhuma distância. Nos três casos, a norma de
+    cada linha é a distância dela ao centro estimado no treino (score_center_distance).
+
+    Parameters
+    ----------
+    fold_data : FoldData
+        Fold padronizado.
+    config : PipelineConfig
+        Configuração do pipeline, com a distância e a semente do MCD.
+
+    Returns
+    -------
+    FoldData
+        O mesmo fold, centrado na média do treino com distance="euclidean" e branqueado nos
+        demais casos.
+    """
+    if config.distance == EUCLIDEAN:
+        center = np.mean(fold_data.X_train, axis=0)
+        return fold_data._replace(
+            X_train=fold_data.X_train - center, X_eval=fold_data.X_eval - center
+        )
+    whitener = MahalanobisWhitener(
+        covariance=WHITENING_BY_DISTANCE[config.distance], random_state=config.random_state
+    ).fit(fold_data.X_train)
+    eigenvalues = whitener.eigenvalues_
+    print(
+        f"Distância {config.distance}: autovalores da covariância de {eigenvalues[0]:.2e} a "
+        f"{eigenvalues[-1]:.2e}, {whitener.n_floored_} no piso"
+    )
+    return fold_data._replace(
+        X_train=whitener.transform(fold_data.X_train),
+        X_eval=whitener.transform(fold_data.X_eval),
+    )
+
+
+def prepare_fold(fold_data: FoldData, config: PipelineConfig) -> FoldData:
+    """Padroniza e, com uma distância de Mahalanobis, branqueia o fold, com estatísticas do treino.
+
+    Parameters
+    ----------
+    fold_data : FoldData
+        Fold de load_fold.
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    FoldData
+        O fold pronto para o HDBSCAN*, as métricas de validação e os escores.
+    """
+    return whiten(standardize(fold_data, standardized_columns(config)), config)
 
 
 def build_grid(param_grid: Mapping[str, Iterable[int]]) -> pd.DataFrame:
@@ -325,7 +510,7 @@ def load_history(path: Path) -> list[dict]:
 
 
 def check_resumable_history(history: list[dict], config: PipelineConfig) -> None:
-    """Recusa retomar um histórico gravado sem alguma das métricas de validação configuradas.
+    """Recusa retomar um histórico sem alguma métrica de validação ou taxa de alerta configurada.
 
     Parameters
     ----------
@@ -334,7 +519,9 @@ def check_resumable_history(history: list[dict], config: PipelineConfig) -> None
     config : PipelineConfig
         Configuração do pipeline.
     """
-    expected = {f"{name}_score" for name in validation_metric_names(config)}
+    expected = {f"{name}_score" for name in validation_metric_names(config)} | {
+        alert_rate_column("f1", rate) for rate in tracked_alert_rates(config)
+    }
     missing = sorted(expected - set().union(*history)) if history else []
     if missing:
         raise ValueError(
@@ -655,11 +842,132 @@ def score_manual_anomaly(
     return ScorePair(train_degree, degree)
 
 
+def glosh_degree_neighbors(X_train: np.ndarray, X_eval: np.ndarray, n_neighbors: int) -> Neighbors:
+    """Busca os vizinhos do grau de anomalia com o GLOSH: os do GLOSH e os da distância kNN.
+
+    Parameters
+    ----------
+    X_train : np.ndarray
+        Treino padronizado.
+    X_eval : np.ndarray
+        Conjunto avaliado padronizado.
+    n_neighbors : int
+        min_samples da busca, em geral o maior da grade.
+
+    Returns
+    -------
+    Neighbors
+        Par com o trio de glosh_neighbors e o par de knn_distances.
+    """
+    return (
+        glosh_neighbors(X_train, X_eval, n_neighbors),
+        knn_distances(X_train, X_eval, n_neighbors),
+    )
+
+
+def score_manual_anomaly_glosh(
+    model: HDBSCAN, X_train: np.ndarray, X_eval: np.ndarray, min_samples: int, neighbors: Neighbors
+) -> ScorePair:
+    """Calcula o grau de anomalia com o GLOSH no lugar de 1 - p(x).
+
+    O grau é a média dos postos percentis do GLOSH e da distância ao vizinho de ordem
+    min_samples, como em manual_anomaly_score com component="glosh".
+
+    Parameters
+    ----------
+    model : HDBSCAN
+        HDBSCAN* ajustado no treino.
+    X_train : np.ndarray
+        Treino padronizado.
+    X_eval : np.ndarray
+        Conjunto avaliado padronizado.
+    min_samples : int
+        min_samples do modelo.
+    neighbors : Neighbors
+        Vizinhos de glosh_degree_neighbors.
+
+    Returns
+    -------
+    ScorePair
+        Grau de anomalia do treino e do conjunto avaliado.
+    """
+    tree_neighbors, distance_neighbors = neighbors
+    train_degree, degree, _ = manual_anomaly_score(
+        X_train,
+        X_eval,
+        None,
+        None,
+        min_samples,
+        neighbors=distance_neighbors,
+        component="glosh",
+        tree=model.condensed_tree_.to_numpy(),
+        tree_neighbors=tree_neighbors,
+    )
+    return ScorePair(train_degree, degree)
+
+
+def no_neighbors(X_train: np.ndarray, X_eval: np.ndarray, n_neighbors: int) -> Neighbors:
+    """Atende à interface do registry para escores que não usam vizinhos.
+
+    Parameters
+    ----------
+    X_train : np.ndarray
+        Treino preparado.
+    X_eval : np.ndarray
+        Conjunto avaliado preparado.
+    n_neighbors : int
+        min_samples da busca, sem uso aqui.
+
+    Returns
+    -------
+    Neighbors
+        Tupla vazia.
+    """
+    return ()
+
+
+def score_center_distance(
+    model: HDBSCAN, X_train: np.ndarray, X_eval: np.ndarray, min_samples: int, neighbors: Neighbors
+) -> ScorePair:
+    """Calcula a distância de cada transação ao centro estimado no treino.
+
+    whiten deixa o fold com o centro na origem, e o escore é a norma euclidiana de cada linha.
+    Com distance="euclidean", o centro é a média do treino padronizado, e a distância é a
+    euclidiana. Com os dados branqueados, a distância é a de Mahalanobis, e o centro é a média do
+    treino (distance="mahalanobis") ou o centro robusto do MCD (distance="mahalanobis_mcd"). O
+    escore não depende do HDBSCAN* nem do min_samples e serve de referência para o GLOSH: mede o
+    afastamento global do núcleo dos dados, sem vizinhança nem agrupamento.
+
+    Parameters
+    ----------
+    model : HDBSCAN
+        HDBSCAN* ajustado no treino, sem uso aqui.
+    X_train : np.ndarray
+        Treino de whiten, centrado na origem.
+    X_eval : np.ndarray
+        Conjunto avaliado de whiten.
+    min_samples : int
+        min_samples do modelo, sem uso aqui.
+    neighbors : Neighbors
+        Tupla vazia de no_neighbors.
+
+    Returns
+    -------
+    ScorePair
+        Distância ao centro no treino e no conjunto avaliado.
+    """
+    return ScorePair(np.linalg.norm(X_train, axis=1), np.linalg.norm(X_eval, axis=1))
+
+
 ANOMALY_SCORERS: dict[str, AnomalyScorer] = {
     "glosh": AnomalyScorer(neighbors=glosh_neighbors, score=score_glosh),
     "manual_anomaly_score": AnomalyScorer(
         neighbors=knn_distances, score=score_manual_anomaly, needs_prediction_data=True
     ),
+    "manual_anomaly_score_glosh": AnomalyScorer(
+        neighbors=glosh_degree_neighbors, score=score_manual_anomaly_glosh
+    ),
+    "center_distance": AnomalyScorer(neighbors=no_neighbors, score=score_center_distance),
 }
 
 
@@ -771,7 +1079,7 @@ def compute_anomaly_scores(
     }
 
 
-def fold_threshold(train_scores: np.ndarray, fold_data: FoldData, config: PipelineConfig) -> float:
+def fold_threshold(train_scores: np.ndarray, fold_data: FoldData, alert_rate: float) -> float:
     """Calcula o limiar de alerta no escore do treino, ponderado na base subamostrada.
 
     Parameters
@@ -780,21 +1088,19 @@ def fold_threshold(train_scores: np.ndarray, fold_data: FoldData, config: Pipeli
         Escore de anomalia do treino.
     fold_data : FoldData
         Fold com os rótulos do treino e o peso das legítimas.
-    config : PipelineConfig
-        Configuração do pipeline.
+    alert_rate : float
+        Fração de alertas.
 
     Returns
     -------
     float
-        Limiar de alert_threshold para a fração config.alert_rate.
+        Limiar de alert_threshold para a fração alert_rate.
     """
-    return alert_threshold(
-        train_scores, config.alert_rate, fold_data.y_train, fold_data.legitimate_weight
-    )
+    return alert_threshold(train_scores, alert_rate, fold_data.y_train, fold_data.legitimate_weight)
 
 
-def detection_metrics(y_true: pd.Series, scores: np.ndarray, threshold: float) -> dict[str, float]:
-    """Mede a detecção de fraudes com o limiar de alerta.
+def alert_metrics(y_true: pd.Series, scores: np.ndarray, threshold: float) -> dict[str, float]:
+    """Mede os alertas de um limiar.
 
     Parameters
     ----------
@@ -808,7 +1114,7 @@ def detection_metrics(y_true: pd.Series, scores: np.ndarray, threshold: float) -
     Returns
     -------
     dict[str, float]
-        precision, recall, f1, auprc, TP, FP e FN.
+        precision, recall, f1, TP, FP e FN.
     """
     predictions = (scores >= threshold).astype(int)
     _, fp, fn, tp = confusion_matrix(y_true, predictions, labels=CLASS_LABELS).ravel()
@@ -816,11 +1122,96 @@ def detection_metrics(y_true: pd.Series, scores: np.ndarray, threshold: float) -
         "precision": precision_score(y_true, predictions, zero_division=0),
         "recall": recall_score(y_true, predictions, zero_division=0),
         "f1": f1_score(y_true, predictions, zero_division=0),
-        "auprc": average_precision_score(y_true, scores),
         "TP": tp,
         "FP": fp,
         "FN": fn,
     }
+
+
+def detection_metrics(y_true: pd.Series, scores: np.ndarray, threshold: float) -> dict[str, float]:
+    """Mede a detecção de fraudes com o limiar de alerta e a AUPRC do escore.
+
+    Parameters
+    ----------
+    y_true : pd.Series
+        Rótulos do conjunto avaliado.
+    scores : np.ndarray
+        Escore de anomalia do conjunto avaliado.
+    threshold : float
+        Limiar de alerta, a partir do qual a transação é sinalizada.
+
+    Returns
+    -------
+    dict[str, float]
+        As métricas de alert_metrics e a auprc.
+    """
+    return {
+        **alert_metrics(y_true, scores, threshold),
+        "auprc": average_precision_score(y_true, scores),
+    }
+
+
+def tracked_alert_rates(config: PipelineConfig) -> tuple[float, ...]:
+    """Lista as frações de alerta acompanhadas além de alert_rate.
+
+    Parameters
+    ----------
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    tuple[float, ...]
+        As frações de extra_alert_rates, sem repetição e sem alert_rate.
+    """
+    return tuple(
+        rate for rate in dict.fromkeys(config.extra_alert_rates) if rate != config.alert_rate
+    )
+
+
+def alert_rate_column(metric: str, rate: float) -> str:
+    """Nomeia a coluna de uma métrica medida com outra fração de alertas.
+
+    Parameters
+    ----------
+    metric : str
+        Métrica de ALERT_RATE_COLUMNS.
+    rate : float
+        Fração de alertas.
+
+    Returns
+    -------
+    str
+        Nome da coluna, como f1_at_0.0012.
+    """
+    return f"{metric}_at_{rate:g}"
+
+
+def tracked_alert_metrics(
+    fold_data: FoldData, scores: ScorePair, config: PipelineConfig
+) -> dict[str, float]:
+    """Mede os alertas do escore de config.anomaly_score em cada fração de extra_alert_rates.
+
+    Parameters
+    ----------
+    fold_data : FoldData
+        Fold com os rótulos e o peso das legítimas.
+    scores : ScorePair
+        Escore dos alertas no treino e no conjunto avaliado.
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    dict[str, float]
+        As métricas de ALERT_RATE_COLUMNS de cada fração, nas colunas de alert_rate_column.
+    """
+    row = {}
+    for rate in tracked_alert_rates(config):
+        threshold = fold_threshold(scores.train, fold_data, rate)
+        metrics = alert_metrics(fold_data.y_eval, scores.evaluated, threshold)
+        row |= {alert_rate_column(name, rate): metrics[name] for name in ALERT_RATE_COLUMNS}
+    return row
 
 
 def tracked_auprc(
@@ -926,7 +1317,7 @@ def evaluate_combination(
     validation = compute_validation_scores(fold_data.X_train, labels, config)
     start = time.time()
     scores = compute_anomaly_scores(model, fold_data, params["min_samples"], neighbors, config)
-    threshold = fold_threshold(scores[config.anomaly_score].train, fold_data, config)
+    threshold = fold_threshold(scores[config.anomaly_score].train, fold_data, config.alert_rate)
     val_time_min = (time.time() - start) / 60
     detection = detection_metrics(
         fold_data.y_eval, scores[config.anomaly_score].evaluated, threshold
@@ -940,6 +1331,7 @@ def evaluate_combination(
         **select_columns(detection, INNER_DETECTION_COLUMNS),
         **tracked_auprc(fold_data.y_eval, scores, config),
         **select_columns(detection, CONFUSION_COLUMNS),
+        **tracked_alert_metrics(fold_data, scores[config.anomaly_score], config),
         "train_time_min": train_time_min,
         "val_time_min": val_time_min,
     }
@@ -970,8 +1362,16 @@ def run_inner_fold(
     config : PipelineConfig
         Configuração do pipeline.
     """
-    fold_data = standardize(
-        load_fold(config.internal_folds_dir, fold, INNER_EVAL_FILE, INNER_INFO_FILE, config.target)
+    fold_data = prepare_fold(
+        load_fold(
+            config.internal_folds_dir,
+            fold,
+            INNER_EVAL_FILE,
+            INNER_INFO_FILE,
+            config.target,
+            config.excluded_features,
+        ),
+        config,
     )
     neighbors = compute_neighbors(fold_data, int(grid["min_samples"].max()), config)
     for combo_id, combo in grid.iterrows():
@@ -1022,7 +1422,7 @@ def run_inner_cycle(
     pd.DataFrame
         Histórico com uma linha por fold e combinação.
     """
-    config.grid_output_dir.mkdir(parents=True, exist_ok=True)
+    paths.guard_run_config(config.grid_output_dir, run_config_record(config), resume)
     results_path = config.grid_output_dir / GRID_RESULTS_FILE
     history = load_history(results_path) if resume else []
     check_resumable_history(history, config)
@@ -1135,14 +1535,22 @@ def evaluate_outer_fold(fold: int, params: Mapping[str, int], config: PipelineCo
     dict
         Linha do relatório, com as métricas de detecção no teste.
     """
-    fold_data = standardize(
-        load_fold(config.outer_folds_dir, fold, OUTER_EVAL_FILE, OUTER_INFO_FILE, config.target)
+    fold_data = prepare_fold(
+        load_fold(
+            config.outer_folds_dir,
+            fold,
+            OUTER_EVAL_FILE,
+            OUTER_INFO_FILE,
+            config.target,
+            config.excluded_features,
+        ),
+        config,
     )
     model, train_time_min = fit_hdbscan(fold_data.X_train, params, needs_prediction_data(config))
     start = time.time()
     neighbors = compute_neighbors(fold_data, params["min_samples"], config)
     scores = compute_anomaly_scores(model, fold_data, params["min_samples"], neighbors, config)
-    threshold = fold_threshold(scores[config.anomaly_score].train, fold_data, config)
+    threshold = fold_threshold(scores[config.anomaly_score].train, fold_data, config.alert_rate)
     predict_time_min = (time.time() - start) / 60
     detection = detection_metrics(
         fold_data.y_eval, scores[config.anomaly_score].evaluated, threshold
@@ -1153,6 +1561,7 @@ def evaluate_outer_fold(fold: int, params: Mapping[str, int], config: PipelineCo
         **select_columns(detection, OUTER_DETECTION_COLUMNS),
         **tracked_auprc(fold_data.y_eval, scores, config),
         **select_columns(detection, CONFUSION_COLUMNS),
+        **tracked_alert_metrics(fold_data, scores[config.anomaly_score], config),
         "train_time_min": train_time_min,
         "predict_time_min": predict_time_min,
     }
@@ -1180,31 +1589,13 @@ def run_outer_cycle(params: Mapping[str, int], config: PipelineConfig) -> pd.Dat
     return pd.DataFrame(rows)
 
 
-def append_mean_row(report: pd.DataFrame) -> pd.DataFrame:
-    """Acrescenta ao relatório a média de cada coluna entre os folds.
-
-    Parameters
-    ----------
-    report : pd.DataFrame
-        Uma linha por fold externo.
-
-    Returns
-    -------
-    pd.DataFrame
-        O relatório com a linha final da média.
-    """
-    mean = report.mean().to_dict()
-    mean["fold"] = MEAN_ROW_LABEL
-    return pd.concat([report, pd.DataFrame([mean])], ignore_index=True)
-
-
 def save_outer_report(report: pd.DataFrame, output_dir: Path) -> Path:
     """Grava o relatório do ciclo externo.
 
     Parameters
     ----------
     report : pd.DataFrame
-        Relatório com a linha da média.
+        Relatório com as linhas da média e do desvio padrão.
     output_dir : Path
         Pasta do relatório.
 
@@ -1240,7 +1631,8 @@ def metric_labels(config: PipelineConfig) -> dict[str, str]:
         "auprc": f"AUPRC {config.anomaly_score}",
     }
     extras = {f"auprc_{name}": f"AUPRC {name}" for name in extra_anomaly_names(config)}
-    return validation | detection | extras
+    rates = {alert_rate_column("f1", rate): f"F1@{rate:g}" for rate in tracked_alert_rates(config)}
+    return validation | detection | extras | rates
 
 
 def format_metrics(row: Mapping[str, float], config: PipelineConfig) -> str:
@@ -1287,13 +1679,21 @@ def print_fold_line(
 
 
 def validate_config(config: PipelineConfig) -> None:
-    """Confere se as métricas configuradas existem nos registries.
+    """Confere as métricas, as variáveis excluídas, as frações de alerta e a distância.
 
     Parameters
     ----------
     config : PipelineConfig
         Configuração do pipeline.
     """
+    unknown_features = sorted(set(config.excluded_features) - {*V_COLUMNS, *DERIVED_COLUMNS})
+    if unknown_features:
+        raise ValueError(f"Variáveis desconhecidas em excluded_features: {unknown_features}")
+    invalid_rates = [
+        rate for rate in (config.alert_rate, *config.extra_alert_rates) if not 0 < rate < 1
+    ]
+    if invalid_rates:
+        raise ValueError(f"Frações de alerta fora do intervalo (0, 1): {invalid_rates}")
     for names, registry in (
         (validation_metric_names(config), VALIDATION_METRICS),
         (anomaly_score_names(config), ANOMALY_SCORERS),
@@ -1301,6 +1701,35 @@ def validate_config(config: PipelineConfig) -> None:
         unknown = sorted(set(names) - set(registry))
         if unknown:
             raise ValueError(f"Métricas desconhecidas: {unknown}. Disponíveis: {sorted(registry)}")
+    if config.distance not in DISTANCES:
+        raise ValueError(f"distance={config.distance!r}: use um de {DISTANCES}.")
+
+
+def distance_label(config: PipelineConfig) -> str:
+    """Descreve a distância configurada, para o cabeçalho do log.
+
+    Parameters
+    ----------
+    config : PipelineConfig
+        Configuração do pipeline.
+
+    Returns
+    -------
+    str
+        A distância e, nas de Mahalanobis, a covariância e os parâmetros fixos do branqueamento.
+    """
+    if config.distance == EUCLIDEAN:
+        return EUCLIDEAN
+    details = [f"piso dos autovalores {DEFAULT_EIGEN_FLOOR:g}"]
+    if config.distance == "mahalanobis_mcd":
+        details = [
+            f"MCD com support_fraction={DEFAULT_SUPPORT_FRACTION:g}",
+            f"amostra de até {DEFAULT_SAMPLE_SIZE} pontos",
+            *details,
+        ]
+    else:
+        details = ["covariância empírica do treino", *details]
+    return f"{config.distance} ({', '.join(details)})"
 
 
 def parse_args() -> argparse.Namespace:
@@ -1309,10 +1738,16 @@ def parse_args() -> argparse.Namespace:
     Returns
     -------
     argparse.Namespace
-        resume e folds.
+        base, distance, resume e folds.
     """
     parser = argparse.ArgumentParser(
         description="Grid search do HDBSCAN aprimorado com retomada por fold."
+    )
+    parser.add_argument(
+        "--base", choices=list(paths.FOLD_PATHS), required=True, help="base dos folds"
+    )
+    parser.add_argument(
+        "--distance", choices=DISTANCES, required=True, help="distância entre as transações"
     )
     parser.add_argument(
         "--resume", action="store_true", help="lê o CSV parcial e pula os folds já concluídos"
@@ -1330,29 +1765,35 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     """Executa o ciclo interno, escolhe a melhor configuração e a avalia no ciclo externo."""
     args = parse_args()
-    validate_config(CONFIG)
+    config = build_config(args.base, args.distance)
+    validate_config(config)
 
     print("HDBSCAN* aprimorado: validação cruzada aninhada")
     print(
-        f"Grade {CONFIG.param_grid} | seleção por {CONFIG.selection_metric} | alertas por "
-        f"{CONFIG.anomaly_score} com alert_rate={CONFIG.alert_rate} | folds internos: "
-        f"{args.folds or 'todos'} | retomada: {'sim' if args.resume else 'não'}"
+        f"Base {args.base} | grade {config.param_grid} | seleção por {config.selection_metric} | "
+        f"alertas por {config.anomaly_score} com alert_rate={config.alert_rate} | folds "
+        f"internos: {args.folds or 'todos'} | retomada: {'sim' if args.resume else 'não'}"
     )
+    print(f"Variáveis fora da distância: {list(config.excluded_features) or 'nenhuma'}")
+    print(f"Variáveis padronizadas: {standardized_columns(config)}")
+    print(f"Distância: {distance_label(config)}")
+    print(f"Taxas de alerta acompanhadas: {list(tracked_alert_rates(config)) or 'nenhuma'}")
 
-    history = run_inner_cycle(build_grid(CONFIG.param_grid), CONFIG, args.resume, args.folds)
-    summary, best_per_fold = select_best_trials(history, CONFIG)
-    save_inner_results(history, summary, best_per_fold, CONFIG.grid_output_dir)
-    best = best_configuration(best_per_fold, CONFIG)
-    params = {name: int(best[name]) for name in CONFIG.param_grid}
-    column = selection_column(CONFIG)
+    history = run_inner_cycle(build_grid(config.param_grid), config, args.resume, args.folds)
+    summary, best_per_fold = select_best_trials(history, config)
+    save_inner_results(history, summary, best_per_fold, config.grid_output_dir)
+    best = best_configuration(best_per_fold, config)
+    params = {name: int(best[name]) for name in config.param_grid}
+    column = selection_column(config)
     best_row = {**params, column: best[f"best_{column}"]}
 
-    print(f"Melhor configuração do ciclo interno: {format_metrics(best_row, CONFIG)}")
-    report = append_mean_row(run_outer_cycle(params, CONFIG))
-    report_path = save_outer_report(report, CONFIG.report_output_dir)
+    print(f"Melhor configuração do ciclo interno: {format_metrics(best_row, config)}")
+    report = append_fold_summary(run_outer_cycle(params, config))
+    report_path = save_outer_report(report, config.report_output_dir)
 
-    print(f"Média nos folds externos: {format_metrics(report.iloc[-1].to_dict(), CONFIG)}")
-    print(f"Resultados salvos em {CONFIG.grid_output_dir} e {report_path}")
+    mean_row = report.loc[report["fold"] == MEAN_ROW_LABEL].iloc[0].to_dict()
+    print(f"Média nos folds externos: {format_metrics(mean_row, config)}")
+    print(f"Resultados salvos em {report_path.parent}")
 
 
 if __name__ == "__main__":

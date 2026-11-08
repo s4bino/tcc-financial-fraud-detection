@@ -100,11 +100,13 @@ kaggle.json
 #==============================================================================
 # Bibliografia (docs/references)
 #
-# Os PDFs sao material de editoras: cerca de 48 MB cuja redistribuicao em geral
-# nao e permitida. As notas de leitura em citations/ e o indice README.md sao
-# versionados; os arquivos em si, nao.
+# Os PDFs sao material de editoras: cerca de 91 MB cuja redistribuicao em geral
+# nao e permitida. Os resumos copiados em .txt, quando falta o PDF, tambem. As
+# notas de leitura em citations/ e o indice README.md sao versionados; os
+# arquivos em si, nao.
 #==============================================================================
 docs/references/articles/**/*.pdf
+docs/references/articles/**/*.txt
 
 # Configuracao local do vault do Obsidian (especifica da maquina)
 .obsidian/
