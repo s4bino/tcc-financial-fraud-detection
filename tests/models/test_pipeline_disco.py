@@ -57,28 +57,68 @@ def partition():
     return X, np.r_[np.zeros(40, int), np.ones(40, int)]
 
 
-def test_config_reads_and_writes_the_same_base(pipeline):
-    """Os resultados de uma base nunca vão para as pastas da outra."""
-    folds = pipeline.FOLDS
-    undersampled = folds == paths.UNDERSAMPLED_PATH
+def default_config(pipeline):
+    """A execução da rodada final que já rodou: base completa com o MCD."""
+    return pipeline.build_config("full", "mahalanobis_mcd")
 
-    assert folds in (paths.FULL_PATH, paths.UNDERSAMPLED_PATH)
-    assert pipeline.CONFIG.internal_folds_dir == folds.internal_folds_dir
-    assert pipeline.CONFIG.outer_folds_dir == folds.outer_folds_dir
-    for output_dir in (pipeline.CONFIG.grid_output_dir, pipeline.CONFIG.report_output_dir):
-        assert output_dir.parent == paths.RESULTS_DIR
-        assert output_dir.name.endswith("_undersampled") == undersampled
+
+@pytest.mark.parametrize("base", ["full", "undersampled"])
+@pytest.mark.parametrize("distance", ["euclidean", "mahalanobis", "mahalanobis_mcd"])
+def test_config_reads_and_writes_the_same_base(pipeline, base, distance):
+    """Os resultados de uma base nunca vão para as pastas da outra."""
+    folds = paths.FOLD_PATHS[base]
+    config = pipeline.build_config(base, distance)
+
+    assert config.internal_folds_dir == folds.internal_folds_dir
+    assert config.outer_folds_dir == folds.outer_folds_dir
+    assert config.distance == distance
+    assert config.grid_output_dir == config.report_output_dir
+    assert config.grid_output_dir.parent == paths.RESULTS_DIR / paths.FINAL_RUNS_DIR_NAME
+    assert config.grid_output_dir.name == f"hdbscan_{distance}{folds.results_suffix}"
+
+
+def test_every_run_of_the_final_round_has_its_own_folder(pipeline):
+    runs = [
+        pipeline.build_config(base, distance).grid_output_dir
+        for base in paths.FOLD_PATHS
+        for distance in pipeline.DISTANCES
+    ]
+
+    assert len(set(runs)) == len(runs) == 6
+
+
+def test_runs_differ_only_in_base_and_distance(pipeline):
+    reference = pipeline.run_config_record(default_config(pipeline))
+    other = pipeline.run_config_record(pipeline.build_config("undersampled", "euclidean"))
+    differing = {key for key in reference if reference[key] != other[key]}
+
+    assert differing == {
+        "internal_folds_dir",
+        "outer_folds_dir",
+        "grid_output_dir",
+        "report_output_dir",
+        "distance",
+    }
+    assert "n_processes" not in reference
+
+
+@pytest.mark.parametrize("distance", ["euclidean", "mahalanobis", "mahalanobis_mcd"])
+def test_every_distance_reports_the_center_distance(pipeline, distance):
+    config = pipeline.build_config("full", distance)
+
+    pipeline.validate_config(config)
+    assert "center_distance" in pipeline.anomaly_score_names(config)
 
 
 def test_config_selects_only_by_disco(pipeline):
-    assert pipeline.validation_metric_names(pipeline.CONFIG) == ("disco",)
-    assert pipeline.selection_column(pipeline.CONFIG) == "disco_score"
-    pipeline.validate_config(pipeline.CONFIG)
+    assert pipeline.validation_metric_names(default_config(pipeline)) == ("disco",)
+    assert pipeline.selection_column(default_config(pipeline)) == "disco_score"
+    pipeline.validate_config(default_config(pipeline))
 
 
 def test_dbcv_is_plugged_in_by_the_config(pipeline, partition):
     X, labels = partition
-    config = dataclasses.replace(pipeline.CONFIG, extra_validation_metrics=("dbcv",))
+    config = dataclasses.replace(default_config(pipeline), extra_validation_metrics=("dbcv",))
 
     scores = pipeline.compute_validation_scores(X, labels, config)
 
@@ -88,7 +128,7 @@ def test_dbcv_is_plugged_in_by_the_config(pipeline, partition):
 
 def test_disco_runs_on_the_whole_train_set_even_above_the_dbcv_sample(pipeline, partition):
     X, labels = partition
-    config = pipeline.CONFIG.__class__(**{**pipeline.CONFIG.__dict__, "dbcv_max_sample_size": 10})
+    config = dataclasses.replace(default_config(pipeline), dbcv_max_sample_size=10)
 
     assert pipeline.disco_validation_score(X, labels, config) == pytest.approx(
         disco_score(X, labels)
@@ -108,17 +148,17 @@ def test_tree_is_built_once_per_train_set(pipeline, partition, monkeypatch):
     monkeypatch.setattr(pipeline, "FOLD_TREE_CACHE", pipeline.FoldTreeCache())
 
     for partition_labels in (labels, np.where(labels == 1, -1, labels), np.zeros(80, int) - 1):
-        pipeline.disco_validation_score(X, partition_labels, pipeline.CONFIG)
+        pipeline.disco_validation_score(X, partition_labels, default_config(pipeline))
     assert len(built) == 1
 
-    pipeline.disco_validation_score(X.copy(), labels, pipeline.CONFIG)
+    pipeline.disco_validation_score(X.copy(), labels, default_config(pipeline))
     assert len(built) == 2
 
 
 def test_only_noise_gets_the_invalid_score(pipeline, partition):
     X, _ = partition
 
-    score = pipeline.disco_validation_score(X, np.full(80, -1), pipeline.CONFIG)
+    score = pipeline.disco_validation_score(X, np.full(80, -1), default_config(pipeline))
 
     assert score == pipeline.INVALID_VALIDATION_SCORE
 
@@ -127,11 +167,11 @@ def test_disco_error_stops_the_run_instead_of_becoming_a_score(pipeline, partiti
     X, _ = partition
 
     with pytest.raises(ValueError):
-        pipeline.disco_validation_score(X, np.zeros(10, int), pipeline.CONFIG)
+        pipeline.disco_validation_score(X, np.zeros(10, int), default_config(pipeline))
 
 
 def test_selection_follows_disco_when_dbcv_disagrees(pipeline):
-    grid = {name: 50 for name in pipeline.CONFIG.param_grid}
+    grid = {name: 50 for name in default_config(pipeline).param_grid}
     history = pd.DataFrame(
         [
             {"fold": 1, "combo_id": 0, **grid, "disco_score": 0.1, "dbcv_score": 0.9},
@@ -139,7 +179,7 @@ def test_selection_follows_disco_when_dbcv_disagrees(pipeline):
         ]
     )
 
-    summary, best = pipeline.select_best_trials(history, pipeline.CONFIG)
+    summary, best = pipeline.select_best_trials(history, default_config(pipeline))
 
     assert summary.iloc[0]["combo_id"] == 1
     assert best[1]["best_disco_score"] == 0.3
@@ -149,22 +189,22 @@ def test_resume_refuses_a_history_without_disco(pipeline):
     old_history = [{"fold": 1, "combo_id": 0, "dbcv_score": 0.2}]
 
     with pytest.raises(ValueError, match="disco_score"):
-        pipeline.check_resumable_history(old_history, pipeline.CONFIG)
+        pipeline.check_resumable_history(old_history, default_config(pipeline))
 
 
 def test_resume_accepts_a_complete_or_empty_history(pipeline):
     rate_columns = {
         pipeline.alert_rate_column("f1", rate): 0.4
-        for rate in pipeline.tracked_alert_rates(pipeline.CONFIG)
+        for rate in pipeline.tracked_alert_rates(default_config(pipeline))
     }
     history = [{"fold": 1, "combo_id": 0, "dbcv_score": 0.2, "disco_score": 0.3, **rate_columns}]
 
-    pipeline.check_resumable_history(history, pipeline.CONFIG)
-    pipeline.check_resumable_history([], pipeline.CONFIG)
+    pipeline.check_resumable_history(history, default_config(pipeline))
+    pipeline.check_resumable_history([], default_config(pipeline))
 
 
 def test_resume_refuses_a_history_without_an_extra_alert_rate(pipeline):
-    config = dataclasses.replace(pipeline.CONFIG, extra_alert_rates=(0.0017,))
+    config = dataclasses.replace(default_config(pipeline), extra_alert_rates=(0.0017,))
     old_history = [{"fold": 1, "combo_id": 0, "disco_score": 0.3}]
 
     with pytest.raises(ValueError, match="f1_at_0.0017"):
@@ -177,7 +217,7 @@ def test_extra_alert_rates_only_move_the_threshold(pipeline):
     y_eval = pd.Series((evaluated > 0.97).astype(int))
     fold_data = pipeline.FoldData(None, None, y_eval, pd.Series(np.zeros(2000, int)), 1.0)
     config = dataclasses.replace(
-        pipeline.CONFIG, alert_rate=0.01, extra_alert_rates=(0.05, 0.01, 0.05)
+        default_config(pipeline), alert_rate=0.01, extra_alert_rates=(0.05, 0.01, 0.05)
     )
 
     row = pipeline.tracked_alert_metrics(
@@ -194,7 +234,7 @@ def test_extra_alert_rates_only_move_the_threshold(pipeline):
 
 
 def test_config_rejects_an_alert_rate_outside_zero_and_one(pipeline):
-    config = dataclasses.replace(pipeline.CONFIG, extra_alert_rates=(0.002, 1.5))
+    config = dataclasses.replace(default_config(pipeline), extra_alert_rates=(0.002, 1.5))
 
     with pytest.raises(ValueError, match="1.5"):
         pipeline.validate_config(config)
@@ -202,7 +242,7 @@ def test_config_rejects_an_alert_rate_outside_zero_and_one(pipeline):
 
 def load_inner_fold(pipeline, folds_dir, excluded_features, standardize_v_columns=False):
     config = dataclasses.replace(
-        pipeline.CONFIG,
+        default_config(pipeline),
         excluded_features=excluded_features,
         standardize_v_columns=standardize_v_columns,
     )
@@ -244,7 +284,7 @@ def test_no_exclusion_keeps_the_31_variables(pipeline, inner_folds_dir):
 def test_standardized_columns_follow_the_v_option_and_the_exclusions(pipeline):
     without_hour = ("hour_sin", "hour_cos")
     v_off = dataclasses.replace(
-        pipeline.CONFIG, excluded_features=without_hour, standardize_v_columns=False
+        default_config(pipeline), excluded_features=without_hour, standardize_v_columns=False
     )
     v_on = dataclasses.replace(v_off, standardize_v_columns=True)
 
@@ -293,28 +333,17 @@ def test_glosh_degree_passes_the_tree_and_both_neighbor_sets(pipeline, monkeypat
 
 
 def test_config_rejects_an_unknown_excluded_feature(pipeline):
-    config = dataclasses.replace(pipeline.CONFIG, excluded_features=("hour",))
+    config = dataclasses.replace(default_config(pipeline), excluded_features=("hour",))
 
     with pytest.raises(ValueError, match="hour"):
         pipeline.validate_config(config)
 
 
 def test_config_rejects_an_unknown_distance(pipeline):
-    config = dataclasses.replace(pipeline.CONFIG, distance="manhattan")
+    config = dataclasses.replace(default_config(pipeline), distance="manhattan")
 
     with pytest.raises(ValueError, match="distance"):
         pipeline.validate_config(config)
-
-
-def test_center_distance_needs_a_mahalanobis_distance(pipeline):
-    config = dataclasses.replace(
-        pipeline.CONFIG, distance="euclidean", extra_anomaly_scores=("center_distance",)
-    )
-    without = dataclasses.replace(config, extra_anomaly_scores=("glosh",))
-
-    with pytest.raises(ValueError, match="center_distance"):
-        pipeline.validate_config(config)
-    pipeline.validate_config(without)
 
 
 def correlated_fold(pipeline):
@@ -326,11 +355,21 @@ def correlated_fold(pipeline):
     return pipeline.FoldData(X_train, X_eval, y_eval, y_train, 1.0)
 
 
-def test_euclidean_distance_keeps_the_standardized_fold(pipeline):
+def test_euclidean_distance_only_moves_the_train_mean_to_the_origin(pipeline):
     fold_data = correlated_fold(pipeline)
-    config = dataclasses.replace(pipeline.CONFIG, distance="euclidean")
+    config = dataclasses.replace(default_config(pipeline), distance="euclidean")
 
-    assert pipeline.whiten(fold_data, config) is fold_data
+    centered = pipeline.whiten(fold_data, config)
+
+    center = fold_data.X_train.mean(axis=0)
+    np.testing.assert_allclose(centered.X_train.mean(axis=0), 0.0, atol=1e-12)
+    np.testing.assert_allclose(centered.X_train, fold_data.X_train - center)
+    np.testing.assert_allclose(centered.X_eval, fold_data.X_eval - center)
+    pairwise = np.linalg.norm(fold_data.X_eval[:, None] - fold_data.X_train[None], axis=2)
+    np.testing.assert_allclose(
+        np.linalg.norm(centered.X_eval[:, None] - centered.X_train[None], axis=2), pairwise
+    )
+    assert centered.y_eval is fold_data.y_eval
 
 
 @pytest.mark.parametrize(
@@ -340,7 +379,7 @@ def test_mahalanobis_distances_whiten_with_their_covariance_fitted_on_the_train(
     pipeline, distance, covariance
 ):
     fold_data = correlated_fold(pipeline)
-    config = dataclasses.replace(pipeline.CONFIG, distance=distance)
+    config = dataclasses.replace(default_config(pipeline), distance=distance)
 
     whitened = pipeline.whiten(fold_data, config)
 
@@ -352,7 +391,7 @@ def test_mahalanobis_distances_whiten_with_their_covariance_fitted_on_the_train(
 
 
 def test_empirical_mahalanobis_leaves_the_train_with_unit_covariance(pipeline):
-    config = dataclasses.replace(pipeline.CONFIG, distance="mahalanobis")
+    config = dataclasses.replace(default_config(pipeline), distance="mahalanobis")
 
     whitened = pipeline.whiten(correlated_fold(pipeline), config)
 
@@ -367,7 +406,6 @@ def test_center_distance_is_the_norm_of_the_whitened_rows(pipeline):
 
     np.testing.assert_allclose(scores.train, [5.0, 1.0])
     np.testing.assert_allclose(scores.evaluated, [10.0])
-    assert scorer.needs_mahalanobis
     assert scorer.neighbors(X_train, X_eval, 50) == ()
 
 
@@ -377,7 +415,7 @@ def test_prepare_fold_whitens_with_the_mcd_without_touching_the_fold_files(
     """Com os V gaussianos da fixture, o treino branqueado tem covariância perto da identidade."""
     files = sorted(Path(inner_folds_dir).iterdir())
     contents_before = [path.read_bytes() for path in files]
-    config = dataclasses.replace(pipeline.CONFIG, distance="mahalanobis_mcd")
+    config = dataclasses.replace(default_config(pipeline), distance="mahalanobis_mcd")
 
     fold_data = pipeline.prepare_fold(
         pipeline.load_fold(
