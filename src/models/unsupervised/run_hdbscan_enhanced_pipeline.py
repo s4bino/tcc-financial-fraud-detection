@@ -161,8 +161,9 @@ def build_config(base: str, distance: str) -> PipelineConfig:
     """Monta a configuração de uma execução da rodada final.
 
     Só a base e a distância variam entre as execuções. Os resultados vão para uma pasta própria
-    de cada combinação, hdbscan_<distância> dentro de paths.FINAL_RUNS_DIR_NAME, com o sufixo da
-    base subamostrada, e o histórico do ciclo interno e o relatório do externo ficam juntos.
+    de cada combinação, hdbscan_<distância> dentro de paths.UNSUPERVISED_DIR_NAME, com o sufixo
+    da base subamostrada, e o histórico do ciclo interno e o relatório do externo ficam juntos. A
+    pasta tem o mesmo nome em results/unsupervised, no repositório.
 
     Parameters
     ----------
@@ -178,7 +179,7 @@ def build_config(base: str, distance: str) -> PipelineConfig:
     """
     folds = paths.FOLD_PATHS[base]
     run_dir = folds.results_dir(
-        paths.RESULTS_DIR / paths.FINAL_RUNS_DIR_NAME, f"hdbscan_{distance}"
+        paths.RESULTS_DIR / paths.UNSUPERVISED_DIR_NAME, f"hdbscan_{distance}"
     )
     return PipelineConfig(
         internal_folds_dir=folds.internal_folds_dir,
