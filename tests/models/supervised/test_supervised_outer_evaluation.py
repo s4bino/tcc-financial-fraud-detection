@@ -11,6 +11,8 @@ As funções auxiliares clean_params e build_model, compartilhadas com a busca
 em grade, também são testadas aqui.
 """
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -24,8 +26,10 @@ from grid_search import (
     supervised_outer_evaluation,
     training_weights,
 )
+from metrics import MEAN_ROW_LABEL, STD_ROW_LABEL
 
 METRIC_COLUMNS = ["auprc", "precision", "recall", "f1"]
+SUMMARY_ROWS = [MEAN_ROW_LABEL, STD_ROW_LABEL]
 
 RF_PARAMS = {"n_estimators": 5, "min_samples_leaf": 2}
 
@@ -148,12 +152,12 @@ def report(tmp_path, outer_folds_dir):
 
 
 def fold_rows(report):
-    return report[report["fold"] != "Média"]
+    return report[~report["fold"].isin(SUMMARY_ROWS)]
 
 
 @pytest.mark.slow
-def test_reports_one_row_per_outer_fold_and_the_mean(report):
-    assert list(report["fold"]) == [1, 2, "Média"]
+def test_reports_one_row_per_outer_fold_the_mean_and_the_std(report):
+    assert list(report["fold"]) == [1, 2, *SUMMARY_ROWS]
 
 
 @pytest.mark.slow
@@ -194,6 +198,41 @@ def test_mean_row_is_the_average_of_the_folds(report):
 
 
 @pytest.mark.slow
+def test_std_row_is_the_sample_deviation_of_the_folds(report):
+    std = report[report["fold"] == STD_ROW_LABEL].iloc[0]
+
+    for metric in METRIC_COLUMNS:
+        assert std[metric] == pytest.approx(fold_rows(report)[metric].std(ddof=1))
+
+
+@pytest.mark.slow
+def test_the_hour_of_the_day_does_not_reach_the_model(tmp_path, outer_folds_dir):
+    """Com a hora fora das variáveis, mudar Time nos folds não muda nenhuma previsão."""
+    shifted_dir = tmp_path / "shifted"
+    shifted_dir.mkdir()
+    rng = np.random.RandomState(0)
+    for path in sorted(Path(outer_folds_dir).iterdir()):
+        target = shifted_dir / path.name
+        if path.suffix == ".csv":
+            fold = pd.read_csv(path)
+            fold["Time"] = rng.uniform(0, 172_800, len(fold))
+            fold.to_csv(target, index=False)
+        else:
+            target.write_bytes(path.read_bytes())
+    common = dict(best_parameter_achieved=RF_PARAMS, model_select="rf", n_jobs=1)
+
+    original = supervised_outer_evaluation(
+        outer_folds_dir=outer_folds_dir, output_dir=str(tmp_path / "a"), **common
+    )
+    shifted = supervised_outer_evaluation(
+        outer_folds_dir=str(shifted_dir), output_dir=str(tmp_path / "b"), **common
+    )
+
+    for metric in [*METRIC_COLUMNS, "TP", "FP", "FN"]:
+        np.testing.assert_allclose(fold_rows(shifted)[metric], fold_rows(original)[metric])
+
+
+@pytest.mark.slow
 def test_writes_the_report_named_after_the_model(tmp_path, outer_folds_dir):
     output_dir = tmp_path / "resultados"
 
@@ -206,7 +245,7 @@ def test_writes_the_report_named_after_the_model(tmp_path, outer_folds_dir):
     )
 
     written = pd.read_csv(output_dir / "xgb_outer_final_report.csv")
-    assert list(written["fold"].astype(str)) == ["1", "2", "Média"]
+    assert list(written["fold"].astype(str)) == ["1", "2", *SUMMARY_ROWS]
 
 
 @pytest.mark.slow
@@ -261,7 +300,7 @@ def test_outer_resume_skips_the_folds_already_saved(tmp_path, outer_folds_dir, m
     resumed = supervised_outer_evaluation(**common, resume=True)
 
     assert len(fitted) == 1
-    assert list(resumed["fold"]) == [1, 2, "Média"]
+    assert list(resumed["fold"]) == [1, 2, *SUMMARY_ROWS]
     for metric in METRIC_COLUMNS:
         np.testing.assert_allclose(resumed[metric].astype(float), full[metric].astype(float))
 

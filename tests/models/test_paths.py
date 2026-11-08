@@ -7,6 +7,7 @@ ser trocada pela variável de ambiente DRIVE_MIRROR.
 """
 
 import filecmp
+import json
 import os
 from pathlib import Path
 
@@ -178,3 +179,44 @@ def test_every_drive_fold_info_gives_the_legitimate_weight_of_its_base(base):
     mirrored = [DRIVE_MIRROR / path.relative_to(paths.DRIVE_DIR) for path in info_files(drive)]
 
     assert_legitimate_weight(base, mirrored)
+
+
+def test_both_lookups_offer_the_same_two_bases():
+    assert set(paths.FOLD_PATHS) == set(paths.LOCAL_FOLD_PATHS) == {"full", "undersampled"}
+    assert paths.FOLD_PATHS["undersampled"] == paths.UNDERSAMPLED_PATH
+    assert paths.LOCAL_FOLD_PATHS["full"] == paths.LOCAL_FULL_PATH
+
+
+def test_run_config_is_written_on_a_new_run(tmp_path):
+    written = paths.guard_run_config(tmp_path / "run", {"model": "rf", "grid": (1, 2)}, False)
+
+    assert json.loads(written.read_text(encoding="utf-8")) == {"model": "rf", "grid": [1, 2]}
+
+
+def test_resume_accepts_the_same_config(tmp_path):
+    config = {"model": "rf", "folds": Path("data/processed"), "grid": (1, 2)}
+    paths.guard_run_config(tmp_path, config, False)
+
+    paths.guard_run_config(tmp_path, config, True)
+
+
+def test_resume_refuses_another_config(tmp_path):
+    paths.guard_run_config(tmp_path, {"model": "rf", "distance": "euclidean"}, False)
+
+    with pytest.raises(ValueError, match="distance"):
+        paths.guard_run_config(tmp_path, {"model": "rf", "distance": "mahalanobis"}, True)
+
+
+def test_resume_refuses_results_without_a_config(tmp_path):
+    (tmp_path / "results_by_fold.csv").write_text("combo_id,fold\n0,1\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=paths.RUN_CONFIG_FILE):
+        paths.guard_run_config(tmp_path, {"model": "rf"}, True)
+
+
+def test_a_run_without_resume_replaces_the_config(tmp_path):
+    paths.guard_run_config(tmp_path, {"model": "rf"}, False)
+
+    written = paths.guard_run_config(tmp_path, {"model": "xgb"}, False)
+
+    assert json.loads(written.read_text(encoding="utf-8")) == {"model": "xgb"}

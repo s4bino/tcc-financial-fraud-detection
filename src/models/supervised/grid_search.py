@@ -16,8 +16,8 @@ from sklearn.metrics import (
 )
 from xgboost import XGBClassifier
 
-from features import build_preprocessor, engineer_features
-from metrics import read_legitimate_weight
+from features import EXCLUDED_FEATURES, build_preprocessor, model_features, scaled_columns
+from metrics import append_fold_summary, read_legitimate_weight
 
 
 def clean_params(params):
@@ -189,6 +189,7 @@ def manual_grid_search(
     n_jobs=-1,
     model_select: str = "rf",
     resume=False,
+    excluded_features=EXCLUDED_FEATURES,
 ):
     """
     Realiza um grid search manual usando folds internos e retorna métricas por fold e médias por combinação.
@@ -198,9 +199,10 @@ def manual_grid_search(
         usando folds internos (train/val), calcular métricas de avaliação e
         identificar os melhores parâmetros segundo uma métrica escolhida.
 
-        As variáveis de entrada são as de engineer_features, padronizadas por build_preprocessor
-        ajustado só no treino de cada fold, como no HDBSCAN* aprimorado: V1 a V28, log_amount e
-        a hora do dia codificada em seno e cosseno. O valor bruto de Time não entra nos modelos.
+        As variáveis de entrada são as de model_features, padronizadas por build_preprocessor
+        ajustado só no treino de cada fold, como no HDBSCAN* aprimorado: V1 a V28 e log_amount,
+        sem as variáveis de excluded_features, que por padrão retira a hora do dia. O valor
+        bruto de Time não entra nos modelos.
 
         As métricas são as mesmas registradas pelo HDBSCAN* aprimorado: a AUPRC (precisão
         média) da probabilidade de fraude, que compara os modelos, e precisão, recall, F1, TP,
@@ -219,6 +221,8 @@ def manual_grid_search(
             combinações já avaliadas. Se False, começa do zero. O arquivo é regravado ao fim de
             cada combinação, de modo que uma execução interrompida perde só as combinações em
             andamento.
+        excluded_features (Sequence[str]): variáveis de engineer_features que não entram no
+            modelo. O padrão é EXCLUDED_FEATURES, o mesmo do HDBSCAN* aprimorado.
 
     Retorno:
         df_folds (pd.DataFrame): Métricas detalhadas por fold e combinação.
@@ -301,11 +305,15 @@ def manual_grid_search(
             df_train = pd.read_csv(train_path)
             df_val = pd.read_csv(val_path)
 
-            preprocessor = build_preprocessor()
+            preprocessor = build_preprocessor(scaled_columns(excluded_features))
 
-            X_train = preprocessor.fit_transform(engineer_features(df_train.drop(columns=[target])))
+            X_train = preprocessor.fit_transform(
+                model_features(df_train.drop(columns=[target]), excluded_features)
+            )
             y_train = df_train[target]
-            X_val = preprocessor.transform(engineer_features(df_val.drop(columns=[target])))
+            X_val = preprocessor.transform(
+                model_features(df_val.drop(columns=[target]), excluded_features)
+            )
             y_val = df_val[target]
 
             # Libera memória do dataframe bruto, já que separamos X e y
@@ -450,6 +458,7 @@ def supervised_outer_evaluation(
     output_dir="results/supervised",
     n_jobs=-1,
     resume=False,
+    excluded_features=EXCLUDED_FEATURES,
 ):
     """
     Executa o ciclo externo da validação cruzada aninhada para o Random Forest ou o XGBoost.
@@ -460,12 +469,12 @@ def supervised_outer_evaluation(
         no teste externo. Todas as rodadas externas usam a mesma configuração, a de maior
         métrica entre as melhores de cada ciclo interno, conforme o critério de seleção descrito
         na Seção 3.1.3.4 da monografia e o mesmo do HDBSCAN* aprimorado. As variáveis de entrada
-        vêm de engineer_features, padronizadas por build_preprocessor ajustado só no treino
-        externo, e as métricas de classification_metrics, as mesmas do ciclo interno e do
-        HDBSCAN* aprimorado.
+        vêm de model_features, sem as de excluded_features, padronizadas por build_preprocessor
+        ajustado só no treino externo, e as métricas de classification_metrics, as mesmas do
+        ciclo interno e do HDBSCAN* aprimorado.
 
-        O relatório traz uma linha por fold e uma linha final, "Média", com a média aritmética
-        das métricas entre os folds, e é gravado em <model_select>_outer_final_report.csv.
+        O relatório traz uma linha por fold e duas linhas finais, "Média" e "Desvio padrão",
+        de append_fold_summary, e é gravado em <model_select>_outer_final_report.csv.
 
     Parâmetros:
         outer_folds_dir (str): pasta com os arquivos fold_k_train.csv e fold_k_test.csv.
@@ -477,10 +486,13 @@ def supervised_outer_evaluation(
         n_jobs (int): número de núcleos usados no treino de cada modelo (-1 = todos).
         resume (bool): se True, retoma o relatório gravado em output_dir e pula os folds já
             avaliados com a mesma configuração. O relatório é regravado ao fim de cada fold.
+        excluded_features (Sequence[str]): variáveis de engineer_features que não entram no
+            modelo, as mesmas do ciclo interno.
 
     Retorno:
         pd.DataFrame com os hiperparâmetros, precisão, recall, F1, AUPRC, TP, FP, FN e tempos de
-        treino e de predição, em minutos, de cada fold, seguido da linha "Média".
+        treino e de predição, em minutos, de cada fold, seguido das linhas "Média" e
+        "Desvio padrão".
 
     Exemplo de uso:
         df_folds, _, _ = manual_grid_search(
@@ -527,11 +539,15 @@ def supervised_outer_evaluation(
         df_train = pd.read_csv(os.path.join(outer_folds_dir, f"fold_{fold}_train.csv"))
         df_test = pd.read_csv(os.path.join(outer_folds_dir, f"fold_{fold}_test.csv"))
 
-        preprocessor = build_preprocessor()
+        preprocessor = build_preprocessor(scaled_columns(excluded_features))
 
-        X_train = preprocessor.fit_transform(engineer_features(df_train.drop(columns=[target])))
+        X_train = preprocessor.fit_transform(
+            model_features(df_train.drop(columns=[target]), excluded_features)
+        )
         y_train = df_train[target]
-        X_test = preprocessor.transform(engineer_features(df_test.drop(columns=[target])))
+        X_test = preprocessor.transform(
+            model_features(df_test.drop(columns=[target]), excluded_features)
+        )
         y_test = df_test[target]
 
         del df_train, df_test
@@ -566,8 +582,8 @@ def supervised_outer_evaluation(
         pd.DataFrame(final_metrics).sort_values("fold").to_csv(report_path, index=False)
 
     df_final = pd.DataFrame(final_metrics).sort_values("fold").reset_index(drop=True)
-    # A média cobre só as métricas e os tempos, já que os hiperparâmetros podem variar por fold
-    mean_columns = [
+    # O resumo cobre só as métricas e os tempos, já que os hiperparâmetros podem variar por fold
+    summary_columns = [
         "precision",
         "recall",
         "f1",
@@ -578,9 +594,7 @@ def supervised_outer_evaluation(
         "train_time_min",
         "predict_time_min",
     ]
-    mean_metrics = df_final[mean_columns].mean().to_dict()
-    mean_metrics["fold"] = "Média"
-    df_final = pd.concat([df_final, pd.DataFrame([mean_metrics])], ignore_index=True)
+    df_final = append_fold_summary(df_final, summary_columns)
 
     df_final.to_csv(report_path, index=False)
     print(f"\nResultados preditivos finais reportados em: {report_path}")

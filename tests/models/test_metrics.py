@@ -388,3 +388,30 @@ def test_the_weighted_threshold_recovers_the_alert_rate_of_the_full_training_set
 def test_the_weighted_threshold_requires_the_training_labels():
     with pytest.raises(ValueError, match="train_labels"):
         alert_threshold(np.arange(10.0), 0.1, legitimate_weight=2.0)
+
+
+def test_fold_summary_appends_the_mean_and_the_sample_deviation():
+    import pandas as pd
+
+    from metrics import MEAN_ROW_LABEL, STD_ROW_LABEL, append_fold_summary
+
+    report = pd.DataFrame({"fold": [1, 2, 3], "auprc": [0.6, 0.7, 0.8], "TP": [7, 8, 9]})
+
+    summary = append_fold_summary(report)
+
+    assert list(summary["fold"]) == [1, 2, 3, MEAN_ROW_LABEL, STD_ROW_LABEL]
+    np.testing.assert_allclose(summary["auprc"].iloc[3:], [0.7, 0.1])
+    np.testing.assert_allclose(summary["TP"].iloc[3:], [8.0, 1.0])
+
+
+def test_fold_summary_can_skip_columns_that_vary_by_fold():
+    import pandas as pd
+
+    from metrics import append_fold_summary
+
+    report = pd.DataFrame({"fold": [1, 2], "max_features": ["sqrt", "sqrt"], "f1": [0.5, 0.7]})
+
+    summary = append_fold_summary(report, ["f1"])
+
+    assert summary["max_features"].iloc[2:].isna().all()
+    np.testing.assert_allclose(summary["f1"].iloc[2], 0.6)

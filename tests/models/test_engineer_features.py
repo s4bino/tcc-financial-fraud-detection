@@ -83,3 +83,29 @@ def test_23h_and_0h_are_neighbours():
     noon = hour_point(12 * 3600)
     assert np.linalg.norm(late - midnight) < np.linalg.norm(late - noon)
     assert np.linalg.norm(late - midnight) == pytest.approx(np.linalg.norm(one_am - midnight))
+
+
+def test_model_features_leave_out_the_hour_by_default(dataset):
+    from features import EXCLUDED_FEATURES, model_features
+
+    features = model_features(dataset.drop(columns=["Class"]))
+
+    assert EXCLUDED_FEATURES == ("hour_sin", "hour_cos")
+    assert list(features.columns) == [*V_COLUMNS, "log_amount"]
+    assert features.index.equals(dataset.index)
+
+
+def test_model_features_can_keep_every_variable(dataset):
+    from features import model_features
+
+    features = model_features(dataset.drop(columns=["Class"]), excluded_features=())
+
+    pd.testing.assert_frame_equal(features, engineer_features(dataset.drop(columns=["Class"])))
+
+
+def test_scaled_columns_skip_the_excluded_variables():
+    from features import scaled_columns
+
+    assert scaled_columns() == ["log_amount"]
+    assert scaled_columns(()) == ["log_amount", "hour_sin", "hour_cos"]
+    assert scaled_columns(extra_columns=["V1"]) == ["log_amount", "V1"]

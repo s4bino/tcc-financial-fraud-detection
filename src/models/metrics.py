@@ -1,8 +1,10 @@
-"""Escores de anomalia do HDBSCAN* aprimorado (grau de anomalia e GLOSH) e o limiar de alerta."""
+"""Escores de anomalia do HDBSCAN* aprimorado (grau de anomalia e GLOSH), o limiar de alerta e o
+resumo dos folds externos, comum a todos os modelos."""
 
 import json
 
 import numpy as np
+import pandas as pd
 
 try:
     from cuml.neighbors import NearestNeighbors
@@ -706,3 +708,40 @@ def alert_threshold(train_scores, alert_rate, train_labels=None, legitimate_weig
         raise ValueError("o limiar ponderado exige train_labels")
     weights = np.where(np.asarray(train_labels) == 1, 1.0, legitimate_weight)
     return np.quantile(train_scores, 1.0 - alert_rate, weights=weights, method="inverted_cdf")
+
+
+MEAN_ROW_LABEL = "Média"
+STD_ROW_LABEL = "Desvio padrão"
+
+
+def append_fold_summary(report, columns=None, label_column="fold"):
+    """
+    Acrescenta ao relatório do ciclo externo a média e o desvio padrão de cada coluna.
+
+    Objetivo:
+        Resume as rodadas externas da validação cruzada aninhada em duas linhas finais, a
+        média e o desvio padrão amostral (ddof = 1) entre os folds, com o mesmo formato no
+        HDBSCAN* aprimorado e nos supervisionados. O desvio mostra a variação entre as rodadas.
+        Como os treinos externos compartilham a maior parte das transações, as rodadas não são
+        independentes, e o desvio subestima a incerteza da média.
+
+    Parâmetros:
+        report (pd.DataFrame): uma linha por fold externo, com a coluna label_column.
+        columns (Sequence[str] | None): colunas resumidas. None resume todas, menos a do fold.
+        label_column (str): coluna que identifica o fold e recebe os rótulos das duas linhas.
+
+    Retorno:
+        pd.DataFrame com as linhas dos folds seguidas de "Média" e "Desvio padrão".
+
+    Exemplo de uso:
+        report = append_fold_summary(pd.DataFrame({"fold": [1, 2], "auprc": [0.6, 0.8]}))
+        report["auprc"].tolist()   # [0.6, 0.8, 0.7, 0.1414]
+    """
+    values = report[list(columns)] if columns is not None else report.drop(columns=[label_column])
+    summary = pd.DataFrame(
+        [
+            {**values.mean().to_dict(), label_column: MEAN_ROW_LABEL},
+            {**values.std(ddof=1).to_dict(), label_column: STD_ROW_LABEL},
+        ]
+    )
+    return pd.concat([report, summary], ignore_index=True)

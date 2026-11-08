@@ -7,6 +7,10 @@ from sklearn.preprocessing import StandardScaler
 V_COLUMNS = [f"V{i}" for i in range(1, 29)]
 # Variáveis criadas por engineer_features, as únicas que build_preprocessor padroniza
 DERIVED_COLUMNS = ("log_amount", "hour_sin", "hour_cos")
+# Variáveis de engineer_features que nenhum modelo recebe. A hora do dia saiu da distância do
+# HDBSCAN* nas rodadas exploratórias e sai também do Random Forest e do XGBoost, para que os três
+# modelos partam das mesmas variáveis.
+EXCLUDED_FEATURES = ("hour_sin", "hour_cos")
 
 
 def engineer_features(X):
@@ -26,7 +30,8 @@ def engineer_features(X):
 
         O valor bruto de Time não entra: ao longo dos dois dias da base, ele só ordena as
         transações, como um identificador. O HDBSCAN* aprimorado e os modelos supervisionados
-        usam esta mesma função, de modo que todos recebem as mesmas variáveis.
+        usam esta mesma função, por meio de model_features, que retira as variáveis de
+        EXCLUDED_FEATURES, de modo que todos recebem as mesmas variáveis.
 
     Parâmetros:
         X (pd.DataFrame): transações com as colunas Time, V1 a V28 e Amount, sem a coluna alvo.
@@ -48,6 +53,54 @@ def engineer_features(X):
     features["hour_sin"] = np.sin(2 * np.pi * hour / 24)
     features["hour_cos"] = np.cos(2 * np.pi * hour / 24)
     return features
+
+
+def model_features(X, excluded_features=EXCLUDED_FEATURES):
+    """
+    Deriva as variáveis de engineer_features e retira as que não entram nos modelos.
+
+    Objetivo:
+        Monta as variáveis que o HDBSCAN*, o Random Forest e o XGBoost recebem. A exclusão
+        acontece na cópia em memória, de modo que os arquivos dos folds não mudam.
+
+    Parâmetros:
+        X (pd.DataFrame): transações com as colunas Time, V1 a V28 e Amount, sem a coluna alvo.
+        excluded_features (Sequence[str]): variáveis de engineer_features retiradas. O padrão é
+            EXCLUDED_FEATURES, a hora do dia.
+
+    Retorno:
+        pd.DataFrame com as variáveis de engineer_features, sem as excluídas e com o índice de X.
+
+    Exemplo de uso:
+        X_train = model_features(df_train.drop(columns=["Class"]))
+        list(X_train.columns)[-1]   # 'log_amount', já sem hour_sin e hour_cos
+    """
+    return engineer_features(X).drop(columns=list(excluded_features))
+
+
+def scaled_columns(excluded_features=EXCLUDED_FEATURES, extra_columns=()):
+    """
+    Lista as variáveis que build_preprocessor padroniza depois de model_features.
+
+    Objetivo:
+        Retira das variáveis derivadas, e das extras pedidas, as que model_features excluiu,
+        para que o ColumnTransformer não procure colunas ausentes.
+
+    Parâmetros:
+        excluded_features (Sequence[str]): as mesmas variáveis passadas a model_features.
+        extra_columns (Sequence[str]): outras variáveis padronizadas, como V1 a V28 quando o
+            pipeline do HDBSCAN* pede a padronização dos componentes.
+
+    Retorno:
+        list[str] na ordem de DERIVED_COLUMNS seguida de extra_columns.
+
+    Exemplo de uso:
+        scaled_columns()                           # ['log_amount']
+        build_preprocessor(scaled_columns())       # padroniza só log_amount
+    """
+    return [
+        column for column in (*DERIVED_COLUMNS, *extra_columns) if column not in excluded_features
+    ]
 
 
 def build_preprocessor(scaled_columns=DERIVED_COLUMNS):
