@@ -37,10 +37,10 @@
             filecolor=rltgreen,     % \href{...} local file
             linkcolor=rltred,       % \ref{...} and \pageref{...}
             citecolor=rltgreen,
-            pdftitle={Detecção de fraudes financeiras},
+            pdftitle={HDBSCAN* para detecção de fraudes financeiras: uma análise comparativa entre agrupamento baseado em densidade e classificadores baseados em árvores de decisão},
           pdfauthor={Heitor Rodrigues Sabino},
           pdfsubject={Trabalho de Conclusão de Curso},
-          pdfkeywords={Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação}%
+          pdfkeywords={Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação; Árvores de Decisão; Aprendizado Não Supervisionado; Aprendizado Supervisionado}%
 ]{hyperref} % para referência cruzadas
 
 \usepackage{subfigure}           % figuras dentro de figuras
@@ -72,8 +72,8 @@
 % Dados da monografia, capa: autor, titulo, banca, etc... - SUBSTITUA DE ACORDO
 %==============================================================================
 \author{Heitor Rodrigues Sabino}
-\title{Detecção de fraudes financeiras: Algoritmo não supervisionado de agrupamento HDBSCAN* em comparação com abordagens supervisionadas de classificação Random Forest e XGBoost}
-\subtitle{}
+\title{HDBSCAN* para detecção de fraudes financeiras}
+\subtitle{Uma análise comparativa entre agrupamento baseado em densidade e classificadores baseados em árvores de decisão}
 \engtitle{}
 \engsubtitle{}
 \edicao{}
@@ -102,7 +102,7 @@
 (Pierre Bourdie)}
 
 % palavras-chave
-\palchaves{Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação.}
+\palchaves{Fraudes Financeiras; Aprendizado de Máquina; HDBSCAN*; Agrupamento; Classificação; Árvores de Decisão; Aprendizado Não Supervisionado; Aprendizado Supervisionado.}
 
 \resumo{ - }  
 
@@ -154,9 +154,9 @@ Além desta introdução, o trabalho está organizado em cinco capítulos. O Cap
 
 \chapter{Trabalhos Correlatos}
 
-Neste capítulo, será feita uma revisão de trabalhos relacionados à temática de detecção de fraudes em cartões de crédito, estabelecendo conexões e contrapontos com a pesquisa proposta neste trabalho. Em particular, serão analisadas as publicações de \citeonline{alarfaj2022}, \citeonline{sulaiman2022}, \citeonline{jurgovsky2018} e \citeonline{ghalwash2025}.
+Neste capítulo, é feita uma revisão de trabalhos relacionados à temática de detecção de fraudes em cartões de crédito, estabelecendo conexões e contrapontos com a pesquisa desenvolvida neste trabalho. Em particular, são analisadas as publicações de \citeonline{alarfaj2022}, \citeonline{sulaiman2022}, \citeonline{jurgovsky2018} e \citeonline{ghalwash2025}.
 
-Baseando-se no mesmo \textit{dataset} que será usado nesta pesquisa, \citeonline{alarfaj2022} construíram uma revisão analisando os principais algoritmos usados na área juntamente com os desafios práticos ao analisar fraudes, tais como alta taxa de alarmes falsos, mudança constante na natureza das fraudes e o alto desbalanceamento das bases. Assim, utilizaram algoritmos tradicionais de Aprendizado de Máquina (\textit{Machine Learning}, ML), sendo eles Árvore de Decisão, \textit{Random Forest}, \textit{Support Vector Machine} (SVM), Regressão Logística, \textit{K-Nearest Neighbours} (KNN) e XGBoost, e, no Aprendizado Profundo (\textit{Deep Learning}, DL), aplicaram e modificaram arquiteturas baseadas em Redes Neurais Convolucionais (CNN). Além disso, também propuseram balanceamento prévio dos dados, com o objetivo de minimizar a taxa de falsos negativos.
+Com base no mesmo \textit{dataset} que é usado nesta pesquisa, \citeonline{alarfaj2022} construíram uma revisão analisando os principais algoritmos usados na área juntamente com os desafios práticos ao analisar fraudes, tais como alta taxa de alarmes falsos, mudança constante na natureza das fraudes e o alto desbalanceamento das bases. Assim, utilizaram algoritmos tradicionais de Aprendizado de Máquina (\textit{Machine Learning}, ML), sendo eles Árvore de Decisão, \textit{Random Forest}, \textit{Support Vector Machine} (SVM), Regressão Logística, \textit{K-Nearest Neighbours} (KNN) e XGBoost, e, no Aprendizado Profundo (\textit{Deep Learning}, DL), aplicaram e modificaram arquiteturas baseadas em Redes Neurais Convolucionais (CNN). Além disso, também propuseram balanceamento prévio dos dados, com o objetivo de minimizar a taxa de falsos negativos.
 
 No estudo, conseguiram aprimorar os algoritmos tradicionais até certo ponto, porém conseguiram resultados superiores com CNN, afirmando que a adição de camadas ocultas na arquitetura da rede neural contribuiu para isso. Com essa abordagem, o modelo proposto alcançou 99,9\% de acurácia, 93\% de precisão, 85,71\% na pontuação F1 e 98\% de área sob a curva ROC (AUC). O destaque de acurácia geral foi de 99,72\%, obtido ao combinar um modelo base com uma CNN de 20 camadas.
 
@@ -209,7 +209,7 @@ As técnicas primárias empregadas no aprendizado supervisionado são a classifi
 
 A segunda principal técnica em ML é o aprendizado não supervisionado, empregado na construção de modelos preditivos em situações onde não há disponibilidade de dados previamente rotulados para o treinamento \cite{solorio2020}. Consequentemente, não há informações prévias sobre a correlação exata entre as características de entrada e saída.
 
-Nesse caso, o papel do algoritmo é permitir que os dados falem por si, revelando as estruturas intrínsecas do conjunto sem a orientação de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados \cite{rezazadeh2025}. Uma das distinções mais significativas em relação à metodologia supervisionada é que as abordagens não supervisionadas frequentemente requerem um grau mais elevado de interpretação humana. Uma vez que não existem métricas estatísticas simples que definam um resultado de forma binária (como um rótulo "certo ou errado"), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados \cite{gopal2018}. As principais categorias do aprendizado não supervisionado incluem:
+Nesse caso, o papel do algoritmo é permitir que os dados falem por si, revelando as estruturas intrínsecas do conjunto sem a orientação de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados \cite{rezazadeh2025}. Uma das distinções mais significativas em relação à metodologia supervisionada é que as abordagens não supervisionadas frequentemente requerem um grau mais elevado de interpretação humana. Uma vez que não existem métricas estatísticas simples que definam um resultado de forma binária (como um rótulo ``certo ou errado''), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados \cite{gopal2018}. As principais categorias do aprendizado não supervisionado incluem:
 
 \begin{itemize}
     \item \textbf{Agrupamento (Clustering):} Considerada a técnica não supervisionada mais prevalente \cite{kononenko2007}, o agrupamento visa organizar os dados com base em suas semelhanças intrínsecas. O objetivo é garantir que os itens dentro de um mesmo agrupamento (\textit{cluster}) compartilhem características fortes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros agrupamentos \cite{iglesias2021, shalev2014}.
@@ -220,9 +220,6 @@ Nesse caso, o papel do algoritmo é permitir que os dados falem por si, reveland
 \subsection{Pipeline de Desenvolvimento e Validação}
 
 A implementação de modelos de aprendizado supervisionado e não supervisionado seguem um fluxo metodológico geral, onde percorre etapas de pré-processamento até a avaliação final.
-
-\subsubsection{Estratificação}
-% Escreva sobre a Estratificação aqui.
 
 \subsubsection{Principal Component Analysis (PCA)}
 
@@ -318,7 +315,7 @@ Quanto à seleção de hiperparâmetros, cada ciclo interno indica a configuraç
 
 \section{Algoritmos Supervisionados}
 
-Neste tópico, serão descritos os algoritmos supervisionados baseados em árvores de decisão selecionados para o embasamento comparativo do estudo.
+Neste tópico, são descritos os algoritmos supervisionados baseados em árvores de decisão selecionados para o embasamento comparativo do estudo.
 
 \subsection{Random Forest}
 
@@ -341,7 +338,7 @@ A partir dessa base conceitual, o XGBoost surge como uma evolução de alta perf
 \subsection{DBSCAN*}
 \label{sec:dbscan}
 
-O DBSCAN* é uma variante do DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}) \cite{ester1996, campello2015} e, como ele, é um algoritmo de agrupamento que identifica padrões nos dados fundamentado na estimativa de níveis mínimos de densidade \cite{schubert2017}. O funcionamento do modelo depende da definição de dois parâmetros principais: um raio de alcance ($\epsilon$) e um número mínimo de vizinhos ($minPts$). Durante a análise, um objeto é classificado como um "ponto central" (\textit{core point}) se a quantidade de vizinhos presentes dentro do seu raio $\epsilon$ for igual ou superior ao limiar estabelecido por $minPts$ \cite{schubert2017, campello2015}.
+O DBSCAN* é uma variante do DBSCAN (\textit{Density-Based Spatial Clustering of Applications with Noise}) \cite{ester1996, campello2015} e, como ele, é um algoritmo de agrupamento que identifica padrões nos dados fundamentado na estimativa de níveis mínimos de densidade \cite{schubert2017}. O funcionamento do modelo depende da definição de dois parâmetros principais: um raio de alcance ($\epsilon$) e um número mínimo de pontos ($m_{pts}$). Durante a análise, um objeto é classificado como um ponto central (\textit{core point}) se a quantidade de pontos presentes dentro do seu raio $\epsilon$, incluindo o próprio objeto, for igual ou superior ao limiar estabelecido por $m_{pts}$ \cite{schubert2017, campello2015}.
 
 A premissa fundamental do algoritmo é localizar regiões contínuas que satisfaçam essa densidade mínima, isolando-as de áreas mais esparsas do conjunto de dados \cite{schubert2017}. No DBSCAN*, os agrupamentos (\textit{clusters}) são formados apenas por pontos centrais: dois pontos centrais contidos no raio $\epsilon$ um do outro são diretamente alcançáveis e pertencem ao mesmo agrupamento, que se expande de forma transitiva para englobar os demais pontos centrais alcançáveis a partir dos seus membros. Os pontos que não são centrais são rotulados como ruído (\textit{noise}) \cite{campello2015}.
 
@@ -597,7 +594,7 @@ O logaritmo preserva a ordem dos valores, de modo que a maior transação contin
 
 \section{Parametrização e avaliação de consistência}
 
-Um passo importante no que tange à parametrização e validação da consistência do modelo é a estratégia a ser tomada para tal feito. Visto isso, visamos realizar validação cruzada aninhada juntamente com a busca em grade como estratégia.
+Um passo importante no que tange à parametrização e validação da consistência do modelo é a estratégia adotada para tal feito. Visto isso, adotou-se a validação cruzada aninhada, juntamente com a busca em grade, como estratégia.
 
 \subsection{Nested Cross-Validation}
 
@@ -632,7 +629,7 @@ No \textit{Random Forest}, a grade abrange o número de variáveis sorteadas em 
 
 No XGBoost, a grade abrange o número de árvores, a profundidade máxima de cada árvore, a taxa de aprendizado e o parâmetro $\gamma$. A taxa de aprendizado (\textit{shrinkage}) multiplica por um fator a contribuição de cada nova árvore, o que reduz a influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo \cite{chen2016}. Por isso, ela é combinada na grade com diferentes números de árvores. O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste \cite{chen2016}. Com $\gamma$ nulo, nenhuma penalidade é aplicada, e valores positivos tornam as árvores mais simples. A profundidade e a taxa de aprendizado abrangem a configuração que \citeonline{chen2016} adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1. Para o desbalanceamento, as fraudes recebem no treinamento um peso igual à razão entre o número de transações legítimas e o de fraudes no treino, valor indicado pela documentação da biblioteca para classes desbalanceadas \cite{xgboost2026}.
 
-No HDBSCAN*, a grade varia o número mínimo de pontos, $m_{pts}$, que atua como fator de suavização das estimativas de densidade (Seção \ref{sec:hdbscan}) e equivale ao número mínimo de vizinhos do DBSCAN*. Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados \apud{sander1998}{schubert2017}, e valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão \cite{schubert2017}. Com as 31 variáveis deste trabalho, a recomendação corresponde a 62 vizinhos, e, como a base é grande, com cerca de 182 mil transações em cada treino interno, a grade explora valores de $m_{pts}$ acima desse ponto de partida. O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização \cite{campello2015}, e o seu valor também foi definido pela busca em grade.
+No HDBSCAN*, a grade varia o número mínimo de pontos, $m_{pts}$, que atua como fator de suavização das estimativas de densidade (Seção \ref{sec:hdbscan}) e equivale ao número mínimo de pontos do DBSCAN*. Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados \apud{sander1998}{schubert2017}, e valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão \cite{schubert2017}. Com as 31 variáveis deste trabalho, a recomendação corresponde a 62 vizinhos, e, como a base é grande, com cerca de 182 mil transações em cada treino interno, a grade explora valores de $m_{pts}$ acima desse ponto de partida. O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização \cite{campello2015}, e o seu valor também foi definido pela busca em grade.
 
 \section{Detecção de Fraudes}
 
