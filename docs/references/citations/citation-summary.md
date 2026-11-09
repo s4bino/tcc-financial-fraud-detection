@@ -433,7 +433,7 @@ o texto, o sumário precisa ser gerado de novo.
    "A Figura 4.1 mostra a correlação de Pearson entre as variáveis: as componentes V1 a V28 não são correlacionadas entre si, por construção do PCA"
 
 123. **(HUANG; LI; XIE, 2015)** → [[scaling-and-standardization#^huang2015-p2|p. 2]]
-   "Já quanto à padronização das variáveis Amount e Time (após a transformação), … escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades"
+   "Já a variável Amount foi escalonada, pois, em ML, esse processo transforma … escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades"
 
 124. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
    "A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$"

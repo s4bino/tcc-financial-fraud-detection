@@ -524,7 +524,7 @@ Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis num�
 
 Através de processos de análise exploratória acerca da base, notou-se que não há necessidade de tratamentos quanto a dados faltantes ou nulos. O conjunto de dados foi originalmente validado nesse sentido. A base contém, no entanto, 1.081 transações que repetem outra em todas as variáveis. Elas são retiradas do conjunto de treinamento do HDBSCAN*, pois cópias de um mesmo ponto ficam a distância zero umas das outras e aumentariam artificialmente a densidade estimada na sua região; os conjuntos de validação e de teste permanecem completos, para que a avaliação cubra todas as transações.
 
-A Figura \ref{fig:correlacao} mostra a correlação de Pearson entre as variáveis: as componentes V1 a V28 não são correlacionadas entre si, por construção do PCA \cite{abdi2010}, e as correlações restantes envolvem Time e Amount. Por conta da anonimização advinda do PCA, não é possível interpretar o que essas correlações representam, e nenhuma variável foi retirada ou fundida por causa delas: todas são mantidas nos modelos com suas devidas transformações e padronizações.
+A Figura \ref{fig:correlacao} mostra a correlação de Pearson entre as variáveis: as componentes V1 a V28 não são correlacionadas entre si, por construção do PCA \cite{abdi2010}, e as correlações restantes envolvem Time e Amount. Por conta da anonimização advinda do PCA, não é possível interpretar o que essas correlações representam, e nenhuma variável foi retirada ou fundida por causa delas.
 
 \begin{figure}[htb]
     \centering
@@ -535,26 +535,13 @@ A Figura \ref{fig:correlacao} mostra a correlação de Pearson entre as variáve
     {\small Fonte: Do autor (2026).}
 \end{figure}
 
-A variável Time registra os segundos decorridos desde a primeira transação da base e cresce ao longo dos dois dias de coleta, de modo que, em seu valor bruto, apenas ordena as transações, como um identificador. A Figura \ref{fig:hora} compara o horário das transações legítimas e das fraudulentas: convertidas em hora do dia, as fraudes se concentram em determinadas faixas de horário (painel b), e a faixa de maior risco tem 5,6 vezes mais fraudes por transação que a de menor risco (painel c). Por isso, o valor bruto de Time não é usado por nenhum dos modelos. Dele se extrai apenas a posição da transação no ciclo de 24 horas, cuja distribuição difere entre fraudes e transações legítimas, como confirma o teste de Kolmogorov-Smirnov sobre a hora do dia ($D = 0{,}197$; $p < 0{,}001$). O valor de $D$ é a maior diferença entre as proporções acumuladas das duas classes ao longo do dia: em certo horário, a fração das fraudes ocorridas até ali difere em 19,7 pontos percentuais da fração das transações legítimas. O valor de $p$ indica que uma diferença desse tamanho seria muito improvável se as duas classes tivessem a mesma distribuição de horários.
+A variável Time registra os segundos decorridos desde a primeira transação da base e, por isso, apenas cresce de uma transação para a seguinte ao longo dos dois dias de coleta, como um contador. Dessa forma, ela não acrescenta informação significativa aos modelos deste trabalho e não é usada por nenhum deles. Em análises exploratórias, Time foi incluída nos modelos, transformada em intervalos de hora, mas os resultados pouco diferiram dos apresentados no Capítulo 5, já que as fraudes de maior escore de anomalia se afastam das transações legítimas em poucas componentes de grande desvio, e a hora quase não altera essa distância. Os modelos recebem, assim, 29 variáveis: as componentes V1 a V28 e a variável Amount, transformada como descrito a seguir.
 
-\begin{figure}[htb]
-    \centering
-    \caption{Horário das transações legítimas e fraudulentas. (a) Distribuição ao longo da coleta; (b) distribuição por hora do dia; (c) fraudes por 10.000 transações em cada faixa de três horas.}
-    \label{fig:hora}
-    \includegraphics[width=\textwidth]{03-time-relevance.pdf}
-    \par\vspace{2mm}
-    {\small Fonte: Do autor (2026).}
-\end{figure}
+Durante a etapa de pré-processamento foram feitas algumas transformações quanto aos dados. Assim, foi padronizada apenas a variável Amount, e não as que passaram pelo processo de PCA, pois pressupõe-se que em ordem de aplicar a transformação PCA, é necessário que passe pelo processo de padronização antes, visto que o método é sensível às escalas.
 
-Como a base não informa o horário da primeira transação, a hora do dia é contada a partir desse instante, e não do horário de fato. O deslocamento é o mesmo para todas as transações, de modo que a duração do ciclo, a distância entre os horários e a diferença entre fraudes e transações legítimas se preservam; apenas os rótulos das faixas da Figura \ref{fig:hora} deixam de corresponder ao horário local.
+Já a variável Amount foi escalonada, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim as \textit{features} escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
 
-A coluna Time passou então pela transformação para representar a hora do dia. O HDBSCAN*, o \textit{Random Forest} e o XGBoost recebem essa mesma representação.
-
-Durante a etapa de pré-processamento foram feitas algumas transformações quanto aos dados. Assim, foram feitas padronizações nas variáveis exceto pela variável Class e pelas que passaram pelo processo de PCA, pois pressupõe-se que em ordem de aplicar a transformação PCA, é necessário que passe pelo processo de padronização antes, visto que o método é sensível às escalas.
-
-Já quanto à padronização das variáveis Amount e Time (após a transformação), foram escalonadas, pois, em ML, esse processo transforma os valores das variáveis de acordo com uma regra definida, assim essas \textit{features} escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades \cite{huang2015}.
-
-Para a hora do dia e para a coluna Amount foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
+Para a coluna Amount foi feito o escalonamento padrão, \textit{Z-score standardization} (Equação \ref{eq:zscore}):
 
 \begin{equation}
     z = \frac{x - \mu_X}{\sigma_X}
@@ -631,7 +618,7 @@ No \textit{Random Forest}, a grade abrange o número de variáveis sorteadas em 
 
 No XGBoost, a grade abrange o número de árvores, a profundidade máxima de cada árvore, a taxa de aprendizado e o parâmetro $\gamma$. A taxa de aprendizado (\textit{shrinkage}) multiplica por um fator a contribuição de cada nova árvore, o que reduz a influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo \cite{chen2016}. Por isso, ela é combinada na grade com diferentes números de árvores. O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste \cite{chen2016}. Com $\gamma$ nulo, nenhuma penalidade é aplicada, e valores positivos tornam as árvores mais simples. A profundidade e a taxa de aprendizado abrangem a configuração que \citeonline{chen2016} adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1. Para o desbalanceamento, as fraudes recebem no treinamento um peso igual à razão entre o número de transações legítimas e o de fraudes no treino, valor indicado pela documentação da biblioteca para classes desbalanceadas \cite{xgboost2026}.
 
-No HDBSCAN*, a grade varia o número mínimo de pontos, $m_{pts}$, que atua como fator de suavização das estimativas de densidade (Seção \ref{sec:hdbscan}) e equivale ao número mínimo de pontos do DBSCAN*. Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados \apud{sander1998}{schubert2017}, e valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão \cite{schubert2017}. Com as 31 variáveis deste trabalho, a recomendação corresponde a 62 vizinhos, e, como a base é grande, com cerca de 182 mil transações em cada treino interno, a grade explora valores de $m_{pts}$ acima desse ponto de partida. O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização \cite{campello2015}, e o seu valor também foi definido pela busca em grade.
+No HDBSCAN*, a grade varia o número mínimo de pontos, $m_{pts}$, que atua como fator de suavização das estimativas de densidade (Seção \ref{sec:hdbscan}) e equivale ao número mínimo de pontos do DBSCAN*. Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados \apud{sander1998}{schubert2017}, e valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão \cite{schubert2017}. Com as 29 variáveis que os modelos recebem, a recomendação corresponde a 58 pontos, e, como a base é grande, com cerca de 182 mil transações em cada treino interno, a grade explora valores de $m_{pts}$ acima desse ponto de partida. O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização \cite{campello2015}, e o seu valor também foi definido pela busca em grade.
 
 \section{Detecção de Fraudes}
 
