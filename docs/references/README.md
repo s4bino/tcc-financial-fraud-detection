@@ -51,7 +51,7 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 58 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 59 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
@@ -67,6 +67,7 @@ de status com essa informação e a seção onde a obra é citada.
 | `sulaiman2022` | ✓ | Sulaiman, Schetinin & Sant. *Review of Machine Learning Approach on Credit Card Fraud Detection*. Human-Centric Intelligent Systems, 2022. |
 | `jurgovsky2018` | ✓ | Jurgovsky et al. *Sequence Classification for Credit-Card Fraud Detection*. Expert Systems with Applications, 2018. |
 | `ghalwash2025` | ✓ | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
+| `leborgne2022` | ✓ | Le Borgne, Siblini, Lebichot & Bontempi. *Reproducible Machine Learning for Credit Card Fraud Detection: Practical Handbook*. Université Libre de Bruxelles, 2022. Livro on-line do mesmo grupo que publicou a base do Kaggle, sem PDF: <https://fraud-detection-handbook.github.io/fraud-detection-handbook/>. |
 | `ngai2011` | ✓ | Ngai, Hu, Wong, Chen & Sun. *The application of data mining techniques in financial fraud detection: A classification framework and an academic review of literature*. Decision Support Systems, 2011. |
 | `west2016` | ✓ | West & Bhattacharya. *Intelligent financial fraud detection: A comprehensive review*. Computers & Security, 2016. O PDF é a versão aceita do manuscrito. |
 | `dalpozzolo2018` | ✓ | Dal Pozzolo, Boracchi, Caelen, Alippi & Bontempi. *Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy*. IEEE Transactions on Neural Networks and Learning Systems, 2018. |

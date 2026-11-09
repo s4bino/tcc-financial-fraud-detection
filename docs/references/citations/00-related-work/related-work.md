@@ -1,11 +1,12 @@
 > [!check] Status: em uso na monografia
 > Todas as chaves constam do `refbib.bib` e são citadas em Trabalhos Correlatos.
-> - `alarfaj2022`: mesmo conjunto de dados, algoritmos de ML e CNN. Também citado em Metodologia › Conjunto de Dados.
+> - `alarfaj2022`: mesmo conjunto de dados, algoritmos de ML e CNN, e, no contraste com o Sulaiman, o Random Forest e o XGBoost entre as abordagens da literatura. Também citado em Metodologia › Conjunto de Dados.
 > - `sulaiman2022`: revisão da literatura, predomínio do supervisionado e proposta com aprendizado federado.
 > - `jurgovsky2018`: LSTM contra Random Forest em dados da Worldline, avaliação pela AUPRC.
 > - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
 > - `moulavi2014`: citado no contraste com o Sulaiman, para o DBCV escolher os hiperparâmetros sem rótulos.
+> - `ngai2011` e `leborgne2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost. O `leborgne2022` é um livro on-line, sem PDF.
 
 ## Alarfaj et al. (2022)
 
@@ -347,4 +348,27 @@ Páginas do PDF local, que é a versão aceita do manuscrito.
 > Página 11 na numeração da revista. Complementa o trecho anterior: a hierarquia cobre todos os valores do raio.
 
 ^campello2015-p12
+
+## Escolha do Random Forest e do XGBoost, no contraste com o Sulaiman
+
+> [!PDF|yellow] [[ngai2011_data-mining-financial-fraud-detection-review.pdf#page=6&selection=38,0,53,42&color=yellow|ngai2011_data-mining-financial-fraud-detection-review, p.6]]
+> > Decision trees are commonly used in credit card, automobile insurance, and corporate fraud.
+>
+> Página 564 da revista. Sustenta que as árvores de decisão são comuns na detecção de fraudes com cartão de crédito.
+
+^ngai2011-p6
+
+> [!PDF|yellow] [[alarfaj2022_credit-card-fraud-detection-state-of-the-art.pdf#page=1&selection=45,76,47,87&color=yellow|alarfaj2022_credit-card-fraud-detection-state-of-the-art, p.1]]
+> > The relevant literature presents many machines learning based approaches for credit card detection, such as Extreme Learning Method, Decision Tree, Random Forest, Support Vector Machine, Logistic Regression and XG Boost.
+>
+> Página 39700 da revista. Sustenta que o Random Forest e o XGBoost estão entre as abordagens de aprendizado de máquina que a literatura apresenta para a detecção de fraudes com cartão de crédito.
+
+^alarfaj2022-p1-6
+
+> [!quote] Livro on-line: [Reproducible Machine Learning for Credit Card Fraud Detection, Capítulo 2, Seção 4.2](https://fraud-detection-handbook.github.io/fraud-detection-handbook/Chapter_2_Background/MachineLearningForFraudDetection.html), conferido em 09/11/2026
+> > We decided, based on our research works, to cover five types of methods: logistic regression (LR), decision trees (DT), Random forests (RF), Boosting, and Neural networks/Deep learning (NN/DL). LR and DT were chosen due to their simplicity and interpretability. RF and Boosting were chosen since they are currently considered to be state-of-the-art in terms of performance.
+>
+> Sustenta o Random Forest e o *boosting* como o estado da arte em desempenho na detecção de fraudes com cartão de crédito. No Capítulo 3, Seção 4.4, o modelo de *boosting* dos autores é o `XGBClassifier` do XGBoost, o que sustenta a aplicação por meio do XGBoost.
+
+^leborgne2022-doc
 

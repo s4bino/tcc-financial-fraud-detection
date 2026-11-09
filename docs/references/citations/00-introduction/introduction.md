@@ -6,6 +6,7 @@
 > - `west2016`: detecção manual impraticável e adoção de métodos estatísticos e computacionais. Citado pelo Alcino (2022) para a mesma afirmação. Também citado em Fundamentação Teórica › Random Forest.
 > - `dalpozzolo2018`: desafios da detecção e rótulos fornecidos pelos investigadores, em geral com atraso. Citado por Jurgovsky et al. (2018) como 2017, ano da publicação antecipada.
 > - `sulaiman2022`, `ghosh2024`, `campello2015`, `moulavi2014` e `davis2006`: restrição de acesso a dados reais, premissa da baixa densidade, HDBSCAN\* com agrupamento e detecção de *outliers*, DBCV sem rótulos e AUPRC sob desbalanceamento. Os grifos de Sulaiman, Ghosh, Moulavi e Davis repetem os das notas de Trabalhos Correlatos e da Fundamentação Teórica.
+> - `neto2021`: agrupamento por densidade com grupos de formatos arbitrários e separação do ruído, e o HDBSCAN\* como estado da arte entre esses métodos. Também citado em Fundamentação Teórica › HDBSCAN\*.
 > - `kaggle2018`: período, origem e proporção de fraudes da base. É a página do conjunto de dados no Kaggle, sem PDF.
 
 ## Fraude financeira e fraude com cartão de crédito
@@ -124,6 +125,13 @@
 > Sustenta a detecção de anomalias e a necessidade de um escore de anomalia.
 
 ^jurgovsky2018-p7
+
+> [!PDF|yellow] [[neto2021_multiple-density-based-clustering-hierarchies.pdf#page=1&selection=83,41,93,45&color=yellow|neto2021_multiple-density-based-clustering-hierarchies, p.1]]
+> > Algorithms in this class, such as DBSCAN [16], DENCLUE [21], OPTICS [3] and HDBSCAN* [9], stand out for their ability to find clusters of arbitrary shapes and to differentiate between cluster points and noise. HDBSCAN*, the current state-of-the-art among those, computes a hierarchy of nested clusters, representing clusters at different density levels.
+>
+> Página 3075 da revista. Sustenta que os métodos de agrupamento baseados em densidade se destacam por encontrar grupos de formatos arbitrários e por distinguir os pontos dos grupos do ruído, e que o HDBSCAN\* é o estado da arte entre eles.
+
+^neto2021-p1
 
 > [!PDF|yellow] [[ghosh2024_parameter-free-outlier-detection-hdbscan-glosh.pdf#page=2&selection=188,0,189,67&color=yellow|ghosh2024_parameter-free-outlier-detection-hdbscan-glosh, p.2]]
 > > Unsupervised outlier detection is based on the premise that potential outliers lie in low-density regions of the reference set.
