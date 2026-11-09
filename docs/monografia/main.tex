@@ -231,9 +231,7 @@ A Análise de Componentes Principais é um procedimento de estatística multivar
 \subsubsection{Validação Cruzada Aninhada}
 \label{sec:nested}
 
-Com o fim de mitigar o viés de otimismo na estimativa de desempenho, assegurar a estabilidade estatística, garantindo a consistência e confiabilidade dos resultados, e, também, fazer a cobertura integral do conjunto de dados durante o processo de modelagem, adotou-se a metodologia de validação cruzada aninhada (\textit{nested cross-validation}). Para \citeonline{krstajic2014}, parafraseando a literatura clássica \cite{stone1974, varma2006}, essa abordagem é indispensável quando se realiza otimização de hiperparâmetros, pois impede o vazamento de informações (\textit{data leakage}) ao separar de forma clara a etapa de calibração da etapa de generalização.
-
-Segundo \citeonline{berrar2024}, a validação cruzada \textit{k-fold} consiste em particionar o conjunto de dados disponível, por amostragem aleatória sem reposição, em $k$ subconjuntos disjuntos (\textit{folds}) de tamanho aproximadamente igual. Em cada uma de $k$ rodadas, o modelo é treinado com $k-1$ subconjuntos, que formam o conjunto de treinamento, e avaliado no subconjunto restante, denominado conjunto de validação. O procedimento se repete até que cada subconjunto tenha sido utilizado uma vez para validação, e a média das $k$ medidas de desempenho constitui a estimativa obtida por validação cruzada. Quando a amostragem é estratificada, cada subconjunto preserva a proporção das classes do conjunto original. A Figura \ref{fig:kfold} ilustra o procedimento para $k = 5$.
+Segundo \citeonline{berrar2024}, a validação cruzada é um dos métodos de reamostragem de dados mais usados para a seleção e a avaliação de modelos. Na validação cruzada \textit{k-fold}, o conjunto de dados disponível é particionado, por amostragem aleatória sem reposição, em $k$ subconjuntos disjuntos (\textit{folds}) de tamanho aproximadamente igual. Em cada uma de $k$ rodadas, o modelo é treinado com $k-1$ subconjuntos, que formam o conjunto de treinamento, e avaliado no subconjunto restante, denominado conjunto de validação. O procedimento se repete até que cada subconjunto tenha sido utilizado uma vez para validação, e a média das $k$ medidas de desempenho constitui a estimativa obtida por validação cruzada. Quando a amostragem é estratificada, cada subconjunto preserva a proporção das classes do conjunto original. A Figura \ref{fig:kfold} ilustra o procedimento para $k = 5$.
 
 \begin{figure}[htb]
     \centering
@@ -262,7 +260,9 @@ Segundo \citeonline{berrar2024}, a validação cruzada \textit{k-fold} consiste 
     {\small Fonte: Adaptado de \citeonline{berrar2024}.}
 \end{figure}
 
-A validação cruzada aninhada executa esse procedimento em dois níveis. O ciclo externo corresponde a uma validação cruzada \textit{k-fold} convencional, destinada a estimar o desempenho de generalização. Em cada rodada externa, o conjunto de treinamento é submetido a uma nova validação cruzada, o ciclo interno, na qual são avaliadas as configurações candidatas de hiperparâmetros. A configuração de melhor desempenho médio no ciclo interno é utilizada para treinar o modelo com todo o conjunto de treinamento externo, que é então avaliado no subconjunto de teste externo. A estimativa final corresponde à média dos desempenhos obtidos nas $k$ rodadas externas, e as configurações selecionadas podem diferir entre as rodadas. Desse modo, a seleção de hiperparâmetros permanece separada da avaliação do modelo \cite{berrar2024}. A Figura \ref{fig:nested} ilustra o esquema.
+Quando a validação cruzada é usada ao mesmo tempo para ajustar os hiperparâmetros e para estimar o desempenho do modelo, a estimativa obtida tem um viés otimista \cite{berrar2024}. Para \citeonline{krstajic2014}, parafraseando a literatura clássica \cite{stone1974, varma2006}, a validação cruzada aninhada (\textit{nested cross-validation}) é indispensável quando se realiza otimização de hiperparâmetros, pois impede o vazamento de informações (\textit{data leakage}) ao separar de forma clara a etapa de calibração da etapa de generalização.
+
+Para isso, a validação cruzada aninhada opera em dois níveis. O ciclo externo corresponde a uma validação cruzada \textit{k-fold} convencional, destinada a estimar o desempenho de generalização. Em cada rodada externa, o conjunto de treinamento é submetido a uma nova validação cruzada, o ciclo interno, na qual são avaliadas as configurações candidatas de hiperparâmetros. A configuração de melhor desempenho médio no ciclo interno é utilizada para treinar o modelo com todo o conjunto de treinamento externo, que é então avaliado no subconjunto de teste externo. A estimativa final corresponde à média dos desempenhos obtidos nas $k$ rodadas externas, e as configurações selecionadas podem diferir entre as rodadas. Desse modo, a seleção de hiperparâmetros permanece separada da avaliação do modelo \cite{berrar2024}. A Figura \ref{fig:nested} ilustra o esquema.
 
 \begin{figure}[htb]
     \centering
@@ -311,8 +311,6 @@ A validação cruzada aninhada executa esse procedimento em dois níveis. O cicl
     {\small Fonte: Adaptado de \citeonline{berrar2024}.}
 \end{figure}
 
-Quanto à seleção de hiperparâmetros, cada ciclo interno indica a configuração de melhor desempenho, e, dentre as configurações assim obtidas, seleciona-se a de melhor desempenho, que é aplicada a todas as rodadas externas. O desempenho é medido pela AUPRC nos modelos supervisionados (Seção \ref{sec:ap}) e, no HDBSCAN*, pelo DBCV, índice que avalia a qualidade do agrupamento sem utilizar rótulos (Seção \ref{sec:dbcv}).
-
 \section{Algoritmos Supervisionados}
 
 Neste tópico, são descritos os algoritmos supervisionados baseados em árvores de decisão selecionados para o embasamento comparativo do estudo.
@@ -354,7 +352,7 @@ A principal diferença do HDBSCAN* em relação ao DBSCAN* está no tratamento d
     \label{eq:mrd}
 \end{equation}
 
-em que $d(x_p, x_q)$ é a distância original entre os dois pontos.
+em que $d(x_p, x_q)$ é a distância entre os vetores de atributos dos dois pontos, dada pela função de distância escolhida para os dados, como a euclidiana, a mesma que define os vizinhos no cálculo da distância núcleo \cite{campello2015}.
 
 Essas distâncias definem o grafo de alcançabilidade mútua, um grafo completo cujos vértices são os pontos do conjunto de dados e cujas arestas têm como peso a distância de alcançabilidade mútua entre eles \cite{campello2015}. Esse grafo é conceitual e não precisa ser materializado, pois os pesos das arestas são calculados sob demanda para a obtenção da sua árvore geradora mínima \cite{neto2022}. As arestas dessa árvore são então removidas em ordem decrescente de peso, o que equivale a reduzir progressivamente o raio $\epsilon$: a cada remoção, os componentes conectados de pontos centrais formam os agrupamentos, e os demais pontos passam a ser ruído \cite{campello2015}. Dessa forma, enquanto o DBSCAN* produz um único agrupamento para o raio escolhido, o HDBSCAN* produz uma hierarquia que reúne todos os agrupamentos que o DBSCAN* obteria para o valor de $m_{pts}$ e para qualquer $\epsilon \in [0, \infty)$ \cite{campello2015}.
 
@@ -372,7 +370,7 @@ Para quantificar o desempenho dos modelos de classificação, utilizam-se métri
 
 \subsection{Matriz de Confusão}
 
-Em uma classificação binária, cada exemplo pertence a uma de duas classes, a positiva ou a negativa, e o classificador atribui a ele uma delas. Neste trabalho, a classe positiva corresponde à fraude. A matriz de confusão cruza a classe predita com a classe real e organiza as quatro combinações possíveis. Os verdadeiros positivos (VP) são as fraudes classificadas como fraude, e os falsos negativos (FN), as fraudes classificadas como legítimas. Os verdadeiros negativos (VN) são as transações legítimas classificadas como legítimas, e os falsos positivos (FP), as transações legítimas classificadas como fraude \cite{fawcett2006}. O Quadro \ref{qua:confusao} apresenta a disposição dessas contagens.
+Em uma classificação binária, cada exemplo pertence a uma de duas classes, a positiva ou a negativa, e o classificador atribui a ele uma delas. A matriz de confusão cruza a classe predita com a classe real e organiza as quatro combinações possíveis. Os verdadeiros positivos (VP) são os exemplos positivos classificados como positivos, e os falsos negativos (FN), os exemplos positivos classificados como negativos. Os verdadeiros negativos (VN) são os exemplos negativos classificados como negativos, e os falsos positivos (FP), os exemplos negativos classificados como positivos \cite{fawcett2006}. O Quadro \ref{qua:confusao} apresenta a disposição dessas contagens.
 
 \begin{quadro}[htb]
     \centering
@@ -383,11 +381,11 @@ Em uma classificação binária, cada exemplo pertence a uma de duas classes, a 
         \hline
         \multicolumn{2}{|c|}{\multirow{2}{*}{}} & \multicolumn{2}{c|}{\textbf{Classe real}} \\
         \cline{3-4}
-        \multicolumn{2}{|c|}{} & Fraude & Legítima \\
+        \multicolumn{2}{|c|}{} & Positiva & Negativa \\
         \hline
-        \multirow{2}{*}{\textbf{Classe predita}} & Fraude & VP & FP \\
+        \multirow{2}{*}{\textbf{Classe predita}} & Positiva & VP & FP \\
         \cline{2-4}
-         & Legítima & FN & VN \\
+         & Negativa & FN & VN \\
         \hline
     \end{tabular}
     \par\vspace{2mm}
@@ -407,7 +405,7 @@ Em bases desbalanceadas, porém, a acurácia não é uma medida adequada \cite{c
 
 \subsection{Precisão}
 
-A precisão é a proporção de verdadeiros positivos entre os exemplos classificados como positivos (Equação \ref{eq:precisao}) \cite{fawcett2006}. Na detecção de fraudes, ela indica quantas das transações sinalizadas como suspeitas são de fato fraudes.
+A precisão é a proporção de verdadeiros positivos entre os exemplos classificados como positivos (Equação \ref{eq:precisao}) \cite{fawcett2006}.
 
 \begin{equation}
     \text{Precisão} = \frac{VP}{VP + FP}
@@ -416,7 +414,7 @@ A precisão é a proporção de verdadeiros positivos entre os exemplos classifi
 
 \subsection{Revocação}
 
-A revocação (\textit{recall}), também chamada de sensibilidade ou taxa de verdadeiros positivos, é a proporção dos exemplos positivos que o classificador identifica (Equação \ref{eq:revocacao}) \cite{fawcett2006}. Na detecção de fraudes, ela indica quantas das fraudes existentes são sinalizadas.
+A revocação (\textit{recall}), também chamada de sensibilidade ou taxa de verdadeiros positivos, é a proporção dos exemplos positivos que o classificador identifica (Equação \ref{eq:revocacao}) \cite{fawcett2006}.
 
 \begin{equation}
     \text{Revocação} = \frac{VP}{VP + FN}
@@ -434,7 +432,7 @@ A pontuação F1 (\textit{F-measure}) combina a precisão e a revocação em um 
 
 \subsection{Curva de Precisão e Revocação}
 
-As métricas anteriores dependem de um limiar de decisão. Os modelos utilizados neste trabalho atribuem a cada exemplo um escore, como a probabilidade estimada de fraude ou o grau de anomalia, e o exemplo é classificado como positivo quando esse escore supera o limiar \cite{fawcett2006}. Cada limiar produz um par de valores de precisão e revocação, e a curva de precisão e revocação reúne esses pares ao longo de todos os limiares possíveis \cite{davis2006}.
+As métricas anteriores dependem de um limiar de decisão. Alguns classificadores atribuem a cada exemplo um escore, valor numérico que representa o grau em que o exemplo pertence a uma classe, como uma probabilidade estimada, e o exemplo é classificado como positivo quando esse escore supera um limiar \cite{fawcett2006}. Cada limiar produz um par de valores de precisão e revocação, e a curva de precisão e revocação reúne esses pares ao longo de todos os limiares possíveis \cite{davis2006}.
 
 Em problemas com grande desbalanceamento entre as classes, a curva ROC (\textit{Receiver Operating Characteristic}), que relaciona as taxas de verdadeiros e de falsos positivos, pode apresentar uma visão excessivamente otimista do desempenho, e a curva de precisão e revocação é apontada como alternativa \cite{davis2006}. Com muitos exemplos negativos, um aumento expressivo no número de falsos positivos altera pouco a taxa de falsos positivos, mas reduz a precisão, que compara os falsos positivos aos verdadeiros positivos \cite{davis2006}.
 
@@ -616,7 +614,7 @@ Neste trabalho, adotou-se a Busca em Grade (\textit{Grid Search}) como mecanismo
 
 De acordo com estudos comparativos em otimização de hiperparâmetros \cite{liashchynskyi2019}, o \textit{Grid Search} demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade. Embora possua um custo computacional linearmente proporcional ao tamanho da grade, o método assegura a exploração completa do domínio de parâmetros estipulados, garantindo a localização da combinação que matematicamente maximiza a métrica de desempenho na partição de validação, sem o risco de convergência prematura para ótimos locais.
 
-Nos três modelos, a busca em grade é executada no ciclo interno da validação cruzada aninhada, e a seleção segue o procedimento descrito na Seção \ref{sec:nested}. Em cada uma das cinco rodadas, as combinações da grade são treinadas no treino interno e avaliadas na validação interna, e a de melhor desempenho é indicada. Dentre as cinco combinações indicadas, a de melhor desempenho é selecionada e aplicada a todas as rodadas do ciclo externo, nas quais o modelo é treinado com todo o treino externo e avaliado no teste externo. Assim, em cada rodada, o modelo avaliado é treinado sem as transações do teste. O desempenho é medido pela AUPRC no \textit{Random Forest} e no XGBoost e pelo DBCV no HDBSCAN*.
+Nos três modelos, a busca em grade é executada no ciclo interno da validação cruzada aninhada (Seção \ref{sec:nested}). Em cada uma das cinco rodadas, as combinações da grade são treinadas no treino interno e avaliadas na validação interna, e a de melhor desempenho é indicada. Dentre as cinco combinações indicadas, a de melhor desempenho é selecionada e aplicada a todas as rodadas do ciclo externo, nas quais o modelo é treinado com todo o treino externo e avaliado no teste externo. Assim, em cada rodada, o modelo avaliado é treinado sem as transações do teste. O desempenho é medido pela AUPRC no \textit{Random Forest} e no XGBoost e pelo DBCV no HDBSCAN*.
 
 No HDBSCAN*, o DBCV (Seção \ref{sec:dbcv}) é calculado sobre o agrupamento obtido no treino interno, sem os rótulos, de modo que nenhuma informação sobre as fraudes participa da escolha. O índice parte da matriz de distâncias entre todos os pares de objetos \cite{moulavi2014}. Devido a isso, tem-se uma complexidade quadrática de espaço e de tempo. Assim, o DBCV é calculado sobre uma amostra do conjunto de dados em questão, estratificada pelos grupos encontrados, incluindo o ruído.
 
@@ -670,7 +668,7 @@ em que $Q_{1-\alpha}$ é o quantil de ordem $1 - \alpha$, $x_i$ é a $i$-ésima 
 
 \subsection{Comparação dos Modelos}
 
-A comparação entre os modelos usa a AUPRC, calculada pela precisão média (Seção \ref{sec:ap}) sobre o escore contínuo de cada modelo, a probabilidade de fraude nos supervisionados e o grau de anomalia no HDBSCAN*. Como depende apenas da ordenação das transações, a AUPRC não é afetada pelos limiares, que diferem entre os modelos. A precisão, a revocação e a pontuação F1 são calculadas sobre as classes atribuídas pela regra de decisão de cada modelo e complementam a análise, mas dependem do limiar adotado. Todas as métricas são calculadas no teste de cada rodada externa, e o desempenho de cada modelo é a média entre as cinco rodadas.
+Nas métricas de avaliação, a fraude é a classe positiva, e a transação legítima, a negativa. A comparação entre os modelos usa a AUPRC, calculada pela precisão média (Seção \ref{sec:ap}) sobre o escore contínuo de cada modelo, a probabilidade de fraude nos supervisionados e o grau de anomalia no HDBSCAN*. Como depende apenas da ordenação das transações, a AUPRC não é afetada pelos limiares, que diferem entre os modelos. A precisão, a revocação e a pontuação F1 são calculadas sobre as classes atribuídas pela regra de decisão de cada modelo e complementam a análise, mas dependem do limiar adotado. A precisão indica quantas das transações sinalizadas como suspeitas são de fato fraudes, e a revocação, quantas das fraudes existentes são sinalizadas. Todas as métricas são calculadas no teste de cada rodada externa, e o desempenho de cada modelo é a média entre as cinco rodadas.
 
 \section{Ambiente de Execução e Bibliotecas}
 

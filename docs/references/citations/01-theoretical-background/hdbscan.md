@@ -52,6 +52,13 @@
 
 ^campello2015-p11
 
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=9&selection=40,0,96,5&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.9]]
+> > Let X = {x1, . . . , xn} be a dataset containing n data objects, each of which is described by an attribute vector, x(·). In addition, let D be (conceptually only) an n × n symmetric matrix containing the distances d(xp, xq) between pairs of objects of X in a metric space
+>
+> Página 8 na numeração da revista. Sustenta a definição da distância $d(x_p, x_q)$ da Equação da distância de alcançabilidade mútua, como a distância entre os vetores de atributos dos dois objetos em um espaço métrico.
+
+^campello2015-p9
+
 > [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=11&selection=127,0,157,41&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.11]]
 > > Definition 3.3 (Mutual Reachability Graph). The mutual reachability graph is a complete graph, Gmpts, in which the objects of X are vertices and the weight of each edge is the mutual reachability distance (w.r.t. mpts) between the respective pair of objects.
 >

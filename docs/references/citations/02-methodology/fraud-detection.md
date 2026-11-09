@@ -1,6 +1,6 @@
 > [!check] Status: em uso na monografia
 > Todas as chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes.
-> - `fawcett2006`: classificação pelo escore e pelo limiar. Mesmo grifo da nota de métricas de avaliação.
+> - `fawcett2006`: classificação pelo escore e pelo limiar. Parte do grifo da nota de métricas de avaliação.
 > - `sklearn2026rf`: probabilidade de fraude do Random Forest e regra de decisão. É a documentação da biblioteca, sem PDF.
 > - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
 > - `jain1999` apud `oyewole2023`: pertinência como grau de pertencimento ao agrupamento. O grifo de Jain et al. (1999) fica como conferência do original.
@@ -16,7 +16,7 @@
 > [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=3&selection=147,0,155,1&color=yellow|fawcett2006_introduction-roc-analysis, p.3]]
 > > threshold to produce a discrete (binary) classifier: if the classifier output is above the threshold, the classifier produces a Y, else a N.
 >
-> Página 863 da revista. Sustenta que a transação é classificada como fraude quando o escore alcança o limiar. Mesmo grifo da nota de métricas de avaliação.
+> Página 863 da revista. Sustenta que a transação é classificada como fraude quando o escore alcança o limiar. Parte do grifo da nota de métricas de avaliação.
 
 ^fawcett2006-p3
 

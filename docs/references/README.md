@@ -16,9 +16,9 @@ dos capítulos na listagem do Obsidian.
 | `00-introduction/introduction.md` | 1 Introdução |
 | `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
 | `01-theoretical-background/machine-learning.md` | 3.1 Aprendizado de Máquina |
-| `01-theoretical-background/principal-component-analysis.md` | 3.1.3.2 Principal Component Analysis |
-| `01-theoretical-background/scaling-and-standardization.md` | 3.1.3.3 Escalonamento e padronização |
-| `01-theoretical-background/nested-cross-validation.md` | 3.1.3.4 Validação Cruzada Aninhada |
+| `01-theoretical-background/principal-component-analysis.md` | 3.1.3.1 Principal Component Analysis |
+| `01-theoretical-background/scaling-and-standardization.md` | 3.1.3.2 Escalonamento e padronização |
+| `01-theoretical-background/nested-cross-validation.md` | 3.1.3.3 Validação Cruzada Aninhada |
 | `01-theoretical-background/random-forest.md` | 3.2.1 Random Forest |
 | `01-theoretical-background/xgboost.md` | 3.2.2 Extreme Gradient Boosting |
 | `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |

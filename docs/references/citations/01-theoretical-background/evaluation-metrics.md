@@ -46,10 +46,10 @@
 
 ## Escore, limiar e curva de precisão e revocação
 
-> [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=3&selection=147,0,155,1&color=yellow|fawcett2006_introduction-roc-analysis, p.3]]
-> > threshold to produce a discrete (binary) classifier: if the classifier output is above the threshold, the classifier produces a Y, else a N.
+> [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=3&selection=116,0,155,1&color=yellow|fawcett2006_introduction-roc-analysis, p.3]]
+> > Some classifiers, such as a Naive Bayes classifier or a neural network, naturally yield an instance probability or score, a numeric value that represents the degree to which an instance is a member of a class. These values can be strict probabilities, in which case they adhere to standard theorems of probability; or they can be general, uncalibrated scores, in which case the only property that holds is that a higher score indicates a higher probability. We shall call both a probabilistic classifier, in spite of the fact that the output may not be a proper probability. Such a ranking or scoring classifier can be used with a threshold to produce a discrete (binary) classifier: if the classifier output is above the threshold, the classifier produces a Y, else a N.
 >
-> Página 863 da revista. Sustenta a classificação pelo escore comparado a um limiar.
+> Página 863 da revista. Sustenta o escore como valor numérico que representa o grau em que o exemplo pertence a uma classe, como uma probabilidade, e a classificação pelo escore comparado a um limiar.
 
 ^fawcett2006-p3
 
