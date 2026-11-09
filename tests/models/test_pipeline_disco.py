@@ -73,7 +73,7 @@ def test_config_reads_and_writes_the_same_base(pipeline, base, distance):
     assert config.outer_folds_dir == folds.outer_folds_dir
     assert config.distance == distance
     assert config.grid_output_dir == config.report_output_dir
-    assert config.grid_output_dir.parent == paths.RESULTS_DIR / paths.FINAL_RUNS_DIR_NAME
+    assert config.grid_output_dir.parent == paths.RESULTS_DIR / paths.UNSUPERVISED_DIR_NAME
     assert config.grid_output_dir.name == f"hdbscan_{distance}{folds.results_suffix}"
 
 

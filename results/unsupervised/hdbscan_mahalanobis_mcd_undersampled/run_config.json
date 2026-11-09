@@ -1,0 +1,44 @@
+{
+    "internal_folds_dir": "/content/drive/MyDrive/TCC - DADOS CV/undersampled/internal_folds",
+    "outer_folds_dir": "/content/drive/MyDrive/TCC - DADOS CV/undersampled/folds_output",
+    "grid_output_dir": "/content/drive/MyDrive/RESULTS/unsupervised/hdbscan_mahalanobis_mcd_undersampled",
+    "report_output_dir": "/content/drive/MyDrive/RESULTS/unsupervised/hdbscan_mahalanobis_mcd_undersampled",
+    "target": "Class",
+    "excluded_features": [
+        "hour_sin",
+        "hour_cos"
+    ],
+    "standardize_v_columns": false,
+    "distance": "mahalanobis_mcd",
+    "param_grid": {
+        "min_cluster_size": [
+            50
+        ],
+        "min_samples": [
+            50,
+            100,
+            200,
+            300
+        ]
+    },
+    "n_folds": 5,
+    "alert_rate": 0.0008,
+    "extra_alert_rates": [
+        0.0005,
+        0.0012,
+        0.0017,
+        0.0025,
+        0.0035
+    ],
+    "random_state": 42,
+    "dbcv_max_sample_size": 28000,
+    "disco_min_points": 5,
+    "selection_metric": "disco",
+    "extra_validation_metrics": [],
+    "anomaly_score": "manual_anomaly_score_glosh",
+    "extra_anomaly_scores": [
+        "glosh",
+        "manual_anomaly_score",
+        "center_distance"
+    ]
+}

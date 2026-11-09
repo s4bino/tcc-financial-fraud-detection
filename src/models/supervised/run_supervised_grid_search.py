@@ -61,10 +61,10 @@ if __name__ == "__main__":
     # no Colab
     folds = (paths.FOLD_PATHS if args.drive else paths.LOCAL_FOLD_PATHS)[args.base]
     results_root = (paths.RESULTS_DIR if args.drive else paths.LOCAL_RESULTS_DIR) / (
-        paths.FINAL_RUNS_DIR_NAME
+        paths.SUPERVISED_DIR_NAME
     )
-    # onde salvar CSVs: uma pasta por modelo e por base, como supervised_rf_undersampled
-    output_dir = folds.results_dir(results_root, f"supervised_{model_select}")
+    # onde salvar CSVs: uma pasta por modelo e por base, como supervised/rf_undersampled
+    output_dir = folds.results_dir(results_root, model_select)
     paths.guard_run_config(
         output_dir,
         {

@@ -85,9 +85,11 @@ FOLD_PATHS = {"full": FULL_PATH, "undersampled": UNDERSAMPLED_PATH}
 LOCAL_FOLD_PATHS = {"full": LOCAL_FULL_PATH, "undersampled": LOCAL_UNDERSAMPLED_PATH}
 
 # Rodada final: todos os modelos, nas duas bases, com a mesma configuração. Cada execução grava
-# numa pasta própria dentro desta, nomeada pelo modelo e pela base, longe das rodadas
-# exploratórias, para que um --resume nunca as leia como concluídas.
-FINAL_RUNS_DIR_NAME = "final_runs"
+# numa pasta própria dentro de uma destas, nomeada pelo modelo e pela base. No Drive, as duas
+# ficam em RESULTS, longe das pastas das rodadas exploratórias, e espelham as de results/ no
+# repositório, para onde os resultados são copiados sem mudar de nome.
+SUPERVISED_DIR_NAME = "supervised"
+UNSUPERVISED_DIR_NAME = "unsupervised"
 RUN_CONFIG_FILE = "run_config.json"
 
 
@@ -113,7 +115,7 @@ def guard_run_config(output_dir, config, resume):
         Path do run_config.json gravado.
 
     Exemplo de uso:
-        guard_run_config("results/final_runs/supervised_rf", {"model": "rf"}, resume=True)
+        guard_run_config("results/supervised/rf", {"model": "rf"}, resume=True)
         # na pasta com {"model": "xgb"}: ValueError, a execução não começa
     """
     output_dir = Path(output_dir)

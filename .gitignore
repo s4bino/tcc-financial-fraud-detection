@@ -163,3 +163,10 @@ $RECYCLE.BIN/
 .DS_Store
 *.tmp
 ~$*
+
+#==============================================================================
+# Resultados
+#
+# Os logs das execuções acompanham os resultados copiados do Drive para results/.
+#==============================================================================
+!results/**/*.log
