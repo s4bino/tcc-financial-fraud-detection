@@ -111,8 +111,8 @@ o texto, o sumário precisa ser gerado de novo.
 33. **(ALARFAJ et al., 2022)** → [[related-work#^alarfaj2022-p1-6|p. 1]]
    "o Random Forest e o XGBoost estão entre as abordagens de aprendizado de máquina que a literatura apresenta para o problema"
 
-34. **Le Borgne et al. (2022)** → [[related-work#^leborgne2022-doc|documentação]]
-   "Para Le Borgne et al. (2022), o Random Forest e os métodos de boosting, que os autores aplicam por meio do XGBoost, são considerados o estado da arte em desempenho nesse problema."
+34. **Hajek, Abedin e Sivarajah (2022)** → [[related-work#^hajek2022-p2|p. 2]] · [[related-work#^hajek2022-p6|p. 6]] · [[related-work#^hajek2022-p1|p. 1]]
+   "Na detecção de fraudes em pagamentos móveis, Hajek, Abedin e Sivarajah (2022) … diferentes domínios, e os modelos baseados nele obtiveram os melhores resultados na comparação feita pelos autores."
 
 35. **Jurgovsky et al. (2018)** → [[related-work#^jurgovsky2018-p3|p. 3]] · [[related-work#^jurgovsky2018-p28|p. 28]] · [[related-work#^jurgovsky2018-p19|p. 19]] · [[related-work#^jurgovsky2018-p15|p. 15]] · [[related-work#^jurgovsky2018-p28-2|p. 28]] · [[related-work#^jurgovsky2018-p16|p. 16]] · [[related-work#^jurgovsky2018-p16-2|p. 16]] · [[related-work#^jurgovsky2018-p18|p. 18]] · [[related-work#^jurgovsky2018-p20|p. 20]] · [[related-work#^jurgovsky2018-p21|p. 21]] · [[related-work#^jurgovsky2018-p22|p. 22]] · [[related-work#^jurgovsky2018-p22-2|p. 22]] · [[related-work#^jurgovsky2018-p3-2|p. 3]] · [[related-work#^jurgovsky2018-p28-3|p. 28]]
    "Jurgovsky et al. (2018) trataram a detecção de fraudes como uma tarefa … da ideia de que o histórico de compras do titular ajuda a reconhecer uma transação fraudulenta."

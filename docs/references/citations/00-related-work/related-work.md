@@ -6,7 +6,7 @@
 > - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
 > - `moulavi2014`: citado no contraste com o Sulaiman, para o DBCV escolher os hiperparâmetros sem rótulos.
-> - `ngai2011` e `leborgne2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost. O `leborgne2022` é um livro on-line, sem PDF.
+> - `ngai2011` e `hajek2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost.
 
 ## Alarfaj et al. (2022)
 
@@ -365,10 +365,24 @@ Páginas do PDF local, que é a versão aceita do manuscrito.
 
 ^alarfaj2022-p1-6
 
-> [!quote] Livro on-line: [Reproducible Machine Learning for Credit Card Fraud Detection, Capítulo 2, Seção 4.2](https://fraud-detection-handbook.github.io/fraud-detection-handbook/Chapter_2_Background/MachineLearningForFraudDetection.html), conferido em 09/11/2026
-> > We decided, based on our research works, to cover five types of methods: logistic regression (LR), decision trees (DT), Random forests (RF), Boosting, and Neural networks/Deep learning (NN/DL). LR and DT were chosen due to their simplicity and interpretability. RF and Boosting were chosen since they are currently considered to be state-of-the-art in terms of performance.
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=1&selection=31,28,33,111&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.1]]
+> > The results suggest that in terms of standard classification measures, the proposed semi-supervised ensemble model integrating multiple unsupervised outlier detection algorithms and an XGBoost classifier achieves the best results, while the highest cost savings can be achieved by combining random under-sampling and XGBoost methods.
 >
-> Sustenta o Random Forest e o *boosting* como o estado da arte em desempenho na detecção de fraudes com cartão de crédito. No Capítulo 3, Seção 4.4, o modelo de *boosting* dos autores é o `XGBClassifier` do XGBoost, o que sustenta a aplicação por meio do XGBoost.
+> Versão on-line do artigo, sem a paginação do fascículo. Sustenta que os modelos baseados no XGBoost obtiveram os melhores resultados na comparação dos autores, na detecção de fraudes em pagamentos móveis.
 
-^leborgne2022-doc
+^hajek2022-p1
+
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=2&selection=59,56,64,47&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.2]]
+> > To overcome the above problems, here we propose to enhance the performance of eXtreme Gradient boosting (XGBoost), a state-of-the-art machine learning method, by including a data sampling component addressing the issue of extreme class imbalance of mobile payment transactions.
+>
+> Sustenta o XGBoost como um método de aprendizado de máquina que representa o estado da arte.
+
+^hajek2022-p2
+
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=6&selection=4,32,5,60&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.6]]
+> > Therefore, XGBoost is currently one of the best performing classifiers across domains
+>
+> Sustenta o XGBoost como um dos classificadores de melhor desempenho em diferentes domínios. A frase continua com uma aplicação à fraude de seguros, que os autores atribuem a outro estudo e que o texto não usa.
+
+^hajek2022-p6
 

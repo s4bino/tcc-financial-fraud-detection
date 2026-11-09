@@ -67,7 +67,7 @@ de status com essa informação e a seção onde a obra é citada.
 | `sulaiman2022` | ✓ | Sulaiman, Schetinin & Sant. *Review of Machine Learning Approach on Credit Card Fraud Detection*. Human-Centric Intelligent Systems, 2022. |
 | `jurgovsky2018` | ✓ | Jurgovsky et al. *Sequence Classification for Credit-Card Fraud Detection*. Expert Systems with Applications, 2018. |
 | `ghalwash2025` | ✓ | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
-| `leborgne2022` | ✓ | Le Borgne, Siblini, Lebichot & Bontempi. *Reproducible Machine Learning for Credit Card Fraud Detection: Practical Handbook*. Université Libre de Bruxelles, 2022. Livro on-line do mesmo grupo que publicou a base do Kaggle, sem PDF: <https://fraud-detection-handbook.github.io/fraud-detection-handbook/>. |
+| `hajek2022` | ✓ | Hajek, Abedin & Sivarajah. *Fraud Detection in Mobile Payment Systems using an XGBoost-based Framework*. Information Systems Frontiers, 2022. O PDF é a versão on-line; no fascículo, v. 25, n. 5, p. 1985 a 2003, 2023. |
 | `ngai2011` | ✓ | Ngai, Hu, Wong, Chen & Sun. *The application of data mining techniques in financial fraud detection: A classification framework and an academic review of literature*. Decision Support Systems, 2011. |
 | `west2016` | ✓ | West & Bhattacharya. *Intelligent financial fraud detection: A comprehensive review*. Computers & Security, 2016. O PDF é a versão aceita do manuscrito. |
 | `dalpozzolo2018` | ✓ | Dal Pozzolo, Boracchi, Caelen, Alippi & Bontempi. *Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy*. IEEE Transactions on Neural Networks and Learning Systems, 2018. |
