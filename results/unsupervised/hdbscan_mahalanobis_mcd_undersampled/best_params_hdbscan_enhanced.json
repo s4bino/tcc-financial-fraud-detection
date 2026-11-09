@@ -1,0 +1,27 @@
+{
+    "1": {
+        "min_cluster_size": 50,
+        "min_samples": 200,
+        "best_disco_score": 0.675296439196085
+    },
+    "2": {
+        "min_cluster_size": 50,
+        "min_samples": 200,
+        "best_disco_score": 0.6376339386237767
+    },
+    "3": {
+        "min_cluster_size": 50,
+        "min_samples": 200,
+        "best_disco_score": 0.6740317561811799
+    },
+    "4": {
+        "min_cluster_size": 50,
+        "min_samples": 200,
+        "best_disco_score": 0.642451231049298
+    },
+    "5": {
+        "min_cluster_size": 50,
+        "min_samples": 200,
+        "best_disco_score": 0.646187135010027
+    }
+}

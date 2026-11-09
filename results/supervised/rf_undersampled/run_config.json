@@ -1,0 +1,37 @@
+{
+    "model": "rf",
+    "base": "undersampled",
+    "internal_folds_dir": "/content/drive/MyDrive/TCC - DADOS CV/undersampled/internal_folds",
+    "outer_folds_dir": "/content/drive/MyDrive/TCC - DADOS CV/undersampled/folds_output",
+    "param_grid": {
+        "n_estimators": [
+            100,
+            200,
+            300
+        ],
+        "max_features": [
+            "sqrt",
+            0.5,
+            0.7
+        ],
+        "class_weight": [
+            null,
+            "balanced_subsample"
+        ],
+        "max_samples": [
+            0.1,
+            0.2,
+            null
+        ],
+        "min_samples_leaf": [
+            1,
+            2,
+            3
+        ]
+    },
+    "excluded_features": [
+        "hour_sin",
+        "hour_cos"
+    ],
+    "metric": "auprc"
+}
