@@ -5,7 +5,7 @@
 > - `jurgovsky2018`: LSTM contra Random Forest em dados da Worldline, avaliação pela AUPRC.
 > - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
-> - `moulavi2014`: citado no contraste com o Sulaiman, para o DBCV escolher os hiperparâmetros sem rótulos.
+> - `beer2025`: citado no contraste com o Sulaiman, para o DISCO escolher os hiperparâmetros sem rótulos, com o grifo na nota de métricas. O grifo de `moulavi2014` desta nota fica como registro da leitura.
 > - `ngai2011` e `hajek2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost.
 
 ## Alarfaj et al. (2022)
