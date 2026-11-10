@@ -321,309 +321,315 @@ o texto, o sumário precisa ser gerado de novo.
 93. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p19-2|p. 19]]
    "grandeza análoga à distância núcleo do HDBSCAN*"
 
+94. **(CAMPELLO et al., 2015; GHOSH et al., 2024)** → Campello, 2015: [[hdbscan#^campello2015-p26|p. 26]] · Ghosh, 2024: [[hdbscan#^ghosh2024-p3-2|p. 3]]
+   "O próprio arcabouço do HDBSCAN* inclui um escore de anomalia, o GLOSH (Global-Local Outlier Score from Hierarchies), calculado a partir das estimativas de densidade da hierarquia"
+
+95. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p26|p. 26]]
+   "Para cada objeto $x_i$, o GLOSH compara a densidade em que ele … densidade máxima desse agrupamento, em que cada densidade é o inverso do raio correspondente (Equação 3.2)"
+
+96. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p26-2|p. 26]]
+   "em que $\epsilon(x_i)$ é o menor raio em que $x_i$ ainda pertence … dos seus subagrupamentos ainda existe, com as densidades $\lambda(x_i)$ e $\lambda_{max}(x_i)$ iguais aos inversos desses raios"
+
+97. **(GHOSH et al., 2024)** → [[hdbscan#^ghosh2024-p3-3|p. 3]]
+   "Para os objetos das regiões densas de um agrupamento, a diferença entre … e, para os objetos das regiões de baixa densidade, ela cresce, o que eleva o escore"
+
+98. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p27|p. 27]]
+   "Em uma distribuição com formato de sino, por exemplo, o GLOSH fica … cada vez mais afastados dela, sem que o modelo suponha uma distribuição específica para os dados"
+
 #### 3.3.3 Distância de Mahalanobis
 
-94. **(MAHALANOBIS, 1936 apud GHORBANI, 2019)** → Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p6-3|p. 6]]
+99. **(MAHALANOBIS, 1936 apud GHORBANI, 2019)** → Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p6-3|p. 6]]
    "Ao contrário da distância euclidiana, a distância de Mahalanobis considera as correlações entre as variáveis e pondera a contribuição de cada variável de acordo com a sua variabilidade"
 
-95. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6-2|p. 6]]
+100. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6-2|p. 6]]
    "Ela também não depende da escala das variáveis"
 
-96. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6-4|p. 6]]
-   "A distância de Mahalanobis de um ponto $x$ ao centro $\mu$ de uma distribuição com matriz de covariância $\Sigma$ é dada pela Equação 3.2"
+101. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6-4|p. 6]]
+   "A distância de Mahalanobis de um ponto $x$ ao centro $\mu$ de uma distribuição com matriz de covariância $\Sigma$ é dada pela Equação 3.3"
 
-97. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6|p. 6]]
+102. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p6|p. 6]]
    "Quando a covariância é a matriz identidade, a distância de Mahalanobis se reduz à euclidiana"
 
-98. **(CAMPELLO et al., 2015)** → [[mahalanobis-distance#^campello2015-p9|p. 9]]
+103. **(CAMPELLO et al., 2015)** → [[mahalanobis-distance#^campello2015-p9|p. 9]]
    "A mesma forma mede a distância entre dois pontos, com o segundo … HDBSCAN*, que é definido sobre as distâncias entre pares de objetos em um espaço métrico qualquer"
 
 ##### 3.3.3.1 Covariância empírica
 
-99. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1|p. 1]]
+104. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1|p. 1]]
    "A distância de Mahalanobis indica, assim, quão longe cada observação está do centro da nuvem de pontos, em relação ao tamanho dessa nuvem"
 
-100. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-2|p. 1]]
+105. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-2|p. 1]]
    "Para $p$ variáveis, a elipse de tolerância de 97,5% é o conjunto … Mahalanobis ao quadrado é igual ao quantil 0,975 da distribuição qui-quadrado com $p$ graus de liberdade"
 
-101. **(CAMPELLO et al., 2015)** → [[mahalanobis-distance#^campello2015-p5|p. 5]]
+106. **(CAMPELLO et al., 2015)** → [[mahalanobis-distance#^campello2015-p5|p. 5]]
    "Essas estimativas, porém, são bastante sensíveis à presença de anomalias"
 
-102. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-3|p. 1]]
+107. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-3|p. 1]]
    "Em um exemplo com dados reais, a elipse de tolerância clássica tenta englobar todas as observações, e nenhuma distância de Mahalanobis se destaca"
 
-103. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-4|p. 1]] · [[mahalanobis-distance#^hubert2010-p2|p. 2]]
+108. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-4|p. 1]] · [[mahalanobis-distance#^hubert2010-p2|p. 2]]
    "É o efeito de mascaramento, em que as estimativas clássicas são tão afetadas pelos valores discrepantes que a distância de Mahalanobis deixa de detectá-los"
 
-104. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p8|p. 8]]
+109. **(GHORBANI, 2019)** → [[mahalanobis-distance#^ghorbani2019-p8|p. 8]]
    "Por isso, é importante considerar alternativas robustas para calcular a distância de Mahalanobis"
 
 ##### 3.3.3.2 Covariância robusta
 
-105. **(ROUSSEEUW, 1985 apud GHORBANI, 2019)** → Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p8|p. 8]] · Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p9|p. 9]]
+110. **(ROUSSEEUW, 1985 apud GHORBANI, 2019)** → Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p8|p. 8]] · Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p9|p. 9]]
    "O estimador robusto mais usado é o determinante mínimo da covariância (MCD, do inglês Minimum Covariance Determinant)"
 
-106. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p2-2|p. 2]]
+111. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p2-2|p. 2]]
    "Entre os subconjuntos de $h$ observações, com $h$ de pouco mais da metade até o total de observações, o MCD escolhe aquele cuja matriz de covariância amostral tem o menor determinante"
 
-107. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p2|p. 2]]
+112. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p2|p. 2]]
    "Esse determinante é a variância generalizada do subconjunto, e um determinante menor indica uma covariância mais concentrada."
 
-108. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p5|p. 5]]
+113. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p5|p. 5]]
    "um determinante menor indica uma covariância mais concentrada"
 
-109. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p2-2|p. 2]]
+114. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p2-2|p. 2]]
    "A estimativa bruta do centro, $\hat{\mu}_0$, é a média dessas $h$ observações, e a da covariância, $\hat{\Sigma}_0$, é a covariância delas multiplicada por um fator de consistência"
 
-110. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p5-2|p. 5]]
+115. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p5-2|p. 5]]
    "O cálculo exato do MCD exige avaliar todos os subconjuntos de $h$ observações"
 
-111. **(ROUSSEEUW; VAN DRIESSEN, 1999 apud HUBERT; DEBRUYNE, 2010)** → Hubert, 2010: [[mahalanobis-distance#^hubert2010-p5-3|p. 5]]
+116. **(ROUSSEEUW; VAN DRIESSEN, 1999 apud HUBERT; DEBRUYNE, 2010)** → Hubert, 2010: [[mahalanobis-distance#^hubert2010-p5-3|p. 5]]
    "o algoritmo FAST-MCD foi desenvolvido para calculá-lo de forma eficiente"
 
-112. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p11|p. 11]]
+117. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p11|p. 11]]
    "Por padrão, os programas não retornam a estimativa bruta, e sim um centro e uma covariância ponderados, com pesos derivados dela"
 
-113. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p12|p. 12]]
+118. **(FAUCONNIER; HAESBROECK, 2009)** → [[mahalanobis-distance#^fauconnier2009-p12|p. 12]]
    "O centro e a covariância são então recalculados só com as observações de peso 1, e a covariância é de novo multiplicada por um fator de consistência"
 
-114. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p3|p. 3]]
+119. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p3|p. 3]]
    "Um corte simples e eficaz, padrão nas implementações, é o quantil 0,975 da distribuição qui-quadrado com $p$ graus de liberdade"
 
-115. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-5|p. 1]]
-   "A distância robusta de cada observação é a distância de Mahalanobis da Equação 3.2 com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$"
+120. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-5|p. 1]]
+   "A distância robusta de cada observação é a distância de Mahalanobis da Equação 3.3 com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$"
 
-116. **Hubert e Debruyne (2010)** → [[mahalanobis-distance#^hubert2010-p1-5|p. 1]] · [[mahalanobis-distance#^hubert2010-p1-6|p. 1]]
+121. **Hubert e Debruyne (2010)** → [[mahalanobis-distance#^hubert2010-p1-5|p. 1]] · [[mahalanobis-distance#^hubert2010-p1-6|p. 1]]
    "No exemplo de Hubert e Debruyne (2010), a elipse robusta é bem … pontos regulares, e as distâncias robustas destacam oito observações discrepantes que as distâncias clássicas não apontavam."
 
 ### 3.4 Métricas de Avaliação
 
 #### 3.4.1 Matriz de Confusão
 
-117. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2|p. 2]]
+122. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2|p. 2]]
    "Os verdadeiros negativos (VN) são os exemplos negativos classificados como negativos, e os falsos positivos (FP), os exemplos negativos classificados como positivos"
 
-118. **Fawcett (2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
+123. **Fawcett (2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
    "Fonte do quadro: Matriz de confusão."
 
 #### 3.4.2 Acurácia
 
-119. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
-   "A acurácia é a proporção de exemplos classificados corretamente (Equação 3.3)"
+124. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
+   "A acurácia é a proporção de exemplos classificados corretamente (Equação 3.4)"
 
-120. **(CHAWLA et al., 2002)** → [[evaluation-metrics#^chawla2002-p2|p. 2]]
+125. **(CHAWLA et al., 2002)** → [[evaluation-metrics#^chawla2002-p2|p. 2]]
    "Em bases desbalanceadas, porém, a acurácia não é uma medida adequada"
 
 #### 3.4.3 Precisão
 
-121. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
-   "A precisão é a proporção de verdadeiros positivos entre os exemplos classificados como positivos (Equação 3.4)"
+126. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
+   "A precisão é a proporção de verdadeiros positivos entre os exemplos classificados como positivos (Equação 3.5)"
 
 #### 3.4.4 Revocação
 
-122. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-3|p. 2]] · [[evaluation-metrics#^fawcett2006-p2-4|p. 2]]
-   "A revocação (recall), também chamada de sensibilidade ou taxa de verdadeiros positivos, é a proporção dos exemplos positivos que o classificador identifica (Equação 3.5)"
+127. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-3|p. 2]] · [[evaluation-metrics#^fawcett2006-p2-4|p. 2]]
+   "A revocação (recall), também chamada de sensibilidade ou taxa de verdadeiros positivos, é a proporção dos exemplos positivos que o classificador identifica (Equação 3.6)"
 
 #### 3.4.5 Pontuação F1
 
-123. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
-   "A pontuação F1 (F-measure) combina a precisão e a revocação em um único valor por meio da média harmônica entre as duas (Equação 3.6)"
+128. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p2-2|p. 2]]
+   "A pontuação F1 (F-measure) combina a precisão e a revocação em um único valor por meio da média harmônica entre as duas (Equação 3.7)"
 
 #### 3.4.6 Curva de Precisão e Revocação
 
-124. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p3|p. 3]]
+129. **(FAWCETT, 2006)** → [[evaluation-metrics#^fawcett2006-p3|p. 3]]
    "Alguns classificadores atribuem a cada exemplo um escore, valor numérico que representa … uma probabilidade estimada, e o exemplo é classificado como positivo quando esse escore supera um limiar"
 
-125. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p2|p. 2]] · [[evaluation-metrics#^davis2006-p5|p. 5]]
+130. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p2|p. 2]] · [[evaluation-metrics#^davis2006-p5|p. 5]]
    "Cada limiar produz um par de valores de precisão e revocação, e a curva de precisão e revocação reúne esses pares ao longo de todos os limiares possíveis"
 
-126. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p1|p. 1]] · [[evaluation-metrics#^davis2006-p1-2|p. 1]]
+131. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p1|p. 1]] · [[evaluation-metrics#^davis2006-p1-2|p. 1]]
    "Em problemas com grande desbalanceamento entre as classes, a curva ROC (Receiver … visão excessivamente otimista do desempenho, e a curva de precisão e revocação é apontada como alternativa"
 
-127. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p1-3|p. 1]]
+132. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p1-3|p. 1]]
    "Com muitos exemplos negativos, um aumento expressivo no número de falsos positivos altera pouco a taxa de falsos positivos, mas reduz a precisão, que compara os falsos positivos aos verdadeiros positivos"
 
 #### 3.4.7 Precisão Média
 
-128. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p6|p. 6]]
+133. **(DAVIS; GOADRICH, 2006)** → [[evaluation-metrics#^davis2006-p6|p. 6]]
    "O cálculo dessa área exige cuidado, pois a interpolação linear entre os pontos da curva de precisão e revocação é incorreta e superestima o desempenho"
 
-129. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p9|p. 9]] · [[evaluation-metrics#^campos2016-p11|p. 11]]
+134. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p9|p. 9]] · [[evaluation-metrics#^campos2016-p11|p. 11]]
    "Os métodos de detecção de anomalias produzem uma ordenação completa dos exemplos pelo grau de anomalia, e uma das medidas usadas para avaliar essa ordenação é a precisão média (Average Precision, AP)"
 
-130. **(ZHANG; ZHANG, 2009)** → [[evaluation-metrics#^zhang2009-p192|p. 192]]
-   "A precisão média é a média dos valores de $P@n$ nas posições ocupadas pelos exemplos positivos (Equação 3.7)"
+135. **(ZHANG; ZHANG, 2009)** → [[evaluation-metrics#^zhang2009-p192|p. 192]]
+   "A precisão média é a média dos valores de $P@n$ nas posições ocupadas pelos exemplos positivos (Equação 3.8)"
 
-131. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p11-2|p. 11]]
+136. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p11-2|p. 11]]
    "Avaliar a precisão nas posições dos exemplos positivos é adequado para bases desbalanceadas"
 
-132. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p11-3|p. 11]]
+137. **(CAMPOS et al., 2016)** → [[evaluation-metrics#^campos2016-p11-3|p. 11]]
    "A precisão média vale 1 quando todos os exemplos positivos ocupam as primeiras posições, e o seu valor esperado para uma ordenação aleatória é a proporção de exemplos positivos na base"
 
 #### 3.4.8 Índice DBCV
 
-133. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1|p. 1]]
+138. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1|p. 1]]
    "A qualidade de um agrupamento, por sua vez, pode ser avaliada por critérios internos, que utilizam apenas os próprios dados"
 
-134. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-2|p. 1]]
+139. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-2|p. 1]]
    "A maior parte desses critérios relaciona a dispersão dentro dos grupos à … que falha diante de grupos de formato arbitrário e não é definida para pontos de ruído"
 
-135. **Moulavi et al. (2014)** → [[evaluation-metrics#^moulavi2014-p1-3|p. 1]]
+140. **Moulavi et al. (2014)** → [[evaluation-metrics#^moulavi2014-p1-3|p. 1]]
    "Para os agrupamentos baseados em densidade, Moulavi et al. (2014) propuseram o índice de validação de agrupamentos por densidade (Density-Based Clustering Validation, DBCV)."
 
-136. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p3|p. 3]] · [[evaluation-metrics#^moulavi2014-p3-2|p. 3]] · [[evaluation-metrics#^moulavi2014-p4|p. 4]] · [[evaluation-metrics#^moulavi2014-p4-2|p. 4]] · [[evaluation-metrics#^moulavi2014-p5|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-2|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-3|p. 5]]
+141. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p3|p. 3]] · [[evaluation-metrics#^moulavi2014-p3-2|p. 3]] · [[evaluation-metrics#^moulavi2014-p4|p. 4]] · [[evaluation-metrics#^moulavi2014-p4-2|p. 4]] · [[evaluation-metrics#^moulavi2014-p5|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-2|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-3|p. 5]]
    "A separação de densidade entre dois grupos $C_i$ e $C_j$, $DSPC(C_i, C_j)$, … mútua entre os objetos internos das suas árvores e corresponde à região mais densa entre eles"
 
-137. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-4|p. 5]]
-   "A validade de cada grupo compara essas duas grandezas (Equação 3.8)"
+142. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-4|p. 5]]
+   "A validade de cada grupo compara essas duas grandezas (Equação 3.9)"
 
-138. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-5|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-6|p. 5]]
-   "O DBCV é a média dessas validades ponderada pelo tamanho de cada grupo (Equação 3.9)"
+143. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-5|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-6|p. 5]]
+   "O DBCV é a média dessas validades ponderada pelo tamanho de cada grupo (Equação 3.10)"
 
-139. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-7|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-8|p. 5]]
+144. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p5-7|p. 5]] · [[evaluation-metrics#^moulavi2014-p5-8|p. 5]]
    "O índice varia entre $-1$ e 1, e valores maiores indicam agrupamentos melhores"
 
-140. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p6|p. 6]] · [[evaluation-metrics#^moulavi2014-p6-2|p. 6]]
+145. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p6|p. 6]] · [[evaluation-metrics#^moulavi2014-p6-2|p. 6]]
    "Como o denominador inclui o ruído, que não contribui com nenhuma parcela … o índice, o que penaliza as soluções que deixam grande parte dos dados fora dos grupos"
 
-141. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-4|p. 1]]
+146. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-4|p. 1]]
    "Por dispensar a classe real, o DBCV permite avaliar e selecionar algoritmos de agrupamento por densidade e os seus parâmetros"
 
 ## 4 Metodologia
 
 ### 4.1 Conjunto de Dados
 
-142. **(MACHINE LEARNING GROUP - UNIVERSITÉ LIBRE DE BRUXELLES, 2018)** → *página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)*
+147. **(MACHINE LEARNING GROUP - UNIVERSITÉ LIBRE DE BRUXELLES, 2018)** → *página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)*
    "Assim, o conjunto de dados manipulado neste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles, ao qual está acessível pelo site Kaggle"
 
-143. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
+148. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
    "Em relação às features, o dataset possui 31 variáveis numéricas das quais … conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação"
 
-144. **(ALARFAJ et al., 2022)** → *sem grifo para esta afirmação; o PDF está no acervo*
+149. **(ALARFAJ et al., 2022)** → *sem grifo para esta afirmação; o PDF está no acervo*
    "Concomitantemente, o PCA colabora para a anonimização dos dados"
 
 ### 4.2 Pré-processamento
 
-145. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
+150. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
    "As componentes V1 a V28 não são correlacionadas entre si, por construção do PCA"
 
-146. **(HUANG; LI; XIE, 2015)** → [[scaling-and-standardization#^huang2015-p2|p. 2]]
+151. **(HUANG; LI; XIE, 2015)** → [[scaling-and-standardization#^huang2015-p2|p. 2]]
    "Já a variável Amount foi escalonada, pois, em ML, esse processo transforma … escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades"
 
-147. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
+152. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
    "A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$"
 
 ### 4.3 Parametrização e avaliação de consistência
 
 #### 4.3.1 Nested Cross-Validation
 
-148. **Kohavi (1995)** → *sem PDF no acervo*
+153. **Kohavi (1995)** → *sem PDF no acervo*
    "De acordo com Kohavi (1995), a amostragem estratificada é superior ao esquema … o viés quanto a variância das estimativas de desempenho em conjuntos de dados do mundo real."
 
-149. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1|p. 1]]
+154. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1|p. 1]]
    "A subamostragem é uma técnica comum em bases desbalanceadas para reduzir a diferença entre as proporções das classes"
 
-150. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-2|p. 1]]
+155. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-2|p. 1]]
    "A subamostragem aleatória parte da premissa de que a classe majoritária tem muitas observações redundantes e de que retirar parte delas ao acaso não altera a estimativa da sua distribuição"
 
-151. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-3|p. 1]]
+156. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-3|p. 1]]
    "A subamostragem, porém, altera a proporção das classes no treino, e o … estimadas, embora não afete a ordenação das transações, afeta a classificação e a calibração dessas probabilidades"
 
 #### 4.3.2 Grid Search
 
-152. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
+157. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
    "Conforme evidenciado pela literatura recente, a utilização de configurações padrão ou arbitrárias frequentemente resulta em desempenho subótimo, tornando a etapa de otimização paramétrica um requisito fundamental para a robustez do modelo."
 
-153. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
+158. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
    "Durante a fase de calibração, o modelo é instanciado, treinado e avaliado iterativamente para cada combinação única presente nesta grade"
 
-154. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
+159. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
    "De acordo com estudos comparativos em otimização de hiperparâmetros, o Grid Search demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade."
 
-155. **(MOULAVI et al., 2014)** → [[density-based-clustering-validation#^moulavi2014-p3|p. 3]]
+160. **(MOULAVI et al., 2014)** → [[density-based-clustering-validation#^moulavi2014-p3|p. 3]]
    "O índice parte da matriz de distâncias entre todos os pares de objetos"
 
 #### 4.3.3 Grades de Hiperparâmetros
 
-156. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
+161. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
    "Segundo Probst, Wright e Boulesteix (2019), os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma."
 
-157. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
+162. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
    "Valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas"
 
-158. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
+163. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
    "A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis"
 
-159. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
+164. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
    "O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações"
 
-160. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
+165. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
    "O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes"
 
-161. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
+166. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
    "Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste"
 
-162. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
+167. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
    "mas o tempo de execução cresce linearmente com ele"
 
-163. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
+168. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
    "Por fim, como as fraudes são raras, a grade compara o treinamento … maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo"
 
-164. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
+169. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
    "A taxa de aprendizado (shrinkage) multiplica por um fator a contribuição de … influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo"
 
-165. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
+170. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
    "O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste"
 
-166. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+171. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "A profundidade e a taxa de aprendizado abrangem a configuração que Chen e Guestrin (2016) adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1."
 
-167. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
+172. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
    "No XGBoost, o parâmetro scale\_pos\_weight controla o equilíbrio entre os pesos das fraudes e das transações legítimas"
 
-168. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+173. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
 
-169. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+174. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
 
-170. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
+175. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
    "O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização"
 
 ### 4.4 Detecção de Fraudes
 
-171. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
+176. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
    "Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar"
 
 #### 4.4.1 Modelos Supervisionados
 
-172. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc|documentação]]
+177. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc|documentação]]
    "No Random Forest, essa probabilidade é a média das probabilidades estimadas pelas … árvore é a fração de transações da classe na folha em que a transação é classificada"
 
-173. **(XGBOOST DEVELOPERS, 2026)** → [[fraud-detection#^xgboost2026-doc|documentação]]
+178. **(XGBOOST DEVELOPERS, 2026)** → [[fraud-detection#^xgboost2026-doc|documentação]]
    "No XGBoost, treinado com o objetivo de regressão logística para classificação binária, a saída do modelo é a própria probabilidade"
 
-174. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc-2|documentação]]
+179. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc-2|documentação]]
    "A transação é classificada como fraude quando a probabilidade estimada de fraude supera a de transação legítima"
 
 #### 4.4.2 HDBSCAN*
 
-175. **(JAIN; MURTY; FLYNN, 1999 apud OYEWOLE; THOPIL, 2023)** → Oyewole, 2023: [[fraud-detection#^oyewole2023-p5|p. 5]] · Jain, 1999: [[fraud-detection#^jain1999-p4|p. 4]] *(original, para conferência)*
-   "O primeiro é o complemento da probabilidade de pertinência, que mede a intensidade com que a transação pertence ao agrupamento atribuído"
-
-176. **(NVIDIA, 2026)** → [[fraud-detection#^cuml2026-doc|documentação]]
-   "Essa probabilidade é proporcional ao quanto a transação persiste como parte do agrupamento e é nula para as transações rotuladas como ruído"
-
-177. **(NVIDIA, 2026)** → [[fraud-detection#^cuml2026-doc-2|documentação]]
-   "Para as transações da validação e do teste, que não participam do ajuste, a pertinência é estimada pela atribuição aproximada de cada uma ao agrupamento obtido no treino, sem reagrupar os dados"
-
-178. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+180. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
-179. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+181. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-180. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+182. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
 #### 4.4.3 Comparação dos Modelos
@@ -632,13 +638,13 @@ o texto, o sumário precisa ser gerado de novo.
 
 ### 4.5 Ambiente de Execução e Bibliotecas
 
-181. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
+183. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"
 
-182. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
+184. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
    "que fornece o Random Forest, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost"
 
-183. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
+185. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
    "a biblioteca cuML, que oferece, em unidades de processamento gráfico (Graphics Processing Units, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn"
 
 ## 5 Resultados e Discussão
@@ -665,8 +671,8 @@ Citações sem grifo ou com grifo que não cobre toda a afirmação, pelo númer
 - 65. `salman2024`: sem PDF no acervo
 - 66. `salman2024`: sem PDF no acervo
 - 72. `chen2016`: sem grifo para esta afirmação; o PDF está no acervo
-- 142. `kaggle2018`: página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
-- 144. `alarfaj2022`: sem grifo para esta afirmação; o PDF está no acervo
-- 148. `kohavi1995`: sem PDF no acervo
-- 152. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
-- 154. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada
+- 147. `kaggle2018`: página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+- 149. `alarfaj2022`: sem grifo para esta afirmação; o PDF está no acervo
+- 153. `kohavi1995`: sem PDF no acervo
+- 157. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
+- 159. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada

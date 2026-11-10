@@ -51,13 +51,14 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 66 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 63 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
 **Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022`,
-`demaesschalck2000`, `todeschini2013`, `evans2001`, `xie2024` e `bulut2019`
-têm notas de leitura mas nenhuma entrada no `refbib.bib`.
+`demaesschalck2000`, `todeschini2013`, `evans2001`, `xie2024`, `bulut2019`,
+`jain1999` e `oyewole2023` têm notas de leitura mas nenhuma entrada no
+`refbib.bib`.
 
 ### fraud-detection
 
@@ -80,8 +81,8 @@ têm notas de leitura mas nenhuma entrada no `refbib.bib`.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `rezazadeh2025` | ✓ | Rezazadeh. *Review of Machine Learning*. UJRRA, 2025. |
-| `jain1999` | ✓ | Jain, Murty & Flynn. *Data Clustering: A Review*. ACM Computing Surveys, 1999. Citado por apud de Oyewole e Thopil (2023); o PDF fica para conferência do original. |
-| `oyewole2023` | ✓ | Oyewole & Thopil. *Data clustering: application and trends*. Artificial Intelligence Review, 2023. |
+| `jain1999` | | Jain, Murty & Flynn. *Data Clustering: A Review*. ACM Computing Surveys, 1999. Sustentava, por apud de Oyewole e Thopil (2023), a pertinência ao agrupamento, que o grau de anomalia não usa mais. |
+| `oyewole2023` | | Oyewole & Thopil. *Data clustering: application and trends*. Artificial Intelligence Review, 2023. |
 
 ### supervised-models
 
@@ -244,7 +245,7 @@ As entradas abaixo são páginas de documentação das bibliotecas, conferidas e
 |---|:-:|---|
 | `sklearn2026rf` | ✓ | Scikit-learn Developers. *sklearn.ensemble.RandomForestClassifier*. |
 | `xgboost2026` | ✓ | XGBoost Developers. *XGBoost Parameters*. |
-| `cuml2026` | ✓ | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. |
+| `cuml2026` | | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. Sustentava a pertinência e a atribuição aproximada, que o grau de anomalia não usa mais. |
 
 ### figures
 

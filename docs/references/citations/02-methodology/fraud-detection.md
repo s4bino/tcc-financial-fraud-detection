@@ -1,10 +1,9 @@
 > [!check] Status: em uso na monografia
-> Todas as chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes.
+> As chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes, salvo as três da pertinência, indicadas abaixo.
 > - `fawcett2006`: classificação pelo escore e pelo limiar. Parte do grifo da nota de métricas de avaliação.
 > - `sklearn2026rf`: probabilidade de fraude do Random Forest e regra de decisão. É a documentação da biblioteca, sem PDF.
 > - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
-> - `jain1999` apud `oyewole2023`: pertinência como grau de pertencimento ao agrupamento. O grifo de Jain et al. (1999) fica como conferência do original.
-> - `cuml2026`: cálculo da pertinência no HDBSCAN\* e atribuição aproximada das transações novas. É a documentação da biblioteca, sem PDF.
+> - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 > - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
 > - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.

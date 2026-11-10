@@ -1,10 +1,10 @@
 > [!check] Status: em uso na monografia
 > Todas as chaves constam do `refbib.bib` e são citadas em Fundamentação Teórica › Algoritmo Não Supervisionado › HDBSCAN\*.
-> - `campello2015`: base das definições da seção.
+> - `campello2015`: base das definições da seção, inclusive a do GLOSH.
 > - `campello2013b`: citado ao lado de `campello2015` na extração da partição.
 > - `neto2022`: grafo conceitual e faixas de $m_{pts}$.
 > - `neto2021`: citado ao lado de `neto2022` nas faixas de $m_{pts}$.
-> - `ghosh2024`: ponto de partida da seção e fonte da premissa da detecção de anomalias e do efeito do $m_{pts}$.
+> - `ghosh2024`: ponto de partida da seção e fonte da premissa da detecção de anomalias, do efeito do $m_{pts}$ e do intervalo e do comportamento do GLOSH.
 > - `ramaswamy2000`: fonte original do escore kNN, citada diretamente.
 
 > [!PDF|yellow] [[ghosh2024_parameter-free-outlier-detection-hdbscan-glosh.pdf#page=2&selection=315,0,470,1&color=yellow|ghosh2024_parameter-free-outlier-detection-hdbscan-glosh, p.2]]
@@ -168,4 +168,41 @@
 > Página 18 na numeração da revista. Sustenta a analogia entre o escore kNN e a distância núcleo: o inverso da distância núcleo é uma estimativa de densidade por $K$ vizinhos, com $K = m_{pts}$.
 
 ^campello2015-p19-2
+
+## GLOSH
+
+> [!PDF|yellow] [[ghosh2024_parameter-free-outlier-detection-hdbscan-glosh.pdf#page=3&selection=140,0,154,53&color=yellow|ghosh2024_parameter-free-outlier-detection-hdbscan-glosh, p.3]]
+> > The HDBSCAN* framework includes the Global-Local Outlier Scores based on Hierarchies (GLOSH) algorithm to detect outliers using hierarchical density estimates.
+>
+> Sustenta, ao lado de `campello2015`, que o GLOSH faz parte do arcabouço do HDBSCAN\* e usa as estimativas de densidade da hierarquia.
+
+^ghosh2024-p3-2
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=26&selection=432,17,567,16&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.26]]
+> > To take the most general case into account, we generalize Expression (7) and define our Global-Local Outlier Score from Hierarchies (GLOSH) as: GLOSH(xᵢ) = (λ_max(xᵢ) − λ(xᵢ)) / λ_max(xᵢ) = (1/ε_max(xᵢ) − 1/ε(xᵢ)) / (1/ε_max(xᵢ)) = 1 − ε_max(xᵢ)/ε(xᵢ) (8) where ε_max(xᵢ) and ε(xᵢ) are the values for the radii ε associated with the density thresholds λ_max(xᵢ) and λ(xᵢ), respectively.
+>
+> Página 25 na numeração da revista. Sustenta o GLOSH como a comparação entre a densidade do objeto e a densidade máxima do agrupamento, com cada densidade igual ao inverso do raio, e a Equação 3.2 da monografia.
+
+^campello2015-p26
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=26&selection=568,0,603,2&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.26]]
+> > In order to compute GLOSH in Equation (8), one needs only the first (last) cluster to which object xᵢ belongs bottom-up (top-down) through the hierarchy, the lowest radius at which xᵢ still belongs to this cluster (and below which xᵢ is labeled as noise), ε(xᵢ), and the lowest radius at which this cluster or any of its subclusters still exist (and below which all its objects are labeled as noise), ε_max(xᵢ).
+>
+> Página 25 na numeração da revista. Sustenta a definição dos dois raios, o do último agrupamento do objeto e o menor raio em que esse agrupamento ou algum subagrupamento ainda existe.
+
+^campello2015-p26-2
+
+> [!PDF|yellow] [[ghosh2024_parameter-free-outlier-detection-hdbscan-glosh.pdf#page=3&selection=332,0,388,13&color=yellow|ghosh2024_parameter-free-outlier-detection-hdbscan-glosh, p.3]]
+> > The GLOSH score falls in the range [0, 1). If xᵢ resides in a dense region of a cluster, then λ_max(C_xᵢ) − λ(xᵢ) tends to be 0 whereas, for points that reside in low-density areas, λ_max(C_xᵢ) − λ(xᵢ) tends to increase, resulting in higher GLOSH scores.
+>
+> Sustenta o intervalo do escore e o comportamento nas regiões densas e nas de baixa densidade.
+
+^ghosh2024-p3-3
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=27&selection=113,0,118,46&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.27]]
+> > instead follows, for example, a bell-shaped distribution (such as a Gaussian), then the value of GLOSH is expected to be close to zero for those objects within the region of the peak of the distribution, whereas it tends asymptotically to one for objects farther and farther away from that region. This behaviour of GLOSH captures the intended, statistical intuition using a nonparametric model, that is, without making any specific assumption about the distribution of the data.
+>
+> Página 26 na numeração da revista. Sustenta o exemplo da distribuição em forma de sino e o modelo não paramétrico, sem suposição sobre a distribuição dos dados. A frase começa na página anterior, com o caso de um agrupamento que segue essa distribuição.
+
+^campello2015-p27
 
