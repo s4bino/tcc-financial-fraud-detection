@@ -51,13 +51,13 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 59 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 60 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
 **Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022`,
-`dalpozzolo2015`, `ghorbani2019`, `demaesschalck2000`, `todeschini2013`,
-`evans2001` e `xie2024` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
+`ghorbani2019`, `demaesschalck2000`, `todeschini2013`, `evans2001` e
+`xie2024` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
 
 ### fraud-detection
 
@@ -187,7 +187,7 @@ de status com essa informação e a seção onde a obra é citada.
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `dalpozzolo2015` | | Dal Pozzolo, Caelen, Johnson & Bontempi. *Calibrating Probability with Undersampling for Unbalanced Classification*. IEEE Symposium Series on Computational Intelligence (SSCI), 2015. Artigo de origem do dataset (p. 6) e base do limiar de alerta ponderado da base subamostrada. O PDF é a versão final dos autores, sem a numeração dos anais. |
+| `dalpozzolo2015` | ✓ | Dal Pozzolo, Caelen, Johnson & Bontempi. *Calibrating Probability with Undersampling for Unbalanced Classification*. IEEE Symposium Series on Computational Intelligence (SSCI), 2015. Artigo de origem do dataset (p. 6), base da subamostragem e dos pesos das legítimas na base subamostrada, inclusive no limiar de alerta. O PDF é a versão final dos autores, sem a numeração dos anais. |
 
 ### statistics
 

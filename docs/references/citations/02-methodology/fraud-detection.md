@@ -7,9 +7,7 @@
 > - `cuml2026`: cálculo da pertinência no HDBSCAN\* e atribuição aproximada das transações novas. É a documentação da biblioteca, sem PDF.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 > - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
-
-> [!todo] Status: texto em revisão
-> - `dalpozzolo2015`: ainda fora do `refbib.bib`. Sustenta o limiar de alerta ponderado da base subamostrada, citado nas docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. O texto da monografia sobre a subamostragem e o limiar ainda não foi escrito.
+> - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.
 
 ## Escore e limiar
 
@@ -118,6 +116,13 @@
 > Sustenta que, sem correção, a subamostragem desloca a fronteira de decisão e faz mais transações serem classificadas como fraude.
 
 ^dalpozzolo2015-p4
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=5&selection=324,0,349,48&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.5]]
+> > Let τs denote the threshold used to classify an observation after undersampling, form (10) we have τs = π+s, where π+s is the positive class prior after undersampling.
+>
+> Sustenta que o limiar adequado depende da proporção de positivos no treino subamostrado e, portanto, muda com a subamostragem.
+
+^dalpozzolo2015-p5-2
 
 > [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=5&selection=551,0,559,1&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.5]]
 > > The optimal threshold to use with p′ is equal to the one for p.
