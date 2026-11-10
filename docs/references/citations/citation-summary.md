@@ -661,9 +661,30 @@ o texto, o sumário precisa ser gerado de novo.
 
 ## 5 Resultados e Discussão
 
-*Sem citações.*
+190. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
+   "As fraudes restantes não se distinguem das transações legítimas pelo grau de … considerada na Introdução, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
+
+191. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+   "Como os investigadores conseguem verificar apenas poucos alertas por dia"
+
+192. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
+   "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar agrupamentos próprios."
+
+193. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
+   "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
 
 ## 6 Conclusão
+
+*Sem citações.*
+
+## Apêndice A – Hiperparâmetros dos modelos
+
+### Random Forest e XGBoost
+
+194. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+   "No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ … de Chen e Guestrin (2016), com árvores mais profundas e em menor número na base subamostrada."
+
+### HDBSCAN*
 
 *Sem citações.*
 

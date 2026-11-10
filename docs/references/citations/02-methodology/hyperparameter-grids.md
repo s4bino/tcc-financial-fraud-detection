@@ -3,7 +3,7 @@
 > - `probst2019`: compromisso entre correlação e qualidade das árvores, efeito de cada hiperparâmetro do Random Forest, valores padrão e tempo de execução. Só afirmações do próprio artigo, sem as que ele atribui a outros autores.
 > - `biau2016`: mais árvores, predições mais precisas e sem sobreajuste. Mesmo trecho da nota do Random Forest.
 > - `chen2004`: ponderação das classes no Random Forest e pesos como parâmetro de ajuste essencial.
-> - `chen2016`: penalidade do número de folhas, regularização, *shrinkage* e configuração comum dos experimentos.
+> - `chen2016`: penalidade do número de folhas, regularização, *shrinkage* e configuração comum dos experimentos. Também citado no Apêndice A, com o grifo da configuração comum.
 > - `xgboost2026`: o `scale_pos_weight` como controle do equilíbrio entre os pesos das classes no XGBoost. É a documentação da biblioteca, sem PDF.
 > - `sander1998` apud `schubert2017`: $m_{pts}$ igual ao dobro da dimensão e valores maiores para bases ruidosas, grandes ou de alta dimensão. Mesmo grifo da nota de seleção de hiperparâmetros.
 > - `campello2015`: $m_{clSize}$ como controle adicional e independente da suavização.

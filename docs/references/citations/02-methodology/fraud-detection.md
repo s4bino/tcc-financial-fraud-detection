@@ -5,7 +5,7 @@
 > - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
 > - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
-> - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
+> - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o mesmo grifo.
 > - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.
 
 ## Escore e limiar

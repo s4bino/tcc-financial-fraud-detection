@@ -417,7 +417,7 @@ def best_params_by_fold(df_folds, param_grid, metric="auprc"):
     Escolhe, em cada fold interno, a combinação de hiperparâmetros de maior métrica.
 
     Objetivo:
-        É a primeira etapa da seleção, a mesma do HDBSCAN* aprimorado com o DBCV: cada ciclo
+        É a primeira etapa da seleção, a mesma do HDBSCAN* aprimorado com o DISCO: cada ciclo
         interno indica a sua melhor combinação, e a de maior métrica entre elas é aplicada a
         todas as rodadas externas por supervised_outer_evaluation, conforme o critério descrito
         na Seção 4.3.2 da monografia.

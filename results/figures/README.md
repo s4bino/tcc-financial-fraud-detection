@@ -8,7 +8,28 @@ trazem os números que as figuras mostram.
 python src/analysis/dataset_analysis.py   # results/figures/dataset
 python src/analysis/fold_analysis.py      # results/figures/folds
 python src/analysis/hdbscan_metrics.py    # results/figures/hdbscan
+python src/analysis/results_analysis.py   # results/figures/evaluation
 ```
+
+---
+
+## `evaluation/` (capítulo de resultados e apêndice A)
+
+Lê os CSVs das rodadas finais em `results/supervised` e `results/unsupervised`.
+As tabelas e os quadros saem como `tabular` do LaTeX em `evaluation/tables/`, e
+a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
+`evaluation-statistics.md`.
+
+| Arquivo | O que responde |
+|---|---|
+| `tables/outer-results.tex` | média e desvio padrão da AUPRC, da precisão, da revocação e da F1 no teste externo, por modelo e base |
+| `01-outer-metrics` | como essas métricas variam entre as cinco rodadas externas |
+| `tables/outer-alerts.tex` | quantos alertas, VP, FP e FN cada modelo gera, somados nos cinco testes |
+| `02-alert-fraction` | como a precisão, a revocação e a F1 do HDBSCAN* com MCD mudam com a fração de alertas |
+| `tables/reference-scores.tex` | AUPRC do grau de anomalia contra o GLOSH sozinho e a distância ao centro |
+| `tables/rf-hyperparameters.tex`, `xgb-hyperparameters.tex`, `hdbscan-hyperparameters.tex` | grade de cada modelo e configuração escolhida em cada base |
+| `tables/supervised-selection.tex` | AUPRC interna da configuração supervisionada escolhida, perto da maior média da grade? |
+| `tables/hdbscan-selection.tex`, `03-hdbscan-selection` | grupos, DISCO e AUPRC interna do HDBSCAN* para cada `min_samples` |
 
 ---
 

@@ -1,0 +1,13 @@
+\begin{tabular}{L{3.0cm} C{2.4cm} C{2.4cm} C{2.4cm} C{2.8cm}}
+    \toprule
+    \textbf{Modelo} & \textbf{AUPRC no \textit{fold} que a indicou} & \textbf{AUPRC média nos \textit{folds}} & \textbf{Maior AUPRC média da grade} & \textbf{Combinações a menos de 0,01 da maior média} \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Base completa}} \\
+    \textit{Random Forest} & 0,920 & 0,885 & 0,887 & 39 de 162 \\
+    XGBoost & 0,914 & 0,886 & 0,886 & 12 de 81 \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Base subamostrada}} \\
+    \textit{Random Forest} & 0,916 & 0,867 & 0,872 & 21 de 162 \\
+    XGBoost & 0,919 & 0,869 & 0,878 & 42 de 81 \\
+    \bottomrule
+\end{tabular}

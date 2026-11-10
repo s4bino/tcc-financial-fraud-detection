@@ -1,0 +1,17 @@
+\begin{tabular}{|L{2.9cm}|L{4.2cm}|C{2.4cm}|C{1.9cm}|C{2.4cm}|}
+    \hline
+    \multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{Parâmetro}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Descrição}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Listagem}}} & \multicolumn{2}{c|}{\textbf{Escolhido}} \\
+    \cline{4-5}
+    & & & \textbf{Completa} & \textbf{Subamostrada} \\
+    \hline
+    \textit{n\_estimators} & Número de árvores & 100, 200, 300 & 300 & 300 \\
+    \hline
+    \textit{max\_features} & Variáveis sorteadas em cada divisão, pela raiz quadrada (sqrt) ou por uma fração do total & sqrt; 0,5; 0,7 & 0,5 & 0,5 \\
+    \hline
+    \textit{class\_weight} & Ponderação das classes, ausente (None) ou balanceada na amostra de cada árvore (balanced\_subsample) & None, balanced\_\allowbreak subsample & None & None \\
+    \hline
+    \textit{max\_samples} & Fração do treino sorteada para cada árvore, ou o treino inteiro (None) & 0,1; 0,2; None & None & None \\
+    \hline
+    \textit{min\_samples\_leaf} & Número mínimo de transações em cada folha & 1, 2, 3 & 1 & 2 \\
+    \hline
+\end{tabular}

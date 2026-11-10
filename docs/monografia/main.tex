@@ -9,7 +9,7 @@
 \usepackage{amssymb}             % símbolos extras da AMS
 \usepackage{latexsym}            % símbolos extras do LaTeX
 \usepackage{graphicx}            % para inserção de gráficos
-\graphicspath{{../../results/figures/dataset/}} % figuras geradas por src/analysis/dataset_analysis.py
+\graphicspath{{../../results/figures/dataset/}{../../results/figures/evaluation/}} % figuras geradas por src/analysis/dataset_analysis.py e results_analysis.py
 \usepackage{listings}            % para inserção de código
 \usepackage{fancyvrb}            % para inserção de saídas de comandos
 \usepackage{longtable}           % para tabelas muito grandes
@@ -612,7 +612,7 @@ em que $n$ é o número de transações e $\bar{x}$ é a média dos valores. O c
 
 Sem o logaritmo, a cauda inflaria o desvio padrão usado no escalonamento. Assim, 98\% das transações ficariam entre $-0{,}35$ e $3{,}72$ desvios padrão da média, enquanto a maior delas ficaria a 102. Como a distância euclidiana soma as diferenças ao quadrado de cada variável, Amount sozinha decidiria os vizinhos das transações extremas e quase não diferenciaria as demais, o que contraria o objetivo do escalonamento, citado anteriormente, de dar às variáveis o mesmo grau de influência. Com o logaritmo, 98\% das transações ficam entre $-1{,}83$ e $2{,}28$ desvios padrão, e a mais extrema, a 4,2. A Figura \ref{fig:amount} compara as duas distribuições.
 
-O logaritmo preserva a ordem dos valores, de modo que a maior transação continua a mais distante da média. O que muda é a medida da diferença, que passa a ser relativa, de modo que, exemplificando, ir de 10 a 100 equivale a ir de 1.000 a 10.000. Além disso, os valores extremos da base não são fraudes. Nenhuma das 284 transações acima de 3.000 é fraudulenta, e a maior fraude é de 2.125,87. As consequências disso para os modelos são discutidas no Capítulo 5.
+O logaritmo preserva a ordem dos valores, de modo que a maior transação continua a mais distante da média. O que muda é a medida da diferença, que passa a ser relativa, de modo que, exemplificando, ir de 10 a 100 equivale a ir de 1.000 a 10.000. Além disso, os valores extremos da base não são fraudes. Nenhuma das 284 transações acima de 3.000 é fraudulenta, e a maior fraude é de 2.125,87.
 
 \begin{figure}[htb]
     \centering
@@ -647,6 +647,7 @@ A subamostragem aleatória parte da premissa de que a classe majoritária tem mu
 A subamostragem, porém, altera a proporção das classes no treino, e o viés que ela introduz nas probabilidades estimadas, embora não afete a ordenação das transações, afeta a classificação e a calibração dessas probabilidades \cite{dalpozzolo2015}. Para que as decisões tomadas por limiar continuem valendo na proporção real, cada transação legítima do treino subamostrado recebe um peso igual ao número de legítimas do treino original que ela representa, o inverso da fração mantida, de cerca de 2,84, e cada fraude recebe peso 1. Com esses pesos, o treino volta à proporção de classes de antes da subamostragem, a mesma da validação e do teste. Na base completa, o peso das legítimas é 1. A aplicação dos pesos em cada modelo é descrita nas Seções \ref{sec:grades} e \ref{sec:deteccao-hdbscan}.
 
 \subsection{Grid Search}
+\label{sec:grid-search}
 
 Para que um algoritmo de aprendizado de máquina extraia o máximo de sua capacidade preditiva e se adapte à topologia intrínseca do conjunto de dados, é imperativo que seus hiperparâmetros sejam calibrados. Conforme evidenciado pela literatura recente \cite{shams2024}, a utilização de configurações padrão ou arbitrárias frequentemente resulta em desempenho subótimo, tornando a etapa de otimização paramétrica um requisito fundamental para a robustez do modelo.
 
@@ -707,13 +708,14 @@ A transação é sinalizada como fraude quando o seu grau de anomalia alcança o
     \label{eq:limiar}
 \end{equation}
 
-em que $Q_{1-\alpha}$ é o quantil de ordem $1 - \alpha$, $x_i$ é a $i$-ésima transação do treino e $\alpha$ é a fração de alertas. Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o que reproduz a restrição dos sistemas reais de detecção, em que os investigadores conseguem verificar apenas poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados \cite{dalpozzolo2018}. Neste trabalho, a fração de alertas foi fixada em 0,08\% das transações, abaixo da proporção de fraudes na base, de 0,172\%.
+em que $Q_{1-\alpha}$ é o quantil de ordem $1 - \alpha$, $x_i$ é a $i$-ésima transação do treino e $\alpha$ é a fração de alertas. Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o que reproduz a restrição dos sistemas reais de detecção, em que os investigadores conseguem verificar apenas poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados \cite{dalpozzolo2018}. Neste trabalho, a fração de alertas foi fixada em 0,17\% das transações, próxima da proporção de fraudes na base, de 0,172\%.
 
 Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação \cite{dalpozzolo2015}. No treino subamostrado, o número de fraudes por transação legítima é cerca de 2,84 vezes o da base completa. Essas fraudes tendem a ter os maiores graus de anomalia e ocupariam, assim, uma parte maior da fração $\alpha$ das transações de maior grau, o que elevaria o limiar da Equação \ref{eq:limiar}. Aplicado à validação e ao teste, que mantêm a proporção real, esse limiar produziria menos alertas do que $\alpha$. Por isso, na base subamostrada, o quantil é ponderado. Cada transação legítima do treino conta com o peso descrito na Seção \ref{sec:validacao-aninhada}, e cada fraude, com peso 1, de modo que o limiar é calculado como se o treino estivesse na proporção real.
 
 Alguns parâmetros foram calibrados por uma análise exploratória dos resultados de várias grades executadas nos \textit{folds} internos, como a fração de alertas, a faixa da grade de hiperparâmetros (Seção \ref{sec:grades}) e a amostra e a proporção do MCD, além da retirada da variável Time (Seção \ref{sec:preprocessamento}).
 
 \subsection{Comparação dos Modelos}
+\label{sec:comparacao}
 
 Nas métricas de avaliação, a fraude é a classe positiva, e a transação legítima, a negativa. A comparação entre os modelos usa a AUPRC, calculada pela precisão média (Seção \ref{sec:ap}) sobre o escore contínuo de cada modelo, a probabilidade de fraude nos supervisionados e o grau de anomalia no HDBSCAN*. No HDBSCAN*, também se calcula a AUPRC de dois escores de referência, o GLOSH sozinho e a distância de cada transação ao centro estimado no treino, medida com a mesma distância do agrupamento. A distância ao centro não depende do agrupamento nem de $m_{pts}$, e a comparação com ela indica o que o HDBSCAN* acrescenta à distância escolhida. Com a covariância robusta, ela é a distância robusta da Seção \ref{sec:mcd}. Como depende apenas da ordenação das transações, a AUPRC não é afetada pelos limiares, que diferem entre os modelos. A precisão, a revocação e a pontuação F1 são calculadas sobre as classes atribuídas pela regra de decisão de cada modelo e complementam a análise, mas dependem do limiar adotado. A precisão indica quantas das transações sinalizadas como suspeitas são de fato fraudes, e a revocação, quantas das fraudes existentes são sinalizadas. Todas as métricas são calculadas no teste de cada rodada externa, e o desempenho de cada modelo, em cada base, é a média entre as cinco rodadas.
 
@@ -722,7 +724,130 @@ Nas métricas de avaliação, a fraude é a classe positiva, e a transação leg
 O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn \cite{pedregosa2011}, que fornece o \textit{Random Forest}, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost \cite{chen2016} e a biblioteca cuML, que oferece, em unidades de processamento gráfico (\textit{Graphics Processing Units}, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn \cite{raschka2020} e foi usada no HDBSCAN* e na busca de vizinhos mais próximos. Os experimentos dos três modelos foram executados no ambiente Google Colab, em uma máquina com uma GPU NVIDIA L4, de 22,5 GiB de memória, 53 GiB de memória RAM e 12 processadores virtuais.
 
 \chapter{Resultados e Discussão}
-% Apresente e discuta os resultados dos modelos aqui.
+\label{cap:resultados}
+
+Este capítulo apresenta e discute o desempenho dos três modelos no teste externo da validação cruzada aninhada, nas bases completa e subamostrada. O HDBSCAN* é avaliado com as três distâncias descritas na Seção \ref{sec:deteccao-hdbscan}, e cada combinação de modelo e base tem cinco resultados, um em cada rodada externa. As configurações aplicadas pelos modelos, escolhidas no ciclo interno, são apresentadas no Apêndice \ref{ap:hiperparametros}.
+
+A Tabela \ref{tab:resultados} reúne a média e o desvio padrão das métricas nas cinco rodadas, e a Figura \ref{fig:boxplots} mostra a distribuição dessas métricas entre as rodadas.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Média e desvio padrão das métricas de cada modelo no teste externo das cinco rodadas. A melhor média de cada métrica em cada base é mostrada em negrito.}
+    \label{tab:resultados}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{L{3.8cm} C{2.3cm} C{2.3cm} C{2.3cm} C{2.3cm}}
+        \toprule
+        \textbf{Modelo} & \textbf{AUPRC} & \textbf{Precisão} & \textbf{Revocação} & \textbf{F1} \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base completa}} \\
+        \textit{Random Forest} & \textbf{0,852} $\pm$ 0,024 & \textbf{0,945} $\pm$ 0,022 & \textbf{0,803} $\pm$ 0,017 & \textbf{0,868} $\pm$ 0,016 \\
+        XGBoost & \textbf{0,852} $\pm$ 0,029 & 0,944 $\pm$ 0,045 & 0,783 $\pm$ 0,040 & 0,856 $\pm$ 0,039 \\
+        HDBSCAN*\newline euclidiana & 0,238 $\pm$ 0,025 & 0,315 $\pm$ 0,018 & 0,317 $\pm$ 0,059 & 0,314 $\pm$ 0,029 \\
+        HDBSCAN*\newline Mahalanobis empírica & 0,210 $\pm$ 0,019 & 0,254 $\pm$ 0,011 & 0,256 $\pm$ 0,042 & 0,254 $\pm$ 0,022 \\
+        HDBSCAN*\newline Mahalanobis com MCD & 0,708 $\pm$ 0,031 & 0,792 $\pm$ 0,056 & 0,801 $\pm$ 0,011 & 0,796 $\pm$ 0,034 \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base subamostrada}} \\
+        \textit{Random Forest} & 0,841 $\pm$ 0,024 & 0,869 $\pm$ 0,025 & \textbf{0,821} $\pm$ 0,015 & 0,844 $\pm$ 0,018 \\
+        XGBoost & \textbf{0,853} $\pm$ 0,021 & \textbf{0,918} $\pm$ 0,023 & 0,811 $\pm$ 0,029 & \textbf{0,861} $\pm$ 0,020 \\
+        HDBSCAN*\newline euclidiana & 0,183 $\pm$ 0,020 & 0,245 $\pm$ 0,033 & 0,230 $\pm$ 0,019 & 0,235 $\pm$ 0,011 \\
+        HDBSCAN*\newline Mahalanobis empírica & 0,086 $\pm$ 0,008 & 0,127 $\pm$ 0,023 & 0,116 $\pm$ 0,024 & 0,120 $\pm$ 0,021 \\
+        HDBSCAN*\newline Mahalanobis com MCD & 0,700 $\pm$ 0,031 & 0,794 $\pm$ 0,045 & 0,801 $\pm$ 0,011 & 0,797 $\pm$ 0,027 \\
+        \bottomrule
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{table}
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{\textit{Boxplots} das métricas de cada modelo no teste externo das cinco rodadas. Cada caixa vai do primeiro ao terceiro quartil, com a mediana marcada, as hastes vão do menor ao maior valor, e cada ponto é uma rodada.}
+    \label{fig:boxplots}
+    \includegraphics[width=\textwidth]{01-outer-metrics.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+Os modelos supervisionados obtêm os melhores resultados em todas as métricas, com desempenho semelhante entre o \textit{Random Forest} e o XGBoost e pouca variação entre as rodadas. Entre as distâncias do HDBSCAN*, a de Mahalanobis com a covariância do MCD se destaca. Sem o uso de rótulos, ela alcança uma AUPRC inferior à dos supervisionados, mas cerca de três vezes maior que as obtidas com as distâncias euclidiana e de Mahalanobis empírica na base completa. As três distâncias, ainda assim, ficam muito acima da AUPRC esperada para uma ordenação aleatória, igual à proporção de fraudes na base (Seção \ref{sec:ap}). Nas métricas que dependem do limiar, o HDBSCAN* com MCD alcança revocação semelhante à dos supervisionados, e a diferença se concentra na precisão.
+
+A Tabela \ref{tab:alertas} apresenta o número de alertas, de verdadeiros positivos (VP), de falsos positivos (FP) e de falsos negativos (FN) de cada modelo, somados nos cinco testes externos, que juntos cobrem todas as transações da base.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Alertas, verdadeiros positivos (VP), falsos positivos (FP) e falsos negativos (FN) de cada modelo, somados nos testes externos das cinco rodadas, que cobrem as 284.807 transações e as 492 fraudes da base.}
+    \label{tab:alertas}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{L{3.8cm} C{1.9cm} C{1.9cm} C{1.9cm} C{1.9cm}}
+        \toprule
+        \textbf{Modelo} & \textbf{Alertas} & \textbf{VP} & \textbf{FP} & \textbf{FN} \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base completa}} \\
+        \textit{Random Forest} & 418 & 395 & 23 & 97 \\
+        XGBoost & 408 & 385 & 23 & 107 \\
+        HDBSCAN*\newline euclidiana & 496 & 156 & 340 & 336 \\
+        HDBSCAN*\newline Mahalanobis empírica & 496 & 126 & 370 & 366 \\
+        HDBSCAN*\newline Mahalanobis com MCD & 499 & 394 & 105 & 98 \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base subamostrada}} \\
+        \textit{Random Forest} & 465 & 404 & 61 & 88 \\
+        XGBoost & 435 & 399 & 36 & 93 \\
+        HDBSCAN*\newline euclidiana & 471 & 113 & 358 & 379 \\
+        HDBSCAN*\newline Mahalanobis empírica & 453 & 57 & 396 & 435 \\
+        HDBSCAN*\newline Mahalanobis com MCD & 497 & 394 & 103 & 98 \\
+        \bottomrule
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{table}
+
+Com a fração de alertas adotada, próxima da proporção de fraudes na base (Seção \ref{sec:deteccao-hdbscan}), o HDBSCAN* emite um número de alertas pouco maior que o dos modelos supervisionados, de modo que a precisão e a revocação dos modelos são comparadas com volumes de alertas semelhantes. Com a distância de Mahalanobis com MCD, o HDBSCAN* detecta praticamente tantas fraudes quanto os supervisionados, mas com mais falsos positivos, e cerca de quatro em cada cinco dos seus alertas são fraudes. Nas distâncias euclidiana e de Mahalanobis empírica, os alertas têm mais falsos positivos que verdadeiros positivos.
+
+A subamostragem pouco altera a AUPRC dos modelos supervisionados e a do HDBSCAN* com MCD. Nos supervisionados, ela aumenta o número de alertas, o que troca parte da precisão por revocação, sobretudo no \textit{Random Forest}. No HDBSCAN*, ela reduz o desempenho com a distância euclidiana e, principalmente, com a de Mahalanobis empírica, cujos alertas passam a ser quase todos falsos positivos. Esse comportamento é compatível com o efeito de mascaramento (Seção \ref{sec:cov-empirica}). Como todas as fraudes do treino são mantidas, a subamostragem aumenta a sua proporção e, com ela, a sua influência sobre a covariância empírica, o que tende a reduzir as distâncias de Mahalanobis das próprias fraudes. A covariância do MCD, estimada a partir do núcleo dos dados (Seção \ref{sec:mcd}), não sofre esse efeito, e o HDBSCAN* com essa distância mantém o desempenho nas duas bases.
+
+Como a fração de alertas é uma escolha de operação, a Figura \ref{fig:fracao-alertas} mostra a precisão, a revocação e a pontuação F1 do HDBSCAN* com MCD em outras frações, calculadas sobre os mesmos graus de anomalia, com a faixa dos modelos supervisionados como referência.
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{Precisão, revocação e pontuação F1 do HDBSCAN* com a distância de Mahalanobis com MCD em função da fração de alertas, em escala logarítmica, médias das cinco rodadas externas. A linha vertical marca a fração adotada, de 0,17\%, a mais próxima da proporção de fraudes, e a faixa cinza vai da menor à maior média dos modelos supervisionados, com a sua própria regra de decisão.}
+    \label{fig:fracao-alertas}
+    \includegraphics[width=\textwidth]{02-alert-fraction.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+Até a fração adotada, a mais próxima da proporção de fraudes, a revocação cresce com o número de alertas, enquanto a precisão se mantém em torno de quatro em cada cinco alertas, e a pontuação F1 se aproxima da faixa dos supervisionados. Acima dessa fração, a revocação se estabiliza em cerca de 80\% das fraudes, e os novos alertas são quase todos transações legítimas, o que reduz a precisão. As fraudes restantes não se distinguem das transações legítimas pelo grau de anomalia, o que corresponde à possibilidade, considerada na Introdução, de que as fraudes se misturem às transações legítimas no espaço dos atributos \cite{jurgovsky2018}. Como os investigadores conseguem verificar apenas poucos alertas por dia \cite{dalpozzolo2018}, a fração adequada depende dessa capacidade. Nas frações avaliadas, aumentar o número de alertas até a proporção de fraudes amplia a detecção com precisão semelhante, e, acima dela, não a amplia.
+
+Para identificar a origem do desempenho do HDBSCAN*, a Tabela \ref{tab:referencias} compara a AUPRC do seu grau de anomalia com a dos dois escores de referência descritos na Seção \ref{sec:comparacao}, o GLOSH sozinho e a distância de cada transação ao centro do treino.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Média e desvio padrão da AUPRC do grau de anomalia do HDBSCAN* e dos dois escores de referência no teste externo das cinco rodadas.}
+    \label{tab:referencias}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{L{3.8cm} C{2.6cm} C{2.6cm} C{2.6cm}}
+        \toprule
+        \textbf{Distância} & \textbf{Grau de anomalia} & \textbf{GLOSH} & \textbf{Distância ao centro} \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Base completa}} \\
+        Euclidiana & 0,238 $\pm$ 0,025 & 0,239 $\pm$ 0,026 & 0,166 $\pm$ 0,020 \\
+        Mahalanobis empírica & 0,210 $\pm$ 0,019 & 0,210 $\pm$ 0,019 & 0,169 $\pm$ 0,019 \\
+        Mahalanobis com MCD & 0,708 $\pm$ 0,031 & 0,709 $\pm$ 0,030 & 0,713 $\pm$ 0,028 \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Base subamostrada}} \\
+        Euclidiana & 0,183 $\pm$ 0,020 & 0,184 $\pm$ 0,020 & 0,165 $\pm$ 0,020 \\
+        Mahalanobis empírica & 0,086 $\pm$ 0,008 & 0,087 $\pm$ 0,008 & 0,082 $\pm$ 0,008 \\
+        Mahalanobis com MCD & 0,700 $\pm$ 0,031 & 0,703 $\pm$ 0,031 & 0,712 $\pm$ 0,028 \\
+        \bottomrule
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{table}
+
+Em todas as distâncias, o grau de anomalia e o GLOSH têm praticamente a mesma AUPRC, de modo que a distância ao $m_{pts}$-ésimo vizinho pouco acrescenta ao GLOSH. Nas distâncias euclidiana e de Mahalanobis empírica, o GLOSH supera a distância ao centro, o que indica que a hierarquia de densidades do HDBSCAN* capta o isolamento das fraudes melhor do que o afastamento em relação ao centro dos dados. Com a covariância do MCD, os três escores se equivalem. Nesse espaço, o agrupamento escolhido pelo DISCO tem poucos grupos (Tabela \ref{tab:ciclo-hdbscan}), e as transações legítimas formam essencialmente um único núcleo denso, do qual as fraudes se afastam. O ganho dessa distância em relação às demais vem, portanto, da covariância robusta, com a qual as transações afastadas do núcleo dos dados recebem distâncias grandes (Seção \ref{sec:mcd}), e o HDBSCAN* ordena as transações de forma muito próxima à da distância ao centro.
+
+Os resultados sustentam a hipótese deste trabalho. As fraudes ocupam regiões de baixa densidade e, com a distância adequada, o grau de anomalia as coloca entre as transações mais suspeitas sem o uso de rótulos. A escolha da distância é decisiva, já que, nas distâncias euclidiana e de Mahalanobis empírica, transações legítimas afastadas das demais disputam com as fraudes os maiores graus de anomalia. Esse resultado se relaciona com a limitação apontada por \citeonline{ghalwash2025}, segundo a qual, quando as fraudes representam menos de 0,2\% dos registros, elas tendem a aparecer como ruído ou \textit{outliers}, sem formar agrupamentos próprios. Neste trabalho, é justamente esse afastamento que permite detectá-las. Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas das obtidas na mesma base pela rede convolucional proposta por \citeonline{alarfaj2022}, embora os processos de avaliação dos dois trabalhos sejam diferentes.
 
 \chapter{Conclusão}
 % Apresente a conclusão final do estudo e possíveis trabalhos futuros aqui.
@@ -739,7 +864,180 @@ O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-lea
 %==============================================================================
 % Apêndices / Anexos (Descomente se precisar)
 %==============================================================================
-%\apendices
-%\chapter{Título do Apêndice}
+\apendice{Hiperparâmetros dos modelos}
+\label{ap:hiperparametros}
+\refstepcounter{chapter} % numera os quadros, as tabelas e as figuras como A.1, A.2...
+
+Este apêndice apresenta as grades de hiperparâmetros dos modelos e as configurações escolhidas no ciclo interno da validação cruzada aninhada (Seção \ref{sec:grid-search}), aplicadas a todas as rodadas do ciclo externo. Nos quadros, a coluna Parâmetro mantém o nome usado pela biblioteca de cada modelo. Os parâmetros que não constam dos quadros não fazem parte da busca e mantêm os valores padrão das bibliotecas, exceto os que controlam a execução, como a semente aleatória, e os pesos das classes na base subamostrada, descritos na Seção \ref{sec:grades}.
+
+\section*{\textit{Random Forest} e XGBoost}
+
+Os Quadros \ref{qua:hiper-rf} e \ref{qua:hiper-xgb} apresentam as grades do \textit{Random Forest} e do XGBoost e a configuração escolhida em cada base.
+
+\begin{quadro}[!htbp]
+    \centering
+    \caption{Grade de hiperparâmetros do \textit{Random Forest} e configuração escolhida em cada base.}
+    \label{qua:hiper-rf}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{|L{2.9cm}|L{4.2cm}|C{2.4cm}|C{1.9cm}|C{2.4cm}|}
+        \hline
+        \multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{Parâmetro}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Descrição}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Listagem}}} & \multicolumn{2}{c|}{\textbf{Escolhido}} \\
+        \cline{4-5}
+        & & & \textbf{Completa} & \textbf{Subamostrada} \\
+        \hline
+        \textit{n\_estimators} & Número de árvores & 100, 200, 300 & 300 & 300 \\
+        \hline
+        \textit{max\_features} & Variáveis sorteadas em cada divisão, pela raiz quadrada (sqrt) ou por uma fração do total & sqrt; 0,5; 0,7 & 0,5 & 0,5 \\
+        \hline
+        \textit{class\_weight} & Ponderação das classes, ausente (None) ou balanceada na amostra de cada árvore (balanced\_subsample) & None, balanced\_\allowbreak subsample & None & None \\
+        \hline
+        \textit{max\_samples} & Fração do treino sorteada para cada árvore, ou o treino inteiro (None) & 0,1; 0,2; None & None & None \\
+        \hline
+        \textit{min\_samples\_leaf} & Número mínimo de transações em cada folha & 1, 2, 3 & 1 & 2 \\
+        \hline
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{quadro}
+
+\begin{quadro}[!htbp]
+    \centering
+    \caption{Grade de hiperparâmetros do XGBoost e configuração escolhida em cada base.}
+    \label{qua:hiper-xgb}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{|L{2.9cm}|L{4.2cm}|C{2.4cm}|C{1.9cm}|C{2.4cm}|}
+        \hline
+        \multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{Parâmetro}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Descrição}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Listagem}}} & \multicolumn{2}{c|}{\textbf{Escolhido}} \\
+        \cline{4-5}
+        & & & \textbf{Completa} & \textbf{Subamostrada} \\
+        \hline
+        \textit{n\_estimators} & Número de árvores & 100, 200, 300 & 300 & 100 \\
+        \hline
+        \textit{max\_depth} & Profundidade máxima de cada árvore & 3, 6, 9 & 6 & 9 \\
+        \hline
+        \textit{learning\_rate} & Taxa de aprendizado (\textit{shrinkage}) & 0,01; 0,1; 0,2 & 0,1 & 0,1 \\
+        \hline
+        \textit{gamma} & Penalidade $\gamma$ sobre o número de folhas & 0; 0,5; 1 & 0 & 0 \\
+        \hline
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{quadro}
+
+Nas duas bases, o \textit{Random Forest} escolhido tem o maior número de árvores da grade, sorteia metade das variáveis em cada divisão, usa o treino inteiro em cada árvore e dispensa a ponderação das classes, e as bases diferem apenas no tamanho mínimo das folhas. A escolha favorece, assim, árvores individualmente melhores em vez de árvores mais diversas (Seção \ref{sec:grades}). No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ nulo são escolhidos nas duas bases, e a profundidade fica em torno da configuração comum de \citeonline{chen2016}, com árvores mais profundas e em menor número na base subamostrada.
+
+A Tabela \ref{tab:ciclo-supervisionados} mostra a AUPRC das configurações escolhidas no ciclo interno. Como a escolha recai sobre o maior valor entre os cinco \textit{folds}, a AUPRC no \textit{fold} que indicou a configuração supera a sua média nos cinco \textit{folds}. Essa média, porém, fica próxima da maior média da grade, e várias combinações ficam a menos de 0,01 dela, o que indica que o desempenho dos modelos supervisionados é pouco sensível aos hiperparâmetros nas faixas exploradas.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{AUPRC das configurações escolhidas para os modelos supervisionados no ciclo interno, no \textit{fold} que as indicou e em média nos cinco \textit{folds}, com a maior AUPRC média da grade e o número de combinações a menos de 0,01 dela.}
+    \label{tab:ciclo-supervisionados}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{L{3.0cm} C{2.4cm} C{2.4cm} C{2.4cm} C{2.8cm}}
+        \toprule
+        \textbf{Modelo} & \textbf{AUPRC no \textit{fold} que a indicou} & \textbf{AUPRC média nos \textit{folds}} & \textbf{Maior AUPRC média da grade} & \textbf{Combinações a menos de 0,01 da maior média} \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base completa}} \\
+        \textit{Random Forest} & 0,920 & 0,885 & 0,887 & 39 de 162 \\
+        XGBoost & 0,914 & 0,886 & 0,886 & 12 de 81 \\
+        \midrule
+        \multicolumn{5}{l}{\textit{Base subamostrada}} \\
+        \textit{Random Forest} & 0,916 & 0,867 & 0,872 & 21 de 162 \\
+        XGBoost & 0,919 & 0,869 & 0,878 & 42 de 81 \\
+        \bottomrule
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{table}
+
+\section*{HDBSCAN*}
+
+O Quadro \ref{qua:hiper-hdbscan} apresenta a grade do HDBSCAN*, em que $m_{pts}$ é escolhido para cada distância e cada base, e o tamanho mínimo de agrupamento é fixo (Seção \ref{sec:grades}).
+
+\begin{quadro}[!htbp]
+    \centering
+    \caption{Grade de hiperparâmetros do HDBSCAN* e configuração escolhida em cada distância e base.}
+    \label{qua:hiper-hdbscan}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{|L{2.9cm}|L{4.2cm}|C{2.4cm}|C{1.9cm}|C{2.4cm}|}
+        \hline
+        \multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{Parâmetro}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Descrição}}} & \multicolumn{1}{c|}{\multirow{2}{*}{\textbf{Listagem}}} & \multicolumn{2}{c|}{\textbf{Escolhido}} \\
+        \cline{4-5}
+        & & & \textbf{Completa} & \textbf{Subamostrada} \\
+        \hline
+        \textit{min\_samples} & Número mínimo de pontos, $m_{pts}$, com a distância euclidiana & 50, 100, 200, 300 & 300 & 200 \\
+        \hline
+        \textit{min\_samples} & Número mínimo de pontos, $m_{pts}$, com a distância de Mahalanobis empírica & 50, 100, 200, 300 & 300 & 100 \\
+        \hline
+        \textit{min\_samples} & Número mínimo de pontos, $m_{pts}$, com a distância de Mahalanobis com MCD & 50, 100, 200, 300 & 200 & 200 \\
+        \hline
+        \textit{min\_cluster\_size} & Tamanho mínimo de agrupamento, $m_{clSize}$ & 50 & 50 & 50 \\
+        \hline
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{quadro}
+
+A Tabela \ref{tab:ciclo-hdbscan} e a Figura \ref{fig:ciclo-hdbscan} mostram o resultado do ciclo interno para cada valor de $m_{pts}$. Como a configuração escolhida é a de maior DISCO entre as indicadas pelos cinco \textit{folds} (Seção \ref{sec:grid-search}), ela tem o maior DISCO máximo de cada bloco da tabela, embora nem sempre a maior média.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Ciclo interno do HDBSCAN* para cada distância, base e valor de $m_{pts}$, com as médias do número de grupos, do DISCO e da AUPRC nos cinco \textit{folds} internos e o maior DISCO entre eles. A configuração escolhida está em negrito.}
+    \label{tab:ciclo-hdbscan}
+    \vspace{2mm}
+    \small
+    \begin{tabular}{L{2.6cm} L{2.3cm} C{1.1cm} C{1.4cm} C{1.7cm} C{1.7cm} C{1.7cm}}
+        \toprule
+        \textbf{Distância} & \textbf{Base} & $\boldsymbol{m_{pts}}$ & \textbf{Grupos} & \textbf{DISCO médio} & \textbf{DISCO máximo} & \textbf{AUPRC média} \\
+        \midrule
+        \multirow{8}{2.6cm}{\raggedright Euclidiana} & \multirow{4}{2.3cm}{\raggedright Completa} & 50 & 124,4 & $-0{,}162$ & $-0{,}142$ & 0,243 \\
+         &  & 100 & 61,4 & $-0{,}087$ & $-0{,}078$ & 0,281 \\
+         &  & 200 & 33,0 & $-0{,}161$ & $-0{,}133$ & 0,321 \\
+         &  & \textbf{300} & \textbf{3,8} & \textbf{0,194} & \textbf{0,212} & \textbf{0,336} \\
+        \cmidrule{2-7}
+         & \multirow{4}{2.3cm}{\raggedright Subamostrada} & 50 & 39,6 & $-0{,}073$ & $-0{,}030$ & 0,194 \\
+         &  & 100 & 25,2 & $-0{,}130$ & $-0{,}103$ & 0,237 \\
+         &  & \textbf{200} & \textbf{4,8} & \textbf{0,111} & \textbf{0,207} & \textbf{0,281} \\
+         &  & 300 & 3,0 & 0,177 & 0,190 & 0,296 \\
+        \midrule
+        \multirow{8}{2.6cm}{\raggedright Mahalanobis empírica} & \multirow{4}{2.3cm}{\raggedright Completa} & 50 & 122,6 & $-0{,}122$ & $-0{,}064$ & 0,200 \\
+         &  & 100 & 58,4 & $-0{,}104$ & $-0{,}096$ & 0,232 \\
+         &  & 200 & 38,8 & $-0{,}172$ & $-0{,}167$ & 0,288 \\
+         &  & \textbf{300} & \textbf{6,8} & \textbf{0,100} & \textbf{0,110} & \textbf{0,320} \\
+        \cmidrule{2-7}
+         & \multirow{4}{2.3cm}{\raggedright Subamostrada} & 50 & 40,2 & $-0{,}087$ & $-0{,}073$ & 0,127 \\
+         &  & \textbf{100} & \textbf{5,4} & \textbf{0,179} & \textbf{0,238} & \textbf{0,134} \\
+         &  & 200 & 6,0 & 0,074 & 0,078 & 0,145 \\
+         &  & 300 & 5,4 & 0,064 & 0,179 & 0,155 \\
+        \midrule
+        \multirow{8}{2.6cm}{\raggedright Mahalanobis com MCD} & \multirow{4}{2.3cm}{\raggedright Completa} & 50 & 60,0 & 0,198 & 0,731 & 0,033 \\
+         &  & 100 & 5,0 & 0,694 & 0,727 & 0,467 \\
+         &  & \textbf{200} & \textbf{3,0} & \textbf{0,708} & \textbf{0,736} & \textbf{0,763} \\
+         &  & 300 & 3,0 & 0,707 & 0,736 & 0,773 \\
+        \cmidrule{2-7}
+         & \multirow{4}{2.3cm}{\raggedright Subamostrada} & 50 & 5,0 & 0,637 & 0,661 & 0,056 \\
+         &  & 100 & 4,0 & 0,630 & 0,656 & 0,500 \\
+         &  & \textbf{200} & \textbf{2,0} & \textbf{0,655} & \textbf{0,675} & \textbf{0,778} \\
+         &  & 300 & 2,0 & 0,653 & 0,674 & 0,775 \\
+        \bottomrule
+    \end{tabular}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{table}
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{DISCO e AUPRC interna do HDBSCAN* em função de $m_{pts}$, médias dos cinco \textit{folds} internos. Os marcadores cheios indicam a configuração escolhida pelo DISCO.}
+    \label{fig:ciclo-hdbscan}
+    \includegraphics[width=\textwidth]{03-hdbscan-selection.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+Nas distâncias euclidiana e de Mahalanobis empírica, o DISCO é negativo nas configurações que dividem o treino em dezenas de grupos e só fica positivo quando há poucos grupos. Com a distância de Mahalanobis com MCD, o DISCO é bem mais alto, e o agrupamento escolhido tem poucos grupos. A exceção é $m_{pts}$ igual a 50 na base completa, em que o treino se divide em dezenas de grupos, e o DISCO e a AUPRC interna caem juntos. Na maior parte dos casos, a configuração escolhida pelo DISCO tem a maior AUPRC interna ou fica próxima dela, embora o índice não utilize os rótulos. O maior afastamento ocorre na distância de Mahalanobis empírica com a base subamostrada, em que todas as configurações têm AUPRC interna baixa.
 
 \end{document}
