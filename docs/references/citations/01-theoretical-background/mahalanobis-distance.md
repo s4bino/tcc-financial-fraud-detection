@@ -1,12 +1,10 @@
-> [!todo] Status: leitura de estudo, ainda sem texto na monografia
-> Trechos que sustentam o estudo da distância de Mahalanobis (`docs/scratch/notes/mahalanobis-distance-study.md`), feito antes de levá-la ao pipeline do HDBSCAN\*. Nenhuma das chaves novas consta do `refbib.bib`.
-> - `ghorbani2019`: definição, relação com a euclidiana, mascaramento e versão robusta pelo MCD.
-> - `demaesschalck2000`: distâncias euclidiana e de Mahalanobis no espaço original e no dos componentes principais.
-> - `todeschini2013`: forma quadrática geral, invariância à escala, mascaramento e encobrimento, e os dois tipos de anomalia (remota e isolada).
-> - `evans2001`: capítulo 14 do livro organizado por Lock, Wells e Farthing. O PDF é o livro inteiro, e só o trecho sobre Mahalanobis foi lido.
-> - `xie2024`: Mahalanobis na mesma base de cartões, com as ressalvas metodológicas anotadas abaixo.
-> - `laca`: sem PDF. O resumo e o começo da introdução estão em `laca_runtime-optimization-mahalanobis-credit-card-fraud.txt`, e o ano e o veículo não foram localizados.
-> - `campello2015`: já consta do `refbib.bib`. Os trechos abaixo são novos e não estão citados no `main.tex`.
+> [!check] Status: em uso na monografia
+> Citado em Fundamentação › Distância de Mahalanobis, com as subseções de covariância empírica e de covariância robusta. Os grifos novos ficam na seção "Citado na fundamentação", no fim da nota, e alguns das seções de estudo também são citados.
+> - `ghorbani2019`: ponderação pela variabilidade, invariância à escala, definição, relação com a euclidiana, necessidade de estimadores robustos e o MCD como o mais usado. Por apud, `mahalanobis1936` e `rousseeuw1985`, sem PDF no acervo.
+> - `hubert2010`: afastamento do centro em relação ao tamanho da nuvem, elipse de tolerância, mascaramento, MCD bruto, concentração, cálculo exato, corte da repesagem, distância robusta e o exemplo dos vinhos. Por apud, `rousseeuw1999` (FAST-MCD), sem PDF no acervo.
+> - `fauconnier2009`: variância generalizada e repesagem com pesos 0 e 1, retornada por padrão pelos programas.
+> - `campello2015`: sensibilidade da média e da covariância às anomalias e HDBSCAN\* definido sobre distâncias num espaço métrico qualquer.
+> - Só do estudo (`docs/scratch/notes/mahalanobis-distance-study.md`), sem citação na monografia: `demaesschalck2000`, `todeschini2013`, `evans2001`, `xie2024` e `laca`. `bulut2019` foi lido e não acrescenta à definição de Hubert e Debruyne (2010), que ele atribui a Rousseeuw (1985).
 
 ## Definição e relação com a distância euclidiana
 
@@ -20,10 +18,14 @@
 >
 > Página 588 da revista. Sustenta a euclidiana como caso particular da Mahalanobis.
 
+^ghorbani2019-p6
+
 > [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=6&selection=27,63,29,30&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.6]]
 > > It differs from Euclidean distance in this way that it takes into account the correlations between variables. It is a scale invariant metric
 >
 > Página 588 da revista. Sustenta que a Mahalanobis considera as correlações e não depende da escala das variáveis.
+
+^ghorbani2019-p6-2
 
 > [!PDF|yellow] [[todeschini2013_locally-centred-mahalanobis-distance.pdf#page=3&selection=535,0,575,8&color=yellow|todeschini2013_locally-centred-mahalanobis-distance, p.3]]
 > > Like the distances derived using the classical covariance matrix, the locally centred Mahalanobis distances are invariant to any sort of variable scaling.
@@ -94,6 +96,8 @@
 >
 > Página 5:4 da revista. Sustenta, na obra do HDBSCAN\* já citada no trabalho, que a covariância é sensível às anomalias, e define mascaramento e encobrimento.
 
+^campello2015-p5
+
 > [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=2&selection=23,57,31,9&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.2]]
 > > Due to the masking effect, in which one outlier masks a second outlier, if the second outlier can be considered as an outlier only by itself, but not in the presence of the first outlier, detecting multiple outliers is more completed than the case where data consist of a single outlier, since masking effects might decrease the Mahalanobis distance of an outlier. This might happen because a small cluster of outliers attracts mean and inflate variance towards its direction [4]. In such cases using robust estimates of sample mean and variance, can often improve the performance of the detection procedure, see [24] and [30].
 >
@@ -121,10 +125,14 @@
 >
 > Página 590 da revista. Sustenta a dependência da normalidade e a sensibilidade das estimativas clássicas, e a necessidade de estimadores robustos. Continua no trecho seguinte.
 
+^ghorbani2019-p8
+
 > [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=9&selection=3,0,4,41&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.9]]
 > > mum covariance determinant (MCD) estimator defined in [25] for which also a fast computing algorithm was constructed [27].
 >
 > Página 591 da revista. Sustenta o MCD como o estimador robusto mais usado. Remete às referências [25] (Rousseeuw, 1985) e [27] (Rousseeuw e Van Driessen, 1999), fora do acervo. A segunda é o algoritmo FastMCD, implementado no `MinCovDet` do scikit-learn.
+
+^ghorbani2019-p9
 
 > [!PDF|yellow] [[demaesschalck2000_mahalanobis-distance-tutorial.pdf#page=13&selection=132,44,163,66&color=yellow|demaesschalck2000_mahalanobis-distance-tutorial, p.13]]
 > > Rousseeuw [31,32] introduced a robust version of the MD as a tool for the detection of outliers, the minimum volume ellipsoid (MVE) estimator. The variance–covariance is estimated using the at least (n/2 + 1) objects of X which cover the smallest possible ellipsoid. In this way, the variance–covariance matrix is not influenced by multiple outliers.
@@ -187,6 +195,8 @@
 >
 > Página 5:8 da revista. Sustenta que o HDBSCAN\* é definido sobre as distâncias entre pares de objetos num espaço métrico qualquer, sem exigir a euclidiana.
 
+^campello2015-p9
+
 > [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=35&selection=77,57,78,50&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.35]]
 > > We used the Cosine measure as dissimilarity function for these datasets.
 >
@@ -208,3 +218,131 @@
 > > 5 of the 10 pieces of training of the model achieved excellent results of 1 for all model indicators
 >
 > Página 162795 da revista. Métricas iguais a 1 numa base com 0,17% de fraudes são compatíveis com o vazamento do trecho anterior. Os resultados não servem de comparação.
+
+## Citado na fundamentação
+
+### Definição
+
+> [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=6&selection=21,0,26,49&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.6]]
+> > An alternative approach is to scale the contribution of individual variables to the distance value according to the variability of each variable. This approach is considered by the Mahalanobis distance, which has been developed as a statistical measure by PC Mahalanobis, an Indian statistician
+>
+> Página 588 da revista. Sustenta, por apud de Mahalanobis (1936), referência [19] do artigo, a ponderação de cada variável pela sua variabilidade.
+
+^ghorbani2019-p6-3
+
+> [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=6&selection=29,0,73,12&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.6]]
+> > It is a scale invariant metric and provides a measure of distance between a point x ∈ Rᵖ generated from a given p-variate (probability) distribution f_X(.) and the mean µ = E(X) of the distribution. Assume f_X(.) has finite second order moments and denote Σ = E(X − µ) be the covariance matrix. Then the Mahalanobis distance is defined by
+>
+> Página 588 da revista. Sustenta a definição da Equação 3.2, a distância de um ponto ao centro de uma distribuição com covariância Σ. A equação (3.1) do artigo vem logo depois do trecho.
+
+^ghorbani2019-p6-4
+
+### Covariância empírica
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=296,0,305,45&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > should tell us how far away xᵢ is from the center of the cloud, relative to the size of the cloud.
+>
+> Página 36 da revista. Sustenta a leitura da distância de Mahalanobis clássica como o afastamento do centro em relação ao tamanho da nuvem de pontos.
+
+^hubert2010-p1
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=202,0,289,13&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > The classical tolerance ellipse is defined as the set of p-dimensional points x whose Mahalanobis distance MD(x) = √((x − x̄)ᵗ S⁻¹ (x − x̄)) (1) equals √(χ²_{p,0.975}). We denote χ²_{p,α} as the α-quantile of the χ²_p distribution.
+>
+> Página 36 da revista. Sustenta a elipse de tolerância de 97,5%, com a média amostral x̄ e a covariância amostral S.
+
+^hubert2010-p1-2
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=319,8,323,31&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > We see that this tolerance ellipse tries to encompass all observations. Consequently none of the Mahalanobis distances, shown in Figure 2(a), is exceptional large and only three observations would be considered as mild outliers.
+>
+> Página 36 da revista. Sustenta o exemplo da elipse clássica que tenta englobar todas as observações.
+
+^hubert2010-p1-3
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=395,0,421,8&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > This illustrates the masking effect: classical estimates can be so highly affected by outlying
+>
+> Página 36 da revista. Sustenta o efeito de mascaramento. Continua no trecho seguinte.
+
+^hubert2010-p1-4
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=2&selection=43,0,44,44&color=yellow|hubert2010_minimum-covariance-determinant, p.2]]
+> > values that diagnostic tools such as the Mahalanobis distances can no longer detect the outliers.
+>
+> Página 37 da revista. Fim da frase do trecho anterior.
+
+^hubert2010-p2
+
+### Covariância robusta
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=2&selection=54,21,113,1&color=yellow|hubert2010_minimum-covariance-determinant, p.2]]
+> > The raw MCD estimator with parameter [(n + p + 1)/2] ≤ h ≤ n defines the following location and dispersion estimates: 1. µ̂₀ is the mean of the h observations for which the determinant of the sample covariance matrix is minimal. 2. Σ̂₀ is the corresponding covariance matrix multiplied by a consistency factor c₀.
+>
+> Página 37 da revista. Sustenta a escolha do subconjunto de h observações com o menor determinante e a estimativa bruta do centro e da covariância, com o fator de consistência. Com h igual a n, o único subconjunto é a amostra inteira.
+
+^hubert2010-p2-2
+
+> [!PDF|yellow] [[fauconnier2009_outliers-detection-mcd-practice.pdf#page=2&selection=217,48,249,8&color=yellow|fauconnier2009_outliers-detection-mcd-practice, p.2]]
+> > The first step in the derivation of the MCD estimators using a sample of n data points consists in finding a subsample of h observations (with n/2 < h < n) out of n minimising the generalized variance computed on that subsample (i.e. the determinant of the covariance matrix based on these h points).
+>
+> Página 364 da revista. Sustenta o determinante da covariância como a variância generalizada do subconjunto.
+
+^fauconnier2009-p2
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=5&selection=545,8,552,4&color=yellow|hubert2010_minimum-covariance-determinant, p.5]]
+> > Note that the C stands for 'concentration' since Σ̂₂ is more concentrated (has a lower determinant) than
+>
+> Página 40 da revista. Sustenta que um determinante menor indica uma covariância mais concentrada.
+
+^hubert2010-p5
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=5&selection=212,0,224,1&color=yellow|hubert2010_minimum-covariance-determinant, p.5]]
+> > The exact MCD estimator is very hard to compute, as it requires the evaluation of all (n choose h) subsets of size h.
+>
+> Página 40 da revista. Sustenta que o cálculo exato exige avaliar todos os subconjuntos de h observações.
+
+^hubert2010-p5-2
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=5&selection=225,0,226,27&color=yellow|hubert2010_minimum-covariance-determinant, p.5]]
+> > In Ref. 3 the FAST-MCD algorithm is developed to efficiently compute the MCD.
+>
+> Página 40 da revista. Sustenta, por apud de Rousseeuw e Van Driessen (1999), referência 3 do artigo, o algoritmo FAST-MCD, que o `MinCovDet` do scikit-learn implementa.
+
+^hubert2010-p5-3
+
+> [!PDF|yellow] [[fauconnier2009_outliers-detection-mcd-practice.pdf#page=11&selection=197,9,198,57&color=yellow|fauconnier2009_outliers-detection-mcd-practice, p.11]]
+> > it is not the raw estimates that are returned by default but weighted mean and covariance matrix based on weights derived from the MCD estimations.
+>
+> Página 373 da revista. Sustenta que os programas retornam, por padrão, a estimativa repesada.
+
+^fauconnier2009-p11
+
+> [!PDF|yellow] [[fauconnier2009_outliers-detection-mcd-practice.pdf#page=12&selection=73,0,131,23&color=yellow|fauconnier2009_outliers-detection-mcd-practice, p.12]]
+> > where dp is a consistency factor (of the same type as c above) and the weights are given by wᵢ = 1 if d²(xᵢ, µ̂ʳᵃʷ) ≤ q_δ, 0 otherwise, where q_δ is a given cutoff value
+>
+> Página 374 da revista. Sustenta os pesos 0 e 1 pela distância à estimativa bruta, o recálculo do centro e da covariância com as observações de peso 1 e o fator de consistência. As fórmulas do centro e da covariância ponderados vêm logo antes do trecho.
+
+^fauconnier2009-p12
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=3&selection=225,20,257,7&color=yellow|hubert2010_minimum-covariance-determinant, p.3]]
+> > A simple yet effective choice for W is W(d²) = I(d² ≤ χ²_{p,0.975}). This is the default choice in current implementations in S-PLUS, R, SAS, and Matlab.
+>
+> Página 38 da revista. Sustenta o corte no quantil 0,975 da qui-quadrado como padrão nas implementações.
+
+^hubert2010-p3
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=323,32,388,9&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > On the other hand, the robust tolerance ellipse in Figure 1 which is based on the robust distances RD(x) = √((x − µ̂_MCD)ᵗ Σ̂_MCD⁻¹ (x − µ̂_MCD)) (2) is much smaller and encloses the regular data points. Here, µ̂_MCD is the MCD estimate of location, and Σ̂_MCD the MCD covariance estimate.
+>
+> Página 36 da revista. Sustenta a distância robusta, com o centro e a covariância do MCD, e a elipse robusta, menor que a clássica e ajustada aos pontos regulares.
+
+^hubert2010-p1-5
+
+> [!PDF|yellow] [[hubert2010_minimum-covariance-determinant.pdf#page=1&selection=390,0,394,46&color=yellow|hubert2010_minimum-covariance-determinant, p.1]]
+> > The robust distances exposed in Figure 2(b) now clearly spot eight outliers and one mild outlier (observation 3).
+>
+> Página 36 da revista. Sustenta que, no exemplo, as distâncias robustas destacam oito observações discrepantes.
+
+^hubert2010-p1-6
+

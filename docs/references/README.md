@@ -51,13 +51,13 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 60 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 66 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
 **Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022`,
-`ghorbani2019`, `demaesschalck2000`, `todeschini2013`, `evans2001` e
-`xie2024` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
+`demaesschalck2000`, `todeschini2013`, `evans2001`, `xie2024` e `bulut2019`
+têm notas de leitura mas nenhuma entrada no `refbib.bib`.
 
 ### fraud-detection
 
@@ -149,7 +149,13 @@ de status com essa informação e a seção onde a obra é citada.
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `ghorbani2019` | | Ghorbani. *Mahalanobis Distance and Its Application for Detecting Multivariate Outliers*. Facta Universitatis, Series: Mathematics and Informatics, v. 34, n. 3, p. 583 a 595, 2019. |
+| `ghorbani2019` | ✓ | Ghorbani. *Mahalanobis Distance and Its Application for Detecting Multivariate Outliers*. Facta Universitatis, Series: Mathematics and Informatics, v. 34, n. 3, p. 583 a 595, 2019. |
+| `mahalanobis1936` | ✓ | Mahalanobis. *On the Generalized Distance in Statistics*. Proceedings of the National Institute of Sciences (Calcutta), v. 2, p. 49 a 55, 1936. Sem PDF; citado por apud de Ghorbani (2019). |
+| `hubert2010` | ✓ | Hubert & Debruyne. *Minimum Covariance Determinant*. WIREs Computational Statistics, v. 2, n. 1, p. 36 a 43, 2010. Revisão do MCD: definição, repesagem, distância robusta e FAST-MCD. O PDF traz a data de 2009 do copyright, mas o volume é de 2010. |
+| `fauconnier2009` | ✓ | Fauconnier & Haesbroeck. *Outliers Detection with the Minimum Covariance Determinant Estimator in Practice*. Statistical Methodology, v. 6, n. 4, p. 363 a 379, 2009. Variância generalizada e repesagem com pesos 0 e 1. |
+| `rousseeuw1985` | ✓ | Rousseeuw. *Multivariate Estimation with High Breakdown Point*. In: Grossmann, Pflug, Vincze & Wertz (org.). *Mathematical Statistics and Applications*, v. B. Reidel, 1985, p. 283 a 297. Sem PDF; citado por apud de Ghorbani (2019). |
+| `rousseeuw1999` | ✓ | Rousseeuw & Van Driessen. *A Fast Algorithm for the Minimum Covariance Determinant Estimator*. Technometrics, v. 41, n. 3, p. 212 a 223, 1999. Sem PDF; citado por apud de Hubert e Debruyne (2010). É o FAST-MCD que o `MinCovDet` do scikit-learn implementa. |
+| `bulut2019` | | Bulut & Zaman. *An Improved Class of Robust Ratio Estimators by Using the Minimum Covariance Determinant Estimation*. Communications in Statistics: Simulation and Computation, 2019. Atribui a definição do MCD a Rousseeuw (1985) e não acrescenta à revisão de Hubert e Debruyne (2010). |
 | `demaesschalck2000` | | De Maesschalck, Jouan-Rimbaud & Massart. *The Mahalanobis distance*. Chemometrics and Intelligent Laboratory Systems, v. 50, p. 1 a 18, 2000. Tutorial sobre as distâncias euclidiana e de Mahalanobis no espaço original e no dos componentes principais. |
 | `todeschini2013` | | Todeschini, Ballabio, Consonni, Sahigara & Filzmoser. *Locally centred Mahalanobis distance: A new distance measure with salient features towards outlier detection*. Analytica Chimica Acta, v. 787, p. 1 a 9, 2013. |
 | `evans2001` | | Evans. *Statistical aspects of the detection of fraud*. In: Lock, Wells & Farthing (org.). *Fraud and Misconduct in Biomedical Research*. 3. ed. BMJ Books, 2001, cap. 14, p. 186 a 206. O PDF é o livro inteiro: a numeração do PDF coincide com a do livro até a p. 198 e fica uma página atrás depois dela. |

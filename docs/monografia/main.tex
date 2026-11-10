@@ -356,7 +356,7 @@ A principal diferença do HDBSCAN* em relação ao DBSCAN* está no tratamento d
     \label{eq:mrd}
 \end{equation}
 
-em que $d(x_p, x_q)$ é a distância entre os vetores de atributos dos dois pontos, dada pela função de distância escolhida para os dados, como a euclidiana, a mesma que define os vizinhos no cálculo da distância núcleo \cite{campello2015}.
+em que $d(x_p, x_q)$ é a distância entre os vetores de atributos dos dois pontos, dada pela função de distância escolhida para os dados, como a euclidiana ou a de Mahalanobis (Seção \ref{sec:mahalanobis}), a mesma que define os vizinhos no cálculo da distância núcleo \cite{campello2015}.
 
 Essas distâncias definem o grafo de alcançabilidade mútua, um grafo completo cujos vértices são os pontos do conjunto de dados e cujas arestas têm como peso a distância de alcançabilidade mútua entre eles \cite{campello2015}. Esse grafo é conceitual e não precisa ser materializado, pois os pesos das arestas são calculados sob demanda para a obtenção da sua árvore geradora mínima \cite{neto2022}. As arestas dessa árvore são então removidas em ordem decrescente de peso, o que equivale a reduzir progressivamente o raio $\epsilon$. A cada remoção, os componentes conectados de pontos centrais formam os agrupamentos, e os demais pontos passam a ser ruído \cite{campello2015}. Dessa forma, enquanto o DBSCAN* produz um único agrupamento para o raio escolhido, o HDBSCAN* produz uma hierarquia que reúne todos os agrupamentos que o DBSCAN* obteria para o valor de $m_{pts}$ e para qualquer $\epsilon \in [0, \infty)$ \cite{campello2015}.
 
@@ -367,6 +367,34 @@ O valor de $m_{pts}$ continua a influenciar o resultado. Valores maiores exigem 
 Na detecção não supervisionada de anomalias, parte-se da premissa de que as anomalias se encontram em regiões de baixa densidade do conjunto de referência \cite{ghosh2024}. Um método global clássico é o dos $k$ vizinhos mais próximos (\textit{k-Nearest Neighbors}, kNN), em que o escore de anomalia de um ponto é a distância ao seu $k$-ésimo vizinho mais próximo \cite{ramaswamy2000}, grandeza análoga à distância núcleo do HDBSCAN* \cite{campello2015}.
 
 Neste estudo, as fraudes não são identificadas apenas como os pontos rotulados como ruído. Cada transação recebe um escore de anomalia que combina a sua pertinência ao agrupamento atribuído pelo HDBSCAN* e a distância ao seu $m_{pts}$-ésimo vizinho mais próximo, e as transações de maior escore são sinalizadas como suspeitas.
+
+\subsection{Distância de Mahalanobis}
+\label{sec:mahalanobis}
+
+Ao contrário da distância euclidiana, a distância de Mahalanobis considera as correlações entre as variáveis e pondera a contribuição de cada variável de acordo com a sua variabilidade \apud{mahalanobis1936}{ghorbani2019}. Ela também não depende da escala das variáveis \cite{ghorbani2019}. A distância de Mahalanobis de um ponto $x$ ao centro $\mu$ de uma distribuição com matriz de covariância $\Sigma$ é dada pela Equação \ref{eq:mahalanobis} \cite{ghorbani2019}.
+
+\begin{equation}
+    D_M(x, \mu) = \sqrt{(x - \mu)^T \Sigma^{-1} (x - \mu)}
+    \label{eq:mahalanobis}
+\end{equation}
+
+Quando a covariância é a matriz identidade, a distância de Mahalanobis se reduz à euclidiana \cite{ghorbani2019}. A mesma forma mede a distância entre dois pontos, com o segundo no lugar do centro, e pode servir de função de distância ao HDBSCAN*, que é definido sobre as distâncias entre pares de objetos em um espaço métrico qualquer \cite{campello2015}. Na prática, o centro e a covariância são desconhecidos e precisam ser estimados a partir dos dados. As subseções seguintes tratam da estimativa clássica, pela covariância empírica, e de uma estimativa robusta, pelo MCD.
+
+\subsubsection{Covariância empírica}
+\label{sec:cov-empirica}
+
+Na estimativa clássica, o centro é a média amostral $\bar{x}$, e a covariância é a matriz de covariância amostral $S$, ambas calculadas com todas as observações. A distância de Mahalanobis indica, assim, quão longe cada observação está do centro da nuvem de pontos, em relação ao tamanho dessa nuvem \cite{hubert2010}. Para $p$ variáveis, a elipse de tolerância de 97,5\% é o conjunto dos pontos cuja distância de Mahalanobis ao quadrado é igual ao quantil 0,975 da distribuição qui-quadrado com $p$ graus de liberdade \cite{hubert2010}.
+
+Essas estimativas, porém, são bastante sensíveis à presença de anomalias \cite{campello2015}. Em um exemplo com dados reais, a elipse de tolerância clássica tenta englobar todas as observações, e nenhuma distância de Mahalanobis se destaca \cite{hubert2010}. É o efeito de mascaramento, em que as estimativas clássicas são tão afetadas pelos valores discrepantes que a distância de Mahalanobis deixa de detectá-los \cite{hubert2010}. Por isso, é importante considerar alternativas robustas para calcular a distância de Mahalanobis \cite{ghorbani2019}.
+
+\subsubsection{Covariância robusta}
+\label{sec:mcd}
+
+O estimador robusto mais usado é o determinante mínimo da covariância (MCD, do inglês \textit{Minimum Covariance Determinant}) \apud{rousseeuw1985}{ghorbani2019}. Entre os subconjuntos de $h$ observações, com $h$ de pouco mais da metade até o total de observações, o MCD escolhe aquele cuja matriz de covariância amostral tem o menor determinante \cite{hubert2010}. Esse determinante é a variância generalizada do subconjunto \cite{fauconnier2009}, e um determinante menor indica uma covariância mais concentrada \cite{hubert2010}. O subconjunto escolhido reúne, portanto, as observações mais concentradas, o núcleo dos dados. A estimativa bruta do centro, $\hat{\mu}_0$, é a média dessas $h$ observações, e a da covariância, $\hat{\Sigma}_0$, é a covariância delas multiplicada por um fator de consistência \cite{hubert2010}. Quando $h$ é igual ao número de observações, o único subconjunto possível é a amostra inteira, e a estimativa bruta coincide com a empírica, a menos desse fator. O cálculo exato do MCD exige avaliar todos os subconjuntos de $h$ observações \cite{hubert2010}, e o algoritmo FAST-MCD foi desenvolvido para calculá-lo de forma eficiente \apud{rousseeuw1999}{hubert2010}.
+
+Por padrão, os programas não retornam a estimativa bruta, e sim um centro e uma covariância ponderados, com pesos derivados dela \cite{fauconnier2009}. Cada observação recebe peso 1 quando o quadrado da sua distância de Mahalanobis a $\hat{\mu}_0$, calculada com $\hat{\Sigma}_0$, não passa de um corte, e peso 0 caso contrário. O centro e a covariância são então recalculados só com as observações de peso 1, e a covariância é de novo multiplicada por um fator de consistência \cite{fauconnier2009}. Um corte simples e eficaz, padrão nas implementações, é o quantil 0,975 da distribuição qui-quadrado com $p$ graus de liberdade \cite{hubert2010}.
+
+A distância robusta de cada observação é a distância de Mahalanobis da Equação \ref{eq:mahalanobis} com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$ \cite{hubert2010}. Como essas estimativas vêm do núcleo dos dados, a elipse de tolerância robusta se ajusta às observações regulares, e as observações afastadas desse núcleo passam a ter distâncias grandes. No exemplo de \citeonline{hubert2010}, a elipse robusta é bem menor que a clássica e envolve os pontos regulares, e as distâncias robustas destacam oito observações discrepantes que as distâncias clássicas não apontavam.
 
 \section{Métricas de Avaliação}
 
@@ -638,7 +666,9 @@ O \textit{Random Forest} e o XGBoost são treinados com as transações rotulada
 \subsection{HDBSCAN*}
 \label{sec:deteccao-hdbscan}
 
-O HDBSCAN* é ajustado sobre as transações do treino, sem os rótulos e sem as duplicatas (Seção \ref{sec:preprocessamento}), com a distância euclidiana entre as variáveis padronizadas. Cada transação recebe um grau de anomalia construído a partir de dois escores. O primeiro é o complemento da probabilidade de pertinência, que mede a intensidade com que a transação pertence ao agrupamento atribuído \apud{jain1999}{oyewole2023}. Essa probabilidade é proporcional ao quanto a transação persiste como parte do agrupamento e é nula para as transações rotuladas como ruído \cite{cuml2026}. Para as transações da validação e do teste, que não participam do ajuste, a pertinência é estimada pela atribuição aproximada de cada uma ao agrupamento obtido no treino, sem reagrupar os dados \cite{cuml2026}. O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN \cite{ramaswamy2000} e é análoga à distância núcleo do HDBSCAN* (Seção \ref{sec:hdbscan}).
+O HDBSCAN* é ajustado sobre as transações do treino, sem os rótulos e sem as duplicatas (Seção \ref{sec:preprocessamento}), com três distâncias entre as transações, a euclidiana e a de Mahalanobis (Seção \ref{sec:mahalanobis}) com a covariância empírica e com a covariância robusta do MCD. Nas duas de Mahalanobis, o centro e a covariância são estimados só com as transações do treino de cada \textit{fold}, sem os rótulos. O MCD é estimado sobre uma amostra aleatória de 30 mil transações do treino, com $h$ igual ao tamanho da amostra, de modo que a estimativa bruta coincide com a empírica e a robustez vem só da repesagem (Seção \ref{sec:mcd}). Em cada caso, a mesma distância é usada no agrupamento e nos escores descritos a seguir.
+
+Cada transação recebe um grau de anomalia construído a partir de dois escores. O primeiro é o complemento da probabilidade de pertinência, que mede a intensidade com que a transação pertence ao agrupamento atribuído \apud{jain1999}{oyewole2023}. Essa probabilidade é proporcional ao quanto a transação persiste como parte do agrupamento e é nula para as transações rotuladas como ruído \cite{cuml2026}. Para as transações da validação e do teste, que não participam do ajuste, a pertinência é estimada pela atribuição aproximada de cada uma ao agrupamento obtido no treino, sem reagrupar os dados \cite{cuml2026}. O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN \cite{ramaswamy2000} e é análoga à distância núcleo do HDBSCAN* (Seção \ref{sec:hdbscan}).
 
 Os dois escores têm naturezas e escalas distintas, uma probabilidade e uma distância. Para combiná-los, cada escore é convertido no seu posto percentil em relação aos escores do treino, isto é, na fração das transações do treino com escore menor ou igual (Equação \ref{eq:posto}).
 
