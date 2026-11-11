@@ -5,7 +5,7 @@
 > - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
 > - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
-> - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o mesmo grifo.
+> - `dalpozzolo2018`: alertas inspecionados por investigadores que contatam os titulares, na abertura da seção, e poucos alertas verificados por dia, com preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o grifo dos poucos alertas por dia.
 > - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.
 
 ## Escore e limiar
@@ -76,6 +76,15 @@
 > Sustenta a distância ao $m_{pts}$-ésimo vizinho como escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 
 ^ramaswamy2000-p1
+
+## Alertas
+
+> [!PDF|yellow] [[dalpozzolo2018_credit-card-fraud-realistic-modeling.pdf#page=1&selection=253,38,261,11&color=yellow|dalpozzolo2018_credit-card-fraud-realistic-modeling, p.1]]
+> > Classifiers are typically employed to analyze all the authorized transactions and alert the most suspicious ones. Alerts are then inspected by professional investigators that contact the cardholders to determine the true nature (either genuine or fraudulent) of each alerted transaction
+>
+> Página 3784 da revista. Sustenta a definição de alerta, comum aos três modelos, como a transação classificada como fraude, que nos sistemas reais é inspecionada por investigadores que contatam os titulares para saber se ela é legítima ou fraudulenta.
+
+^dalpozzolo2018-p1
 
 ## Fração de alertas
 

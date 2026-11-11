@@ -622,26 +622,29 @@ o texto, o sumário precisa ser gerado de novo.
 180. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
    "Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar"
 
+181. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
+   "Em todos eles, as transações classificadas como fraudulentas constituem os alertas, que, … que entram em contato com os titulares para determinar se cada transação é legítima ou fraudulenta"
+
 #### 4.4.1 Modelos Supervisionados
 
-181. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc|documentação]]
+182. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc|documentação]]
    "No Random Forest, essa probabilidade é a média das probabilidades estimadas pelas … árvore é a fração de transações da classe na folha em que a transação é classificada"
 
-182. **(XGBOOST DEVELOPERS, 2026)** → [[fraud-detection#^xgboost2026-doc|documentação]]
+183. **(XGBOOST DEVELOPERS, 2026)** → [[fraud-detection#^xgboost2026-doc|documentação]]
    "No XGBoost, treinado com o objetivo de regressão logística para classificação binária, a saída do modelo é a própria probabilidade"
 
-183. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc-2|documentação]]
+184. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc-2|documentação]]
    "A transação é classificada como fraude quando a probabilidade estimada de fraude supera a de transação legítima"
 
 #### 4.4.2 HDBSCAN*
 
-184. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+185. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
-185. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+186. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-186. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+187. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
 #### 4.4.3 Comparação dos Modelos
@@ -650,38 +653,51 @@ o texto, o sumário precisa ser gerado de novo.
 
 ### 4.5 Ambiente de Execução e Bibliotecas
 
-187. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
+188. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"
 
-188. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
+189. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
    "que fornece o Random Forest, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost"
 
-189. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
+190. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
    "a biblioteca cuML, que oferece, em unidades de processamento gráfico (Graphics Processing Units, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn"
 
 ## 5 Resultados e Discussão
 
-190. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
+191. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
    "As fraudes restantes não se distinguem das transações legítimas pelo grau de … considerada na Introdução, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
 
-191. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+192. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Como os investigadores conseguem verificar apenas poucos alertas por dia"
 
-192. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
+193. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
    "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar agrupamentos próprios."
 
-193. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
+194. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
    "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
 
 ## 6 Conclusão
 
-*Sem citações.*
+195. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
+   "Como trabalhos futuros, sugere-se, em primeiro lugar, um modelo híbrido, em que … (2025), com o HDBSCAN* no lugar do DBSCAN para eliminar a escolha do raio de vizinhança."
+
+196. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
+   "Essa direção é reforçada por Hajek, Abedin e Sivarajah (2022), que obtiveram os melhores resultados de classificação ao integrar vários algoritmos não supervisionados de detecção de outliers a um classificador XGBoost."
+
+197. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
+   "Os modelos podem ainda ser avaliados em outras bases, como a PaySim, … já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo."
+
+198. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
+   "em partições ordenadas no tempo, em que o treino antecede o teste, já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo"
+
+199. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
+   "Outra direção é tratar o problema como detecção de novidades, ou classificação de uma classe, em que há informação apenas sobre as instâncias normais e o modelo é aprendido somente com elas"
 
 ## Apêndice A – Hiperparâmetros dos modelos
 
 ### Random Forest e XGBoost
 
-194. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+200. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ … de Chen e Guestrin (2016), com árvores mais profundas e em menor número na base subamostrada."
 
 ### HDBSCAN*

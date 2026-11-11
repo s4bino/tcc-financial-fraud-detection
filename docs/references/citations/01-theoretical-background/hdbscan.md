@@ -4,7 +4,7 @@
 > - `campello2013b`: citado ao lado de `campello2015` na extração da partição.
 > - `neto2022`: grafo conceitual e faixas de $m_{pts}$.
 > - `neto2021`: citado ao lado de `neto2022` nas faixas de $m_{pts}$.
-> - `ghosh2024`: ponto de partida da seção e fonte da premissa da detecção de anomalias, do efeito do $m_{pts}$ e do intervalo e do comportamento do GLOSH.
+> - `ghosh2024`: ponto de partida da seção e fonte da premissa da detecção de anomalias, do efeito do $m_{pts}$ e do intervalo e do comportamento do GLOSH. Também citado na Conclusão, com o grifo da classificação de uma classe, na nota da Conclusão.
 > - `ramaswamy2000`: fonte original do escore kNN, citada diretamente.
 
 > [!PDF|yellow] [[ghosh2024_parameter-free-outlier-detection-hdbscan-glosh.pdf#page=2&selection=315,0,470,1&color=yellow|ghosh2024_parameter-free-outlier-detection-hdbscan-glosh, p.2]]

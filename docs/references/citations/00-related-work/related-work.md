@@ -3,10 +3,10 @@
 > - `alarfaj2022`: mesmo conjunto de dados, algoritmos de ML e CNN, e, no contraste com o Sulaiman, o Random Forest e o XGBoost entre as abordagens da literatura. Também citado em Metodologia › Conjunto de Dados e, com os grifos da base e dos resultados da CNN, em Resultados e Discussão.
 > - `sulaiman2022`: revisão da literatura, predomínio do supervisionado e proposta com aprendizado federado.
 > - `jurgovsky2018`: LSTM contra Random Forest em dados da Worldline, avaliação pela AUPRC.
-> - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados. Também citado em Resultados e Discussão, com o grifo da limitação do DBSCAN quando as fraudes são menos de 0,2% dos registros.
+> - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados. Também citado em Resultados e Discussão, com o grifo da limitação do DBSCAN quando as fraudes são menos de 0,2% dos registros, e na Conclusão, com o grifo dos rótulos de agrupamento acrescentados como atributos.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
 > - `beer2025`: citado no contraste com o Sulaiman, para o DISCO escolher os hiperparâmetros sem rótulos, com o grifo na nota de métricas. O grifo de `moulavi2014` desta nota fica como registro da leitura.
-> - `ngai2011` e `hajek2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost.
+> - `ngai2011` e `hajek2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost. O `hajek2022` também é citado na Conclusão, com os grifos da nota da Conclusão.
 
 ## Alarfaj et al. (2022)
 

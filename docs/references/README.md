@@ -33,6 +33,7 @@ dos capítulos na listagem do Obsidian.
 | `02-methodology/hyperparameter-grids.md` | 4.3.3 Grades de Hiperparâmetros |
 | `02-methodology/fraud-detection.md` | 4.4 Detecção de Fraudes |
 | `02-methodology/execution-environment.md` | 4.5 Ambiente de Execução e Bibliotecas |
+| `03-conclusion/conclusion.md` | 6 Conclusão |
 | `03-support/bibtex-references.md` | entradas BibTeX coletadas |
 | `03-support/ideas.md` | anotações de trabalho e pontos em aberto |
 
