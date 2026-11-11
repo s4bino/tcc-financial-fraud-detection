@@ -15,17 +15,18 @@ dos capítulos na listagem do Obsidian.
 | `citation-summary.md` | sumário de todas as citações do `main.tex`, em ordem, com links para os grifos |
 | `00-introduction/introduction.md` | 1 Introdução |
 | `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
-| `01-theoretical-background/machine-learning.md` | 3.1 Aprendizado de Máquina |
-| `01-theoretical-background/principal-component-analysis.md` | 3.1.3.1 Principal Component Analysis |
-| `01-theoretical-background/scaling-and-standardization.md` | 3.1.3.2 Escalonamento e padronização |
-| `01-theoretical-background/nested-cross-validation.md` | 3.1.3.3 Validação Cruzada Aninhada |
-| `01-theoretical-background/random-forest.md` | 3.2.1 Random Forest |
-| `01-theoretical-background/xgboost.md` | 3.2.2 Extreme Gradient Boosting |
-| `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
-| `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
-| `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
-| `01-theoretical-background/mahalanobis-distance.md` | estudo da distância de Mahalanobis, ainda sem seção no `main.tex` |
-| `01-theoretical-background/evaluation-metrics.md` | 3.4 Métricas de Avaliação |
+| `01-theoretical-background/financial-fraud.md` | 3.1 Fraudes Financeiras |
+| `01-theoretical-background/machine-learning.md` | 3.2 Aprendizado de Máquina |
+| `01-theoretical-background/principal-component-analysis.md` | 3.2.3.1 Principal Component Analysis |
+| `01-theoretical-background/scaling-and-standardization.md` | 4.2 Pré-processamento, no escalonamento |
+| `01-theoretical-background/nested-cross-validation.md` | 3.2.3.2 Validação Cruzada Aninhada |
+| `01-theoretical-background/random-forest.md` | 3.3.1 Random Forest |
+| `01-theoretical-background/xgboost.md` | 3.3.2 Extreme Gradient Boosting |
+| `01-theoretical-background/anomaly-detection.md` | 3.4 Algoritmo Não Supervisionado |
+| `01-theoretical-background/dbscan.md` | 3.4.1 DBSCAN* |
+| `01-theoretical-background/hdbscan.md` | 3.4.2 HDBSCAN* |
+| `01-theoretical-background/mahalanobis-distance.md` | 3.4.3 Distância de Mahalanobis |
+| `01-theoretical-background/evaluation-metrics.md` | 3.5 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
@@ -71,6 +72,7 @@ de status com essa informação e a seção onde a obra é citada.
 | `ghalwash2025` | ✓ | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
 | `hajek2022` | ✓ | Hajek, Abedin & Sivarajah. *Fraud Detection in Mobile Payment Systems using an XGBoost-based Framework*. Information Systems Frontiers, 2022. O PDF é a versão on-line; no fascículo, v. 25, n. 5, p. 1985 a 2003, 2023. |
 | `ngai2011` | ✓ | Ngai, Hu, Wong, Chen & Sun. *The application of data mining techniques in financial fraud detection: A classification framework and an academic review of literature*. Decision Support Systems, 2011. |
+| `reurink2016` | ✓ | Reurink. *Financial Fraud: A Literature Review*. MPIfG Discussion Paper 16/5, Max-Planck-Institut für Gesellschaftsforschung, 2016. A versão revista saiu no Journal of Economic Surveys, v. 32, n. 5, p. 1292 a 1325, 2018, e é a que o Alcino (2022) cita. |
 | `west2016` | ✓ | West & Bhattacharya. *Intelligent financial fraud detection: A comprehensive review*. Computers & Security, 2016. O PDF é a versão aceita do manuscrito. |
 | `dalpozzolo2018` | ✓ | Dal Pozzolo, Boracchi, Caelen, Alippi & Bontempi. *Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy*. IEEE Transactions on Neural Networks and Learning Systems, 2018. |
 | `santos2025` | | Santos, Bueno dos Santos & Toma. *Detecção de transações fraudulentas com cartão de crédito: uma abordagem comparativa baseada em aprendizado de máquina*. Revista Foco, 2025. |
