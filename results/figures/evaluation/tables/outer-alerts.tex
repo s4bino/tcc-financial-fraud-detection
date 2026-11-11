@@ -1,0 +1,19 @@
+\begin{tabular}{L{3.8cm} C{1.9cm} C{1.9cm} C{1.9cm} C{1.9cm}}
+    \toprule
+    \textbf{Modelo} & \textbf{Alertas} & \textbf{VP} & \textbf{FP} & \textbf{FN} \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Base completa}} \\
+    \textit{Random Forest} & 418 & 395 & 23 & 97 \\
+    XGBoost & 408 & 385 & 23 & 107 \\
+    HDBSCAN*\newline euclidiana & 496 & 156 & 340 & 336 \\
+    HDBSCAN*\newline Mahalanobis empírica & 496 & 126 & 370 & 366 \\
+    HDBSCAN*\newline Mahalanobis com MCD & 499 & 394 & 105 & 98 \\
+    \midrule
+    \multicolumn{5}{l}{\textit{Base subamostrada}} \\
+    \textit{Random Forest} & 465 & 404 & 61 & 88 \\
+    XGBoost & 435 & 399 & 36 & 93 \\
+    HDBSCAN*\newline euclidiana & 471 & 113 & 358 & 379 \\
+    HDBSCAN*\newline Mahalanobis empírica & 453 & 57 & 396 & 435 \\
+    HDBSCAN*\newline Mahalanobis com MCD & 497 & 394 & 103 & 98 \\
+    \bottomrule
+\end{tabular}

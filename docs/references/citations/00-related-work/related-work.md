@@ -1,11 +1,12 @@
 > [!check] Status: em uso na monografia
 > Todas as chaves constam do `refbib.bib` e são citadas em Trabalhos Correlatos.
-> - `alarfaj2022`: mesmo conjunto de dados, algoritmos de ML e CNN. Também citado em Metodologia › Conjunto de Dados.
+> - `alarfaj2022`: mesmo conjunto de dados, algoritmos de ML e CNN, e, no contraste com o Sulaiman, o Random Forest e o XGBoost entre as abordagens da literatura. Também citado em Metodologia › Conjunto de Dados e, com os grifos da base e dos resultados da CNN, em Resultados e Discussão.
 > - `sulaiman2022`: revisão da literatura, predomínio do supervisionado e proposta com aprendizado federado.
 > - `jurgovsky2018`: LSTM contra Random Forest em dados da Worldline, avaliação pela AUPRC.
-> - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados.
+> - `ghalwash2025`: DBSCAN como etapa de aumento de dados de classificadores supervisionados. Também citado em Resultados e Discussão, com o grifo da limitação do DBSCAN quando as fraudes são menos de 0,2% dos registros, e na Conclusão, com o grifo dos rótulos de agrupamento acrescentados como atributos.
 > - `campello2015`: citado no contraste com o Ghalwash, para o HDBSCAN\* dispensar o raio do DBSCAN.
-> - `moulavi2014`: citado no contraste com o Sulaiman, para o DBCV escolher os hiperparâmetros sem rótulos.
+> - `beer2025`: citado no contraste com o Sulaiman, para o DISCO escolher os hiperparâmetros sem rótulos, com o grifo na nota de métricas. O grifo de `moulavi2014` desta nota fica como registro da leitura.
+> - `ngai2011` e `hajek2022`: citados no contraste com o Sulaiman, na escolha do Random Forest e do XGBoost. O `hajek2022` também é citado na Conclusão, com os grifos da nota da Conclusão.
 
 ## Alarfaj et al. (2022)
 
@@ -347,4 +348,41 @@ Páginas do PDF local, que é a versão aceita do manuscrito.
 > Página 11 na numeração da revista. Complementa o trecho anterior: a hierarquia cobre todos os valores do raio.
 
 ^campello2015-p12
+
+## Escolha do Random Forest e do XGBoost, no contraste com o Sulaiman
+
+> [!PDF|yellow] [[ngai2011_data-mining-financial-fraud-detection-review.pdf#page=6&selection=38,0,53,42&color=yellow|ngai2011_data-mining-financial-fraud-detection-review, p.6]]
+> > Decision trees are commonly used in credit card, automobile insurance, and corporate fraud.
+>
+> Página 564 da revista. Sustenta que as árvores de decisão são comuns na detecção de fraudes com cartão de crédito.
+
+^ngai2011-p6
+
+> [!PDF|yellow] [[alarfaj2022_credit-card-fraud-detection-state-of-the-art.pdf#page=1&selection=45,76,47,87&color=yellow|alarfaj2022_credit-card-fraud-detection-state-of-the-art, p.1]]
+> > The relevant literature presents many machines learning based approaches for credit card detection, such as Extreme Learning Method, Decision Tree, Random Forest, Support Vector Machine, Logistic Regression and XG Boost.
+>
+> Página 39700 da revista. Sustenta que o Random Forest e o XGBoost estão entre as abordagens de aprendizado de máquina que a literatura apresenta para a detecção de fraudes com cartão de crédito.
+
+^alarfaj2022-p1-6
+
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=1&selection=31,28,33,111&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.1]]
+> > The results suggest that in terms of standard classification measures, the proposed semi-supervised ensemble model integrating multiple unsupervised outlier detection algorithms and an XGBoost classifier achieves the best results, while the highest cost savings can be achieved by combining random under-sampling and XGBoost methods.
+>
+> Versão on-line do artigo, sem a paginação do fascículo. Sustenta que os modelos baseados no XGBoost obtiveram os melhores resultados na comparação dos autores, na detecção de fraudes em pagamentos móveis.
+
+^hajek2022-p1
+
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=2&selection=59,56,64,47&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.2]]
+> > To overcome the above problems, here we propose to enhance the performance of eXtreme Gradient boosting (XGBoost), a state-of-the-art machine learning method, by including a data sampling component addressing the issue of extreme class imbalance of mobile payment transactions.
+>
+> Sustenta o XGBoost como um método de aprendizado de máquina que representa o estado da arte.
+
+^hajek2022-p2
+
+> [!PDF|yellow] [[hajek2022_xgboost-fraud-detection-mobile-payments.pdf#page=6&selection=4,32,5,60&color=yellow|hajek2022_xgboost-fraud-detection-mobile-payments, p.6]]
+> > Therefore, XGBoost is currently one of the best performing classifiers across domains
+>
+> Sustenta o XGBoost como um dos classificadores de melhor desempenho em diferentes domínios. A frase continua com uma aplicação à fraude de seguros, que os autores atribuem a outro estudo e que o texto não usa.
+
+^hajek2022-p6
 

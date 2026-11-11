@@ -233,12 +233,13 @@ def manual_anomaly_score(
         (ensemble_score). O treino recebe o seu próprio grau, que define o limiar de alerta, e o
         conjunto avaliado, validação ou teste, é posto na mesma escala.
 
-        O escore do agrupamento tem duas opções. Com component="membership", a da monografia, é
-        1 - p(x), em que p(x) é a probabilidade de pertinência ao agrupamento. Como p(x) é zero
-        em todo ponto de ruído, esse componente empata todo o ruído no valor máximo. Com
-        component="glosh", é o GLOSH (glosh_anomaly_score), que gradua também os pontos de
-        ruído, pela densidade em que cada um deixa o seu último agrupamento na árvore condensada.
-        Nesse caso, train_probabilities e probabilities não são usados e podem ser None.
+        O escore do agrupamento tem duas opções. Com component="membership", é 1 - p(x), em que
+        p(x) é a probabilidade de pertinência ao agrupamento. Como p(x) é zero em todo ponto de
+        ruído, esse componente empata todo o ruído no valor máximo. Com component="glosh", o da
+        monografia e das rodadas finais, é o GLOSH (glosh_anomaly_score), que gradua também os
+        pontos de ruído, pela densidade em que cada um deixa o seu último agrupamento na árvore
+        condensada. Nesse caso, train_probabilities e probabilities não são usados e podem ser
+        None.
 
         As distâncias aos vizinhos são a etapa mais cara. Quando várias configurações usam o
         mesmo treino, como na grade de min_samples, neighbors recebe o resultado de knn_distances

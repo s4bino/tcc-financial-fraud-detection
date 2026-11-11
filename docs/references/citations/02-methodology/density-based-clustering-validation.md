@@ -1,5 +1,5 @@
-> [!check] Status: em uso na monografia
-> - `moulavi2014`: consta do `refbib.bib`. O DBCV é definido em Fundamentação Teórica › Métricas de Avaliação › Índice DBCV, com os grifos em `01-theoretical-background/evaluation-metrics.md`. Esta nota fica para o uso do DBCV na seleção de hiperparâmetros da Metodologia, citado em Metodologia › Parametrização e avaliação de consistência › Grid Search.
+> [!info] Status: sem citação na Metodologia
+> - `moulavi2014`: consta do `refbib.bib`, mas a seleção dos hiperparâmetros do HDBSCAN\* usa o DISCO, descrito em Fundamentação Teórica › Métricas de Avaliação › Índice DISCO, com os grifos de `beer2025` em `01-theoretical-background/evaluation-metrics.md`. Os grifos desta nota ficam como registro do DBCV.
 
 > [!PDF|yellow] [[moulavi2014_density-based-clustering-validation.pdf#page=3&selection=161,15,171,28&color=yellow|moulavi2014_density-based-clustering-validation, p.3]]
 > > Let Dist be an n × n matrix of pairwise distances

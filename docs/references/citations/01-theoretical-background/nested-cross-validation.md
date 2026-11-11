@@ -10,6 +10,13 @@
 
 ^krstajic2014-p10
 
+> [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=2&selection=2,0,4,90&color=yellow|berrar2024_cross-validation, p.2]]
+> > Cross-validation is one of the most widely used data resampling methods for model selection and evaluation.
+>
+> Sustenta a abertura da subseção: a validação cruzada como um dos métodos de reamostragem de dados mais usados para a seleção e a avaliação de modelos.
+
+^berrar2024-p2
+
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=5|berrar2024, p.5]]
 > > In k-fold cross-validation, the available learning set is partitioned into k disjoint subsets of approximately equal size. Here, "fold" refers to the number of resulting subsets. This partitioning is performed by randomly sampling cases from the learning set without replacement. The model is trained on k-1 subsets, which, together, represent the training set. Then, the model is applied to the remaining subset, which is denoted as the validation set, and the performance is measured. This procedure is repeated until each of the k subsets has served as validation set. The average of the k performance measurements on the k validation sets is the cross-validated performance.
 >
@@ -58,7 +65,7 @@
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=11|berrar2024, p.11]]
 > > Nested cross-validation disentangles hyperparameter tuning from the model evaluation, but in practice, the less computationally expensive ordinary (or flat) cross-validation is often sufficient despite its optimistic bias.
 >
-> Sustenta a separação entre a seleção de hiperparâmetros e a avaliação do modelo.
+> Sustenta o viés otimista da validação cruzada usada ao mesmo tempo para ajustar os hiperparâmetros e para avaliar o modelo, e a separação entre as duas etapas na validação cruzada aninhada.
 
 ^berrar2024-p11
 
@@ -66,7 +73,7 @@
 > [[berrar2024_cross-validation.pdf#page=8|berrar2024, p.8]]
 > > It would not be advisable to select that value for which the best performance among the five outer folds was achieved because this approach would ignore the results from the remaining four folds and could be just due to chance. Instead, to find the "best" hyperparameter for the "winner" algorithm, it is preferable to run additional ordinary k-fold cross-validations (that is, without nesting), one for each distinct value of $h_{opt,k}$. The hyperparameter for which the best cross-validated performance is achieved will then be selected.
 >
-> O HDBSCAN* é configurado pelo maior DBCV entre os vencedores dos ciclos internos (Seção 3.1.3.4), critério que este trecho desaconselha. A justificativa da escolha está pendente.
+> Os três modelos são configurados pela maior métrica entre os vencedores dos ciclos internos, a AUPRC nos supervisionados e o DBCV no HDBSCAN* (Seção 4.3.2), critério que este trecho desaconselha. Nos supervisionados, a validação interna de uma rodada contém transações do teste das outras rodadas, de modo que, em quatro das cinco, a configuração é escolhida em parte com rótulos do próprio teste. No HDBSCAN*, o DBCV não usa rótulos. A justificativa da escolha e essa limitação ainda não estão no texto.
 
 
 

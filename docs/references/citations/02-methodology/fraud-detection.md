@@ -1,22 +1,19 @@
 > [!check] Status: em uso na monografia
-> Todas as chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes.
-> - `fawcett2006`: classificação pelo escore e pelo limiar. Mesmo grifo da nota de métricas de avaliação.
+> As chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes, salvo as três da pertinência, indicadas abaixo.
+> - `fawcett2006`: classificação pelo escore e pelo limiar. Parte do grifo da nota de métricas de avaliação.
 > - `sklearn2026rf`: probabilidade de fraude do Random Forest e regra de decisão. É a documentação da biblioteca, sem PDF.
 > - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
-> - `jain1999` apud `oyewole2023`: pertinência como grau de pertencimento ao agrupamento. O grifo de Jain et al. (1999) fica como conferência do original.
-> - `cuml2026`: cálculo da pertinência no HDBSCAN\* e atribuição aproximada das transações novas. É a documentação da biblioteca, sem PDF.
+> - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
-> - `dalpozzolo2018`: poucos alertas verificados por dia e preocupação com a precisão dos alertas.
-
-> [!todo] Status: texto em revisão
-> - `dalpozzolo2015`: ainda fora do `refbib.bib`. Sustenta o limiar de alerta ponderado da base subamostrada, citado nas docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. O texto da monografia sobre a subamostragem e o limiar ainda não foi escrito.
+> - `dalpozzolo2018`: alertas inspecionados por investigadores que contatam os titulares, na abertura da seção, e poucos alertas verificados por dia, com preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o grifo dos poucos alertas por dia.
+> - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.
 
 ## Escore e limiar
 
 > [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=3&selection=147,0,155,1&color=yellow|fawcett2006_introduction-roc-analysis, p.3]]
 > > threshold to produce a discrete (binary) classifier: if the classifier output is above the threshold, the classifier produces a Y, else a N.
 >
-> Página 863 da revista. Sustenta que a transação é classificada como fraude quando o escore alcança o limiar. Mesmo grifo da nota de métricas de avaliação.
+> Página 863 da revista. Sustenta que a transação é classificada como fraude quando o escore alcança o limiar. Parte do grifo da nota de métricas de avaliação.
 
 ^fawcett2006-p3
 
@@ -80,6 +77,15 @@
 
 ^ramaswamy2000-p1
 
+## Alertas
+
+> [!PDF|yellow] [[dalpozzolo2018_credit-card-fraud-realistic-modeling.pdf#page=1&selection=253,38,261,11&color=yellow|dalpozzolo2018_credit-card-fraud-realistic-modeling, p.1]]
+> > Classifiers are typically employed to analyze all the authorized transactions and alert the most suspicious ones. Alerts are then inspected by professional investigators that contact the cardholders to determine the true nature (either genuine or fraudulent) of each alerted transaction
+>
+> Página 3784 da revista. Sustenta a definição de alerta, comum aos três modelos, como a transação classificada como fraude, que nos sistemas reais é inspecionada por investigadores que contatam os titulares para saber se ela é legítima ou fraudulenta.
+
+^dalpozzolo2018-p1
+
 ## Fração de alertas
 
 > [!PDF|yellow] [[dalpozzolo2018_credit-card-fraud-realistic-modeling.pdf#page=2&selection=16,10,18,41&color=yellow|dalpozzolo2018_credit-card-fraud-realistic-modeling, p.2]]
@@ -118,6 +124,13 @@
 > Sustenta que, sem correção, a subamostragem desloca a fronteira de decisão e faz mais transações serem classificadas como fraude.
 
 ^dalpozzolo2015-p4
+
+> [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=5&selection=324,0,349,48&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.5]]
+> > Let τs denote the threshold used to classify an observation after undersampling, form (10) we have τs = π+s, where π+s is the positive class prior after undersampling.
+>
+> Sustenta que o limiar adequado depende da proporção de positivos no treino subamostrado e, portanto, muda com a subamostragem.
+
+^dalpozzolo2015-p5-2
 
 > [!PDF|yellow] [[dalpozzolo2015_calibrating-probability-undersampling.pdf#page=5&selection=551,0,559,1&color=yellow|dalpozzolo2015_calibrating-probability-undersampling, p.5]]
 > > The optimal threshold to use with p′ is equal to the one for p.

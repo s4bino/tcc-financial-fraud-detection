@@ -417,10 +417,10 @@ def best_params_by_fold(df_folds, param_grid, metric="auprc"):
     Escolhe, em cada fold interno, a combinação de hiperparâmetros de maior métrica.
 
     Objetivo:
-        É a primeira etapa da seleção, a mesma do HDBSCAN* aprimorado com o DBCV: cada ciclo
+        É a primeira etapa da seleção, a mesma do HDBSCAN* aprimorado com o DISCO: cada ciclo
         interno indica a sua melhor combinação, e a de maior métrica entre elas é aplicada a
         todas as rodadas externas por supervised_outer_evaluation, conforme o critério descrito
-        na Seção 3.1.3.4 da monografia.
+        na Seção 4.3.2 da monografia.
 
     Parâmetros:
         df_folds (pd.DataFrame): métricas por fold e combinação, retornadas por manual_grid_search.
@@ -468,7 +468,7 @@ def supervised_outer_evaluation(
         modelo sobre todo o treino externo com a configuração best_parameter_achieved e o avalia
         no teste externo. Todas as rodadas externas usam a mesma configuração, a de maior
         métrica entre as melhores de cada ciclo interno, conforme o critério de seleção descrito
-        na Seção 3.1.3.4 da monografia e o mesmo do HDBSCAN* aprimorado. As variáveis de entrada
+        na Seção 4.3.2 da monografia e o mesmo do HDBSCAN* aprimorado. As variáveis de entrada
         vêm de model_features, sem as de excluded_features, padronizadas por build_preprocessor
         ajustado só no treino externo, e as métricas de classification_metrics, as mesmas do
         ciclo interno e do HDBSCAN* aprimorado.

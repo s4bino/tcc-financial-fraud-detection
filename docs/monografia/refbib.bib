@@ -228,6 +228,16 @@
 
 % "\relax" mantém "Dal Pozzolo" como sobrenome inteiro: sem ele, o abntex2 usa só a última
 % palavra do sobrenome (regra da ABNT para sobrenomes compostos) e cita "POZZOLO"
+@book{reurink2016,
+    author = {Reurink, Arjan},
+    title = {Financial Fraud: A Literature Review},
+    publisher = {Max-Planck-Institut f{\"u}r Gesellschaftsforschung},
+    address = {K{\"o}ln},
+    series = {MPIfG Discussion Paper},
+    number = {16/5},
+    year = {2016}
+}
+
 @article{dalpozzolo2018,
     author = {{\relax Dal Pozzolo}, Andrea and Boracchi, Giacomo and Caelen, Olivier and Alippi, Cesare and Bontempi, Gianluca},
     title = {Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy},
@@ -272,7 +282,6 @@
     address = {San Francisco, CA, USA},
     pages = {1137--1143}
 }
-
 
 @book{zhang2010,
     title = {Recursive partitioning and applications},
@@ -528,27 +537,6 @@
     doi = {10.1023/A:1009745219419}
 }
 
-@article{jain1999,
-    author = {Jain, Anil K. and Murty, M. Narasimha and Flynn, Patrick J.},
-    title = {Data Clustering: A Review},
-    journal = {ACM Computing Surveys},
-    volume = {31},
-    number = {3},
-    pages = {264--323},
-    year = {1999},
-    doi = {10.1145/331499.331504}
-}
-
-@article{oyewole2023,
-    author = {Oyewole, Gbeminiyi John and Thopil, George Alex},
-    title = {Data Clustering: Application and Trends},
-    journal = {Artificial Intelligence Review},
-    volume = {56},
-    pages = {6439--6475},
-    year = {2023},
-    doi = {10.1007/s10462-022-10325-y}
-}
-
 @article{pedregosa2011,
     author = {Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and Vanderplas, Jake and Passos, Alexandre and Cournapeau, David and Brucher, Matthieu and Perrot, Matthieu and Duchesnay, {\'E}douard},
     title = {Scikit-learn: Machine Learning in {P}ython},
@@ -591,11 +579,94 @@
 
 % A URL é a da página da API, porque o abntex2 escapa o sublinhado das URLs das páginas de
 % cada entrada (cuml.cluster.hdbscan.approximate_predict) e o pacote url imprime a barra
-@misc{cuml2026,
-    author = {{NVIDIA}},
-    title = {{cuML} {API} Reference},
-    year = {2026},
-    howpublished = {Documentação da biblioteca cuML, entradas HDBSCAN e approximate\_predict},
-    url = {https://docs.nvidia.com/cuml/latest/api/},
-    urlaccessdate = {23 out. 2026}
+@inproceedings{dalpozzolo2015,
+    author = {{\relax Dal Pozzolo}, Andrea and Caelen, Olivier and Johnson, Reid A. and Bontempi, Gianluca},
+    title = {Calibrating Probability with Undersampling for Unbalanced Classification},
+    booktitle = {2015 IEEE Symposium Series on Computational Intelligence},
+    address = {Cape Town},
+    publisher = {IEEE},
+    pages = {159--166},
+    year = {2015},
+    doi = {10.1109/SSCI.2015.33}
+}
+@article{hajek2022,
+    author = {Hajek, Petr and Abedin, Mohammad Zoynul and Sivarajah, Uthayasankar},
+    title = {Fraud Detection in Mobile Payment Systems using an {XGBoost}-based Framework},
+    journal = {Information Systems Frontiers},
+    year = {2022},
+    doi = {10.1007/s10796-022-10346-6},
+    url = {https://doi.org/10.1007/s10796-022-10346-6},
+    urlaccessdate = {09 nov. 2026}
+}
+
+@article{ghorbani2019,
+    author = {Ghorbani, Hamid},
+    title = {Mahalanobis Distance and Its Application for Detecting Multivariate Outliers},
+    journal = {Facta Universitatis, Series: Mathematics and Informatics},
+    volume = {34},
+    number = {3},
+    pages = {583--595},
+    year = {2019},
+    doi = {10.22190/FUMI1903583G}
+}
+
+@article{mahalanobis1936,
+    author = {Mahalanobis, P. C.},
+    title = {On the Generalized Distance in Statistics},
+    journal = {Proceedings of the National Institute of Sciences (Calcutta)},
+    volume = {2},
+    pages = {49--55},
+    year = {1936}
+}
+
+@incollection{rousseeuw1985,
+    author = {Rousseeuw, Peter J.},
+    title = {Multivariate Estimation with High Breakdown Point},
+    booktitle = {Mathematical Statistics and Applications},
+    editor = {Grossmann, W. and Pflug, G. and Vincze, I. and Wertz, W.},
+    volume = {B},
+    publisher = {Reidel},
+    address = {Dordrecht},
+    pages = {283--297},
+    year = {1985}
+}
+
+@article{rousseeuw1999,
+    author = {Rousseeuw, Peter J. and {\relax Van Driessen}, Katrien},
+    title = {A Fast Algorithm for the Minimum Covariance Determinant Estimator},
+    journal = {Technometrics},
+    volume = {41},
+    number = {3},
+    pages = {212--223},
+    year = {1999},
+    doi = {10.1080/00401706.1999.10485670}
+}
+
+@article{hubert2010,
+    author = {Hubert, Mia and Debruyne, Michiel},
+    title = {Minimum Covariance Determinant},
+    journal = {WIREs Computational Statistics},
+    volume = {2},
+    number = {1},
+    pages = {36--43},
+    year = {2010},
+    doi = {10.1002/wics.61}
+}
+
+@article{fauconnier2009,
+    author = {Fauconnier, C. and Haesbroeck, G.},
+    title = {Outliers Detection with the Minimum Covariance Determinant Estimator in Practice},
+    journal = {Statistical Methodology},
+    volume = {6},
+    number = {4},
+    pages = {363--379},
+    year = {2009},
+    doi = {10.1016/j.stamet.2008.12.005}
+}
+
+@misc{beer2025,
+    author = {Beer, Anna and Krieger, Lena and Weber, Pascal and Ritzert, Martin and Assent, Ira and Plant, Claudia},
+    title = {Internal Evaluation of Density-Based Clusterings with Noise},
+    howpublished = {\textit{Preprint} arXiv:2503.00127},
+    year = {2025}
 }

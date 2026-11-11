@@ -385,7 +385,7 @@ def hdbscan_enhanced_outer_evaluation(
         cálculo das métricas.
 
         Todas as rodadas externas usam a mesma configuração, conforme o critério de seleção
-        adotado no trabalho e descrito na Seção 3.1.3.4 da monografia. O relatório traz uma linha
+        adotado no trabalho e descrito na Seção 4.3.2 da monografia. O relatório traz uma linha
         por fold e uma linha final, "Média", com a média aritmética das métricas entre os folds,
         e é gravado em hdbscan_enhanced_outer_final_report.csv.
 

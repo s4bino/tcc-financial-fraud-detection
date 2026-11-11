@@ -15,17 +15,18 @@ dos capítulos na listagem do Obsidian.
 | `citation-summary.md` | sumário de todas as citações do `main.tex`, em ordem, com links para os grifos |
 | `00-introduction/introduction.md` | 1 Introdução |
 | `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
-| `01-theoretical-background/machine-learning.md` | 3.1 Aprendizado de Máquina |
-| `01-theoretical-background/principal-component-analysis.md` | 3.1.3.2 Principal Component Analysis |
-| `01-theoretical-background/scaling-and-standardization.md` | 3.1.3.3 Escalonamento e padronização |
-| `01-theoretical-background/nested-cross-validation.md` | 3.1.3.4 Validação Cruzada Aninhada |
-| `01-theoretical-background/random-forest.md` | 3.2.1 Random Forest |
-| `01-theoretical-background/xgboost.md` | 3.2.2 Extreme Gradient Boosting |
-| `01-theoretical-background/anomaly-detection.md` | 3.3 Algoritmo Não Supervisionado |
-| `01-theoretical-background/dbscan.md` | 3.3.1 DBSCAN* |
-| `01-theoretical-background/hdbscan.md` | 3.3.2 HDBSCAN* |
-| `01-theoretical-background/mahalanobis-distance.md` | estudo da distância de Mahalanobis, ainda sem seção no `main.tex` |
-| `01-theoretical-background/evaluation-metrics.md` | 3.4 Métricas de Avaliação |
+| `01-theoretical-background/financial-fraud.md` | 3.1 Fraudes Financeiras |
+| `01-theoretical-background/machine-learning.md` | 3.2 Aprendizado de Máquina |
+| `01-theoretical-background/principal-component-analysis.md` | 3.2.3.1 Principal Component Analysis |
+| `01-theoretical-background/scaling-and-standardization.md` | 4.2 Pré-processamento, no escalonamento |
+| `01-theoretical-background/nested-cross-validation.md` | 3.2.3.2 Validação Cruzada Aninhada |
+| `01-theoretical-background/random-forest.md` | 3.3.1 Random Forest |
+| `01-theoretical-background/xgboost.md` | 3.3.2 Extreme Gradient Boosting |
+| `01-theoretical-background/anomaly-detection.md` | 3.4 Algoritmo Não Supervisionado |
+| `01-theoretical-background/dbscan.md` | 3.4.1 DBSCAN* |
+| `01-theoretical-background/hdbscan.md` | 3.4.2 HDBSCAN* |
+| `01-theoretical-background/mahalanobis-distance.md` | 3.4.3 Distância de Mahalanobis |
+| `01-theoretical-background/evaluation-metrics.md` | 3.5 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
@@ -33,6 +34,7 @@ dos capítulos na listagem do Obsidian.
 | `02-methodology/hyperparameter-grids.md` | 4.3.3 Grades de Hiperparâmetros |
 | `02-methodology/fraud-detection.md` | 4.4 Detecção de Fraudes |
 | `02-methodology/execution-environment.md` | 4.5 Ambiente de Execução e Bibliotecas |
+| `03-conclusion/conclusion.md` | 6 Conclusão |
 | `03-support/bibtex-references.md` | entradas BibTeX coletadas |
 | `03-support/ideas.md` | anotações de trabalho e pontos em aberto |
 
@@ -51,13 +53,14 @@ um PDF entre subpastas não quebra as notas, mas renomeá-lo quebra.
 ## Acervo
 
 A coluna **bib** indica que a chave já consta no `docs/monografia/refbib.bib`.
-Atualmente as 58 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
+Atualmente as 64 entradas do `refbib.bib` estão todas citadas no `main.tex`, de
 modo que ✓ equivale a "em uso". Cada nota de `citations/` traz no topo um bloco
 de status com essa informação e a seção onde a obra é citada.
 
 **Lidos mas ainda não incorporados:** `samariya2023`, `alcino2022`,
-`dalpozzolo2015`, `ghorbani2019`, `demaesschalck2000`, `todeschini2013`,
-`evans2001` e `xie2024` têm notas de leitura mas nenhuma entrada no `refbib.bib`.
+`demaesschalck2000`, `todeschini2013`, `evans2001`, `xie2024`, `bulut2019`,
+`jain1999` e `oyewole2023` têm notas de leitura mas nenhuma entrada no
+`refbib.bib`.
 
 ### fraud-detection
 
@@ -67,7 +70,9 @@ de status com essa informação e a seção onde a obra é citada.
 | `sulaiman2022` | ✓ | Sulaiman, Schetinin & Sant. *Review of Machine Learning Approach on Credit Card Fraud Detection*. Human-Centric Intelligent Systems, 2022. |
 | `jurgovsky2018` | ✓ | Jurgovsky et al. *Sequence Classification for Credit-Card Fraud Detection*. Expert Systems with Applications, 2018. |
 | `ghalwash2025` | ✓ | Ghalwash et al. *Enhancing credit card fraud detection using DBSCAN-augmented disjunctive voting ensemble*. Scientific Reports, 2025. |
+| `hajek2022` | ✓ | Hajek, Abedin & Sivarajah. *Fraud Detection in Mobile Payment Systems using an XGBoost-based Framework*. Information Systems Frontiers, 2022. O PDF é a versão on-line; no fascículo, v. 25, n. 5, p. 1985 a 2003, 2023. |
 | `ngai2011` | ✓ | Ngai, Hu, Wong, Chen & Sun. *The application of data mining techniques in financial fraud detection: A classification framework and an academic review of literature*. Decision Support Systems, 2011. |
+| `reurink2016` | ✓ | Reurink. *Financial Fraud: A Literature Review*. MPIfG Discussion Paper 16/5, Max-Planck-Institut für Gesellschaftsforschung, 2016. A versão revista saiu no Journal of Economic Surveys, v. 32, n. 5, p. 1292 a 1325, 2018, e é a que o Alcino (2022) cita. |
 | `west2016` | ✓ | West & Bhattacharya. *Intelligent financial fraud detection: A comprehensive review*. Computers & Security, 2016. O PDF é a versão aceita do manuscrito. |
 | `dalpozzolo2018` | ✓ | Dal Pozzolo, Boracchi, Caelen, Alippi & Bontempi. *Credit Card Fraud Detection: A Realistic Modeling and a Novel Learning Strategy*. IEEE Transactions on Neural Networks and Learning Systems, 2018. |
 | `santos2025` | | Santos, Bueno dos Santos & Toma. *Detecção de transações fraudulentas com cartão de crédito: uma abordagem comparativa baseada em aprendizado de máquina*. Revista Foco, 2025. |
@@ -79,8 +84,8 @@ de status com essa informação e a seção onde a obra é citada.
 | Chave | bib | Referência |
 |---|:-:|---|
 | `rezazadeh2025` | ✓ | Rezazadeh. *Review of Machine Learning*. UJRRA, 2025. |
-| `jain1999` | ✓ | Jain, Murty & Flynn. *Data Clustering: A Review*. ACM Computing Surveys, 1999. Citado por apud de Oyewole e Thopil (2023); o PDF fica para conferência do original. |
-| `oyewole2023` | ✓ | Oyewole & Thopil. *Data clustering: application and trends*. Artificial Intelligence Review, 2023. |
+| `jain1999` | | Jain, Murty & Flynn. *Data Clustering: A Review*. ACM Computing Surveys, 1999. Sustentava, por apud de Oyewole e Thopil (2023), a pertinência ao agrupamento, que o grau de anomalia não usa mais. |
+| `oyewole2023` | | Oyewole & Thopil. *Data clustering: application and trends*. Artificial Intelligence Review, 2023. |
 
 ### supervised-models
 
@@ -134,7 +139,7 @@ de status com essa informação e a seção onde a obra é citada.
 |---|:-:|---|
 | `moulavi2014` | ✓ | Moulavi, Jaskowiak, Campello, Zimek & Sander. *Density-Based Clustering Validation*. SDM, 2014. Origem do índice DBCV, critério de seleção do grid do HDBSCAN. |
 | `thompson2024` | | Thompson. *Partition-Free Cluster Evaluation: Extending Cluster Validation and Cluster Extraction from Hierarchies*. Dissertação de mestrado, University of Alberta, 2024. Propõe o PFCE, candidato a substituir o DBCV na seleção do grid. |
-| `beer2025` | | Beer, Krieger, Weber, Ritzert, Assent & Plant. *Internal Evaluation of Density-Based Clusterings with Noise*. arXiv:2503.00127, 2025. Propõe o DISCO, índice interno que avalia também a qualidade da atribuição de ruído; código em https://github.com/pasiweber/DISCO. Critério de seleção do pipeline modular do HDBSCAN\* aprimorado, documentado em `docs/metrics/disco.md`. |
+| `beer2025` | ✓ | Beer, Krieger, Weber, Ritzert, Assent & Plant. *Internal Evaluation of Density-Based Clusterings with Noise*. arXiv:2503.00127, 2025. Propõe o DISCO, índice interno que avalia também a qualidade da atribuição de ruído; código em https://github.com/pasiweber/DISCO. Critério de seleção do pipeline modular do HDBSCAN\* aprimorado, documentado em `docs/metrics/disco.md`. |
 
 ### outlier-detection
 
@@ -148,7 +153,13 @@ de status com essa informação e a seção onde a obra é citada.
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `ghorbani2019` | | Ghorbani. *Mahalanobis Distance and Its Application for Detecting Multivariate Outliers*. Facta Universitatis, Series: Mathematics and Informatics, v. 34, n. 3, p. 583 a 595, 2019. |
+| `ghorbani2019` | ✓ | Ghorbani. *Mahalanobis Distance and Its Application for Detecting Multivariate Outliers*. Facta Universitatis, Series: Mathematics and Informatics, v. 34, n. 3, p. 583 a 595, 2019. |
+| `mahalanobis1936` | ✓ | Mahalanobis. *On the Generalized Distance in Statistics*. Proceedings of the National Institute of Sciences (Calcutta), v. 2, p. 49 a 55, 1936. Sem PDF; citado por apud de Ghorbani (2019). |
+| `hubert2010` | ✓ | Hubert & Debruyne. *Minimum Covariance Determinant*. WIREs Computational Statistics, v. 2, n. 1, p. 36 a 43, 2010. Revisão do MCD: definição, repesagem, distância robusta e FAST-MCD. O PDF traz a data de 2009 do copyright, mas o volume é de 2010. |
+| `fauconnier2009` | ✓ | Fauconnier & Haesbroeck. *Outliers Detection with the Minimum Covariance Determinant Estimator in Practice*. Statistical Methodology, v. 6, n. 4, p. 363 a 379, 2009. Variância generalizada e repesagem com pesos 0 e 1. |
+| `rousseeuw1985` | ✓ | Rousseeuw. *Multivariate Estimation with High Breakdown Point*. In: Grossmann, Pflug, Vincze & Wertz (org.). *Mathematical Statistics and Applications*, v. B. Reidel, 1985, p. 283 a 297. Sem PDF; citado por apud de Ghorbani (2019). |
+| `rousseeuw1999` | ✓ | Rousseeuw & Van Driessen. *A Fast Algorithm for the Minimum Covariance Determinant Estimator*. Technometrics, v. 41, n. 3, p. 212 a 223, 1999. Sem PDF; citado por apud de Hubert e Debruyne (2010). É o FAST-MCD que o `MinCovDet` do scikit-learn implementa. |
+| `bulut2019` | | Bulut & Zaman. *An Improved Class of Robust Ratio Estimators by Using the Minimum Covariance Determinant Estimation*. Communications in Statistics: Simulation and Computation, 2019. Atribui a definição do MCD a Rousseeuw (1985) e não acrescenta à revisão de Hubert e Debruyne (2010). |
 | `demaesschalck2000` | | De Maesschalck, Jouan-Rimbaud & Massart. *The Mahalanobis distance*. Chemometrics and Intelligent Laboratory Systems, v. 50, p. 1 a 18, 2000. Tutorial sobre as distâncias euclidiana e de Mahalanobis no espaço original e no dos componentes principais. |
 | `todeschini2013` | | Todeschini, Ballabio, Consonni, Sahigara & Filzmoser. *Locally centred Mahalanobis distance: A new distance measure with salient features towards outlier detection*. Analytica Chimica Acta, v. 787, p. 1 a 9, 2013. |
 | `evans2001` | | Evans. *Statistical aspects of the detection of fraud*. In: Lock, Wells & Farthing (org.). *Fraud and Misconduct in Biomedical Research*. 3. ed. BMJ Books, 2001, cap. 14, p. 186 a 206. O PDF é o livro inteiro: a numeração do PDF coincide com a do livro até a p. 198 e fica uma página atrás depois dela. |
@@ -186,7 +197,7 @@ de status com essa informação e a seção onde a obra é citada.
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `dalpozzolo2015` | | Dal Pozzolo, Caelen, Johnson & Bontempi. *Calibrating Probability with Undersampling for Unbalanced Classification*. IEEE Symposium Series on Computational Intelligence (SSCI), 2015. Artigo de origem do dataset (p. 6) e base do limiar de alerta ponderado da base subamostrada. O PDF é a versão final dos autores, sem a numeração dos anais. |
+| `dalpozzolo2015` | ✓ | Dal Pozzolo, Caelen, Johnson & Bontempi. *Calibrating Probability with Undersampling for Unbalanced Classification*. IEEE Symposium Series on Computational Intelligence (SSCI), 2015. Artigo de origem do dataset (p. 6), base da subamostragem e dos pesos das legítimas na base subamostrada, inclusive no limiar de alerta. O PDF é a versão final dos autores, sem a numeração dos anais. |
 
 ### statistics
 
@@ -237,7 +248,7 @@ As entradas abaixo são páginas de documentação das bibliotecas, conferidas e
 |---|:-:|---|
 | `sklearn2026rf` | ✓ | Scikit-learn Developers. *sklearn.ensemble.RandomForestClassifier*. |
 | `xgboost2026` | ✓ | XGBoost Developers. *XGBoost Parameters*. |
-| `cuml2026` | ✓ | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. |
+| `cuml2026` | | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. Sustentava a pertinência e a atribuição aproximada, que o grau de anomalia não usa mais. |
 
 ### figures
 

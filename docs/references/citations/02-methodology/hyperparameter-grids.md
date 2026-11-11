@@ -3,8 +3,8 @@
 > - `probst2019`: compromisso entre correlação e qualidade das árvores, efeito de cada hiperparâmetro do Random Forest, valores padrão e tempo de execução. Só afirmações do próprio artigo, sem as que ele atribui a outros autores.
 > - `biau2016`: mais árvores, predições mais precisas e sem sobreajuste. Mesmo trecho da nota do Random Forest.
 > - `chen2004`: ponderação das classes no Random Forest e pesos como parâmetro de ajuste essencial.
-> - `chen2016`: penalidade do número de folhas, regularização, *shrinkage* e configuração comum dos experimentos.
-> - `xgboost2026`: peso das fraudes no XGBoost. É a documentação da biblioteca, sem PDF.
+> - `chen2016`: penalidade do número de folhas, regularização, *shrinkage* e configuração comum dos experimentos. Também citado no Apêndice A, com o grifo da configuração comum.
+> - `xgboost2026`: o `scale_pos_weight` como controle do equilíbrio entre os pesos das classes no XGBoost. É a documentação da biblioteca, sem PDF.
 > - `sander1998` apud `schubert2017`: $m_{pts}$ igual ao dobro da dimensão e valores maiores para bases ruidosas, grandes ou de alta dimensão. Mesmo grifo da nota de seleção de hiperparâmetros.
 > - `campello2015`: $m_{clSize}$ como controle adicional e independente da suavização.
 
@@ -124,10 +124,10 @@
 
 ^chen2016-p8
 
-> [!quote] Documentação: [XGBoost Parameters](https://xgboost.readthedocs.io/en/stable/parameter.html), conferida em 23/10/2026
-> > scale_pos_weight [...] A typical value to consider: sum(negative instances) / sum(positive instances).
+> [!quote] Documentação: [XGBoost Parameters](https://xgboost.readthedocs.io/en/stable/parameter.html), conferida em 09/11/2026
+> > scale_pos_weight [default=1] Control the balance of positive and negative weights, useful for unbalanced classes.
 >
-> Sustenta o peso das fraudes igual à razão entre transações legítimas e fraudes.
+> Sustenta que o parâmetro controla o equilíbrio entre os pesos das fraudes, a classe positiva, e das transações legítimas. A página sugere como valor típico a razão entre legítimas e fraudes, que não é usada. O peso das fraudes vale 1 na base completa e é recalibrado para a proporção da base completa na subamostrada.
 
 ^xgboost2026-doc
 
