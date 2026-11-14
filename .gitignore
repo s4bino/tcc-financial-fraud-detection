@@ -132,6 +132,18 @@ docs/scratch/
 docs/corrections/
 
 #==============================================================================
+# Normas e modelos da UFLA e da ABNT (docs/ufla-standards)
+#
+# Manual de normalizacao da UFLA, template DOCX, exemplo da classe uflamon e
+# normas da ABNT. Sao material de terceiros cuja redistribuicao nao e
+# permitida (as NBR trazem a marca de exemplar licenciado) e ficam so na copia
+# local. O orquestrador MONOGRAPH-STANDARDS.md, com as regras extraidas e as
+# pendencias da monografia, e versionado.
+#==============================================================================
+docs/ufla-standards/*
+!docs/ufla-standards/MONOGRAPH-STANDARDS.md
+
+#==============================================================================
 # Grafo de conhecimento (graphify) e configuracao do Claude Code
 #
 # graphify-out/ e gerado e guarda trechos extraidos dos rascunhos e dos artigos,
