@@ -14,19 +14,19 @@ dos capítulos na listagem do Obsidian.
 |---|---|
 | `citation-summary.md` | sumário de todas as citações do `main.tex`, em ordem, com links para os grifos |
 | `00-introduction/introduction.md` | 1 Introdução |
-| `00-related-work/related-work.md` | 2 Trabalhos Correlatos |
-| `01-theoretical-background/financial-fraud.md` | 3.1 Fraudes Financeiras |
-| `01-theoretical-background/machine-learning.md` | 3.2 Aprendizado de Máquina |
-| `01-theoretical-background/principal-component-analysis.md` | 3.2.3.1 Principal Component Analysis |
+| `00-related-work/related-work.md` | 3 Trabalhos Correlatos |
+| `01-theoretical-background/financial-fraud.md` | 2.1 Fraudes Financeiras |
+| `01-theoretical-background/machine-learning.md` | 2.2 Aprendizado de Máquina |
+| `01-theoretical-background/principal-component-analysis.md` | 2.2.3.1 Análise de Componentes Principais |
 | `01-theoretical-background/scaling-and-standardization.md` | 4.2 Pré-processamento, no escalonamento |
-| `01-theoretical-background/nested-cross-validation.md` | 3.2.3.2 Validação Cruzada Aninhada |
-| `01-theoretical-background/random-forest.md` | 3.3.1 Random Forest |
-| `01-theoretical-background/xgboost.md` | 3.3.2 Extreme Gradient Boosting |
-| `01-theoretical-background/anomaly-detection.md` | 3.4 Algoritmo Não Supervisionado |
-| `01-theoretical-background/dbscan.md` | 3.4.1 DBSCAN* |
-| `01-theoretical-background/hdbscan.md` | 3.4.2 HDBSCAN* |
-| `01-theoretical-background/mahalanobis-distance.md` | 3.4.3 Distância de Mahalanobis |
-| `01-theoretical-background/evaluation-metrics.md` | 3.5 Métricas de Avaliação |
+| `01-theoretical-background/nested-cross-validation.md` | 2.2.3.2 Validação Cruzada Aninhada |
+| `01-theoretical-background/random-forest.md` | 2.3.1 Random Forest |
+| `01-theoretical-background/xgboost.md` | 2.3.2 Extreme Gradient Boosting |
+| `01-theoretical-background/anomaly-detection.md` | 2.4 Algoritmo Não Supervisionado |
+| `01-theoretical-background/dbscan.md` | 2.4.1 DBSCAN* |
+| `01-theoretical-background/hdbscan.md` | 2.4.2 HDBSCAN* |
+| `01-theoretical-background/mahalanobis-distance.md` | 2.5 Distância de Mahalanobis |
+| `01-theoretical-background/evaluation-metrics.md` | 2.6 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.2 Grid Search |
 | `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |

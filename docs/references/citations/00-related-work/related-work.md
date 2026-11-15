@@ -162,7 +162,7 @@
 > [!PDF|yellow] [[moulavi2014_density-based-clustering-validation.pdf#page=1&selection=119,0,121,28&color=yellow|moulavi2014_density-based-clustering-validation, p.1]]
 > > Because internal validity criteria measure clustering quality based solely on information intrinsic to the data
 >
-> Sustenta, no contraste com o Sulaiman, que o DBCV mede a qualidade do agrupamento sem rótulos. O índice é detalhado na Seção 3.4.8, com os grifos em `01-theoretical-background/evaluation-metrics.md`.
+> Sustenta, no contraste com o Sulaiman, que o DBCV mede a qualidade do agrupamento sem rótulos. O índice é detalhado na Seção 2.6.8, com os grifos em `01-theoretical-background/evaluation-metrics.md`.
 
 ^moulavi2014-p1
 

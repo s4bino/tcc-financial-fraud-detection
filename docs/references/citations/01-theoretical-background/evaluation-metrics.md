@@ -20,7 +20,7 @@
 > [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=2&selection=222,0,222,75&color=yellow|fawcett2006_introduction-roc-analysis, p.2]]
 > > Fig. 1. Confusion matrix and common performance metrics calculated from it.
 >
-> Página 862 da revista. A Figura 1 traz a disposição da matriz, adaptada no Quadro 3.1, e as fórmulas de acurácia, precisão, revocação e F-measure (Equações 3.2 a 3.5). As fórmulas estão desenhadas na figura, fora da camada de texto, por isso o grifo fica na legenda.
+> Página 862 da revista. A Figura 1 traz a disposição da matriz, adaptada no Quadro 2.1, e as fórmulas de acurácia, precisão, revocação e F-measure (Equações 2.4 a 2.7). As fórmulas estão desenhadas na figura, fora da camada de texto, por isso o grifo fica na legenda.
 
 ^fawcett2006-p2-2
 

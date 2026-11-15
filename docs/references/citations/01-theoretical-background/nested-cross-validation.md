@@ -41,7 +41,7 @@
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=7|berrar2024, p.7]]
 > > Figure 2: (a) 5 × 2 nested cross-validation (CV). The outer CV is a 5-fold cross-validation to evaluate the model fitting procedure. [...] Each fold consists of an inner CV to find the optimal hyperparameter, h. The inner CV is only shown for the fifth fold [...]
 >
-> Base da Figura 3.2.
+> Base da Figura 2.2.
 
 ^berrar2024-p7
 
