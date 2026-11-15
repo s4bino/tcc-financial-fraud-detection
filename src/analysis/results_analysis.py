@@ -482,7 +482,7 @@ def hdbscan_table(cycle):
     lines = [
         "\\begin{tabular}{L{2.6cm} L{2.3cm} C{1.1cm} C{1.4cm} C{1.7cm} C{1.7cm} C{1.7cm}}",
         "    \\toprule",
-        "    \\textbf{Distância} & \\textbf{Base} & $\\boldsymbol{m_{pts}}$ & \\textbf{Grupos} & "
+        "    \\textbf{Distância} & \\textbf{Base} & $\\boldsymbol{m_{pts}}$ & \\textbf{\\textit{Clusters}} & "
         "\\textbf{DISCO médio} & \\textbf{DISCO máximo} & \\textbf{AUPRC média} \\\\",
         "    \\midrule",
     ]
@@ -603,7 +603,7 @@ def hdbscan_quadro(cycle):
     size_grid = sizes.pop()
     full_sizes = set(chosen.xs("full", level="base")["min_cluster_size"])
     under_sizes = set(chosen.xs("undersampled", level="base")["min_cluster_size"])
-    rows.append(("min_cluster_size", "Tamanho mínimo de agrupamento, $m_{clSize}$",
+    rows.append(("min_cluster_size", "Tamanho mínimo de \\textit{cluster}, $m_{clSize}$",
                  listing(size_grid), ", ".join(map(str, sorted(full_sizes))),
                  ", ".join(map(str, sorted(under_sizes)))))
     return quadro(rows)
@@ -654,7 +654,7 @@ def write_summary(outer, rates, selection, cycle, path):
                      f" | {row['auprc_fold']:.3f} | {row['auprc_mean']:.3f} | {row['best_mean']:.3f}"
                      f" | {row['within_001']} de {row['grid_size']} | {row['distinct_winners']} de 5 |")
     lines += ["", "## Ciclo interno do HDBSCAN*", "",
-              "| Distância | Base | m_pts | Grupos | DISCO médio | DISCO máximo | AUPRC | Escolhida |",
+              "| Distância | Base | m_pts | Clusters | DISCO médio | DISCO máximo | AUPRC | Escolhida |",
               "|---|---|---|---|---|---|---|---|"]
     for _, row in cycle.iterrows():
         lines.append(f"| {row['distance']} | {row['base']} | {row['m_pts']} | {row['clusters']:.1f}"

@@ -47,7 +47,7 @@ o texto, o sumário precisa ser gerado de novo.
    "Eles modelam as transações legítimas e consideram anômalas as que não se ajustam a esse modelo, o que exige um escore capaz de quantificar o grau de anomalia de cada transação"
 
 13. **(NETO et al., 2021)** → [[introduction#^neto2021-p1|p. 1]]
-   "Entre os métodos não supervisionados, os de agrupamento baseados em densidade se destacam por encontrar grupos de formatos arbitrários e por distinguir os pontos que pertencem aos grupos dos pontos de ruído"
+   "Entre os métodos não supervisionados, os de agrupamento baseados em densidade se destacam por encontrar clusters de formatos arbitrários e por distinguir os pontos que pertencem aos clusters dos pontos de ruído"
 
 14. **(GHOSH et al., 2024)** → [[introduction#^ghosh2024-p2|p. 2]]
    "Como a detecção não supervisionada de anomalias parte da premissa de que elas se encontram em regiões de baixa densidade"
@@ -179,10 +179,10 @@ o texto, o sumário precisa ser gerado de novo.
    "Uma vez que não existem métricas estatísticas simples que definam um resultado … errado"), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados"
 
 53. **(KONONENKO; KUKAR, 2007)** → [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)*
-   "Considerada a técnica não supervisionada mais prevalente, o agrupamento visa organizar os dados com base em suas semelhanças intrínsecas."
+   "Considerada a técnica não supervisionada mais prevalente, o agrupamento visa organizar os dados em clusters com base em suas semelhanças intrínsecas."
 
 54. **(IGLESIAS; ZSEBY; ZIMEK, 2021; SHALEV-SHWARTZ; BEN-DAVID, 2014)** → Iglesias, 2021: [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)* · Shalev-Shwartz, 2014: [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)*
-   "O objetivo é garantir que os itens dentro de um mesmo agrupamento (cluster) compartilhem características fortes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros agrupamentos"
+   "O objetivo é garantir que os itens dentro de um mesmo cluster compartilhem características fortes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros clusters"
 
 55. **(DIKE et al., 2018)** → *sem grifo; Rezazadeh (2025) cita a obra na p. 9 do PDF, fora dos trechos grifados*
    "Esta técnica foca na descoberta de dependências ou correlações entre entradas individuais de dados para, posteriormente, mapeá-las em conjunto"
@@ -305,19 +305,19 @@ o texto, o sumário precisa ser gerado de novo.
    "Esse grafo é conceitual e não precisa ser materializado, pois os pesos das arestas são calculados sob demanda para a obtenção da sua árvore geradora mínima"
 
 89. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p11-3|p. 11]] · [[hdbscan#^campello2015-p12|p. 12]]
-   "A cada remoção, os componentes conectados de pontos centrais formam os agrupamentos, e os demais pontos passam a ser ruído"
+   "A cada remoção, os componentes conectados de pontos centrais formam os clusters, e os demais pontos passam a ser ruído"
 
 90. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p12-2|p. 12]]
    "Dessa forma, enquanto o DBSCAN* produz um único agrupamento para o raio … que o DBSCAN* obteria para o valor de $m_{pts}$ e para qualquer $\epsilon \in [0, \infty)$"
 
 91. **(CAMPELLO et al., 2013; CAMPELLO et al., 2015)** → Campello, 2013: [[hdbscan#^campello2013b-p1|p. 1]] · Campello, 2015: [[hdbscan#^campello2015-p8|p. 8]] · Campello, 2015: [[hdbscan#^campello2015-p19|p. 19]]
-   "Para obter uma partição única, os agrupamentos são extraídos da hierarquia por um critério de estabilidade, segundo o qual os agrupamentos mais proeminentes tendem a persistir por uma faixa maior de densidades"
+   "Para obter uma partição única, os clusters são extraídos da hierarquia por um critério de estabilidade, segundo o qual os clusters mais proeminentes tendem a persistir por uma faixa maior de densidades"
 
 92. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p15|p. 15]]
-   "Nesse processo, componentes com menos pontos que um tamanho mínimo de agrupamento, $m_{clSize}$, são considerados espúrios e rotulados como ruído"
+   "Nesse processo, componentes com menos pontos que um tamanho mínimo de cluster, $m_{clSize}$, são considerados espúrios e rotulados como ruído"
 
 93. **(GHOSH et al., 2024)** → [[hdbscan#^ghosh2024-p3|p. 3]]
-   "Valores maiores exigem mais vizinhos para que um ponto seja central, o … formar agrupamentos mais suaves e possivelmente maiores, enquanto valores menores permitem agrupamentos mais detalhados e menores"
+   "Valores maiores exigem mais vizinhos para que um ponto seja central, o … formar clusters mais suaves e possivelmente maiores, enquanto valores menores permitem clusters mais detalhados e menores"
 
 94. **(NETO et al., 2021; NETO et al., 2022)** → Neto, 2021: [[hdbscan#^neto2021-p1|p. 1]] · Neto, 2022: [[hdbscan#^neto2022-p1-2|p. 1]]
    "Assim, diferentes faixas de $m_{pts}$ podem levar a resultados distintos"
@@ -335,13 +335,13 @@ o texto, o sumário precisa ser gerado de novo.
    "O próprio arcabouço do HDBSCAN* inclui um escore de anomalia, o GLOSH (Global-Local Outlier Score from Hierarchies), calculado a partir das estimativas de densidade da hierarquia"
 
 99. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p26|p. 26]]
-   "Para cada objeto $x_i$, o GLOSH compara a densidade em que ele … densidade máxima desse agrupamento, em que cada densidade é o inverso do raio correspondente (Equação 3.2)"
+   "Para cada objeto $x_i$, o GLOSH compara a densidade em que ele … densidade máxima desse cluster, em que cada densidade é o inverso do raio correspondente (Equação 3.2)"
 
 100. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p26-2|p. 26]]
-   "em que $\epsilon(x_i)$ é o menor raio em que $x_i$ ainda pertence … dos seus subagrupamentos ainda existe, com as densidades $\lambda(x_i)$ e $\lambda_{max}(x_i)$ iguais aos inversos desses raios"
+   "em que $\epsilon(x_i)$ é o menor raio em que $x_i$ ainda pertence … dos seus subclusters ainda existe, com as densidades $\lambda(x_i)$ e $\lambda_{max}(x_i)$ iguais aos inversos desses raios"
 
 101. **(GHOSH et al., 2024)** → [[hdbscan#^ghosh2024-p3-3|p. 3]]
-   "Para os objetos das regiões densas de um agrupamento, a diferença entre … e, para os objetos das regiões de baixa densidade, ela cresce, o que eleva o escore"
+   "Para os objetos das regiões densas de um cluster, a diferença entre … e, para os objetos das regiões de baixa densidade, ela cresce, o que eleva o escore"
 
 102. **(CAMPELLO et al., 2015)** → [[hdbscan#^campello2015-p27|p. 27]]
    "Em uma distribuição com formato de sino, por exemplo, o GLOSH fica … cada vez mais afastados dela, sem que o modelo suponha uma distribuição específica para os dados"
@@ -488,19 +488,19 @@ o texto, o sumário precisa ser gerado de novo.
 #### 3.5.8 Índice DISCO
 
 142. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p1|p. 1]] · [[evaluation-metrics#^beer2025-p1-2|p. 1]]
-   "A qualidade de um agrupamento, por sua vez, pode ser avaliada por índices internos de validação, que dispensam os rótulos e equilibram a compacidade dos grupos e a separação entre eles"
+   "A qualidade de um agrupamento, por sua vez, pode ser avaliada por índices internos de validação, que dispensam os rótulos e equilibram a compacidade dos clusters e a separação entre eles"
 
 143. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p2|p. 2]]
-   "A maior parte desses índices supõe grupos compactos e não serve para avaliar grupos de formato arbitrário, como os do agrupamento por densidade"
+   "A maior parte desses índices supõe clusters compactos e não serve para avaliar clusters de formato arbitrário, como os do agrupamento por densidade"
 
 144. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-3|p. 1]]
-   "Entre os índices para grupos de formato arbitrário, o mais conhecido é o DBCV"
+   "Entre os índices para clusters de formato arbitrário, o mais conhecido é o DBCV"
 
 145. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p2-2|p. 2]] · [[evaluation-metrics#^beer2025-p3|p. 3]]
    "Ele, porém, apenas reduz o escore pela fração de pontos rotulados como … corretos, e não é determinístico, pois descarta pontos de árvores geradoras mínimas que não são únicas"
 
 146. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p2-3|p. 2]] · [[evaluation-metrics#^beer2025-p1-3|p. 1]]
-   "Para superar essas limitações, Beer et al. (2025) propuseram o DISCO (Density-based … um escore a cada ponto e avalia tanto os pontos dos grupos quanto os de ruído."
+   "Para superar essas limitações, Beer et al. (2025) propuseram o DISCO (Density-based … um escore a cada ponto e avalia tanto os pontos dos clusters quanto os de ruído."
 
 147. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p4|p. 4]]
    "O índice usa a distância de conectividade por densidade, $d_{dc}$, entre dois … que os liga na árvore geradora mínima do grafo de distâncias de alcançabilidade mútua (Equação 3.9)"
@@ -509,19 +509,19 @@ o texto, o sumário precisa ser gerado de novo.
    "Ao contrário da distância euclidiana, $d_{dc}$ depende de como os pontos se conectam no conjunto de dados, pois o caminho percorre as regiões densas em passos pequenos"
 
 149. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p1-4|p. 1]] · [[evaluation-metrics#^beer2025-p4-3|p. 4]]
-   "Para um ponto $x$ de um grupo $C_x$, o escore compara a … ao grupo mais próximo, como no coeficiente de silhueta, mas com a distância $d_{dc}$ (Equação 3.10)"
+   "Para um ponto $x$ de um cluster $C_x$, o escore compara a … ao cluster mais próximo, como no coeficiente de silhueta, mas com a distância $d_{dc}$ (Equação 3.10)"
 
 150. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p5|p. 5]] · [[evaluation-metrics#^beer2025-p5-2|p. 5]] · [[evaluation-metrics#^beer2025-p5-3|p. 5]] · [[evaluation-metrics#^beer2025-p5-4|p. 5]]
    "O escore do ponto de ruído é o menor dos dois"
 
 151. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p1-5|p. 1]]
-   "Assim, o índice premia os rótulos de ruído corretos e penaliza os pontos rotulados como ruído que deveriam pertencer a um grupo"
+   "Assim, o índice premia os rótulos de ruído corretos e penaliza os pontos rotulados como ruído que deveriam pertencer a um cluster"
 
 152. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p4-4|p. 4]]
    "O DISCO de um agrupamento é a média dos escores $\rho(x)$ de todos os pontos do conjunto $X$ (Equação 3.11)"
 
 153. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p2-4|p. 2]]
-   "Ele está definido para qualquer partição, inclusive com grupos unitários ou com um único grupo e ruído"
+   "Ele está definido para qualquer partição, inclusive com clusters unitários ou com um único cluster e ruído"
 
 154. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p1-6|p. 1]]
    "Por dispensar a classe real, índices internos como o DISCO permitem comparar agrupamentos e escolher os hiperparâmetros dos algoritmos"
@@ -625,7 +625,7 @@ o texto, o sumário precisa ser gerado de novo.
    "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
 
 183. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
-   "O tamanho mínimo de agrupamento, $m_{clSize}$, atua como um controle adicional e independente da suavização"
+   "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
 
 ### 4.4 Detecção de Fraudes
 
@@ -674,7 +674,7 @@ o texto, o sumário precisa ser gerado de novo.
    "Como os investigadores conseguem verificar apenas poucos alertas por dia"
 
 194. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
-   "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar agrupamentos próprios."
+   "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar clusters próprios."
 
 195. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
    "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
