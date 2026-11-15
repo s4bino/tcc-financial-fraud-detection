@@ -246,7 +246,7 @@ As entradas abaixo são páginas de documentação das bibliotecas, conferidas e
 
 | Chave | bib | Referência |
 |---|:-:|---|
-| `sklearn2026rf` | ✓ | Scikit-learn Developers. *sklearn.ensemble.RandomForestClassifier*. |
+| `sklearn2026rf` | ✓ | Scikit-learn Developers. *sklearn.ensemble.RandomForestClassifier*. Registro da probabilidade e da regra de decisão do Random Forest, descritas na Metodologia sem citar a biblioteca. |
 | `xgboost2026` | ✓ | XGBoost Developers. *XGBoost Parameters*. |
 | `cuml2026` | | NVIDIA. *cuML API Reference*, entradas HDBSCAN e approximate_predict. Sustentava a pertinência e a atribuição aproximada, que o grau de anomalia não usa mais. |
 

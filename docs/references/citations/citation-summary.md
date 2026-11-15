@@ -192,10 +192,10 @@ o texto, o sumário precisa ser gerado de novo.
 
 #### 3.2.3 Pipeline de Desenvolvimento e Validação
 
-##### 3.2.3.1 Principal Component Analysis (PCA)
+##### 3.2.3.1 Análise de Componentes Principais
 
 57. **(GREENACRE et al., 2022)** → [[principal-component-analysis#^greenacre2022-p2|p. 2]]
-   "A Análise de Componentes Principais é um procedimento de estatística multivariável que … intuitiva e estruturada a interpretação das principais features inerentes a um conjunto de dados multivariado complexo"
+   "A Análise de Componentes Principais (Principal Component Analysis, PCA) é um procedimento … intuitiva e estruturada a interpretação das principais features inerentes a um conjunto de dados multivariado complexo"
 
 ##### 3.2.3.2 Validação Cruzada Aninhada
 
@@ -413,7 +413,7 @@ o texto, o sumário precisa ser gerado de novo.
    "O centro e a covariância são então recalculados só com as observações de peso 1, e a covariância é de novo multiplicada por um fator de consistência"
 
 123. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p3|p. 3]]
-   "Um corte simples e eficaz, padrão nas implementações, é o quantil 0,975 da distribuição qui-quadrado com $p$ graus de liberdade"
+   "Um corte simples e eficaz, padrão nas implementações, é o mesmo quantil da distribuição qui-quadrado que define a elipse de tolerância da Seção 3.4.3.1"
 
 124. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p1-5|p. 1]]
    "A distância robusta de cada observação é a distância de Mahalanobis da Equação 3.3 com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$"
@@ -637,24 +637,17 @@ o texto, o sumário precisa ser gerado de novo.
 
 #### 4.4.1 Modelos Supervisionados
 
-186. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc|documentação]]
-   "No Random Forest, essa probabilidade é a média das probabilidades estimadas pelas … árvore é a fração de transações da classe na folha em que a transação é classificada"
-
-187. **(XGBOOST DEVELOPERS, 2026)** → [[fraud-detection#^xgboost2026-doc|documentação]]
-   "No XGBoost, treinado com o objetivo de regressão logística para classificação binária, a saída do modelo é a própria probabilidade"
-
-188. **(SCIKIT-LEARN DEVELOPERS, 2026)** → [[fraud-detection#^sklearn2026rf-doc-2|documentação]]
-   "A transação é classificada como fraude quando a probabilidade estimada de fraude supera a de transação legítima"
+*Sem citações.*
 
 #### 4.4.2 HDBSCAN*
 
-189. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+186. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore é a distância da transação ao seu $m_{pts}$-ésimo vizinho mais próximo entre as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
-190. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+187. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-191. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+188. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
 #### 4.4.3 Comparação dos Modelos
@@ -663,51 +656,51 @@ o texto, o sumário precisa ser gerado de novo.
 
 ### 4.5 Ambiente de Execução e Bibliotecas
 
-192. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
+189. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"
 
-193. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
+190. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
    "que fornece o Random Forest, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost"
 
-194. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
+191. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
    "a biblioteca cuML, que oferece, em unidades de processamento gráfico (Graphics Processing Units, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn"
 
 ## 5 Resultados e Discussão
 
-195. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
-   "As fraudes restantes não se distinguem das transações legítimas pelo grau de … considerada na Introdução, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
+192. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
+   "As fraudes restantes não se distinguem das transações legítimas pelo grau de … na Seção 1, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
 
-196. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+193. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Como os investigadores conseguem verificar apenas poucos alertas por dia"
 
-197. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
+194. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
    "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar agrupamentos próprios."
 
-198. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
+195. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
    "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
 
 ## 6 Conclusão
 
-199. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
+196. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
    "Como trabalhos futuros, sugere-se, em primeiro lugar, um modelo híbrido, em que … (2025), com o HDBSCAN* no lugar do DBSCAN para eliminar a escolha do raio de vizinhança."
 
-200. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
+197. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
    "Essa direção é reforçada por Hajek, Abedin e Sivarajah (2022), que obtiveram os melhores resultados de classificação ao integrar vários algoritmos não supervisionados de detecção de outliers a um classificador XGBoost."
 
-201. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
+198. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
    "Os modelos podem ainda ser avaliados em outras bases, como a PaySim, … já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo."
 
-202. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
+199. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
    "em partições ordenadas no tempo, em que o treino antecede o teste, já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo"
 
-203. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
+200. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
    "Outra direção é tratar o problema como detecção de novidades, ou classificação de uma classe, em que há informação apenas sobre as instâncias normais e o modelo é aprendido somente com elas"
 
 ## Apêndice A – Hiperparâmetros dos modelos
 
 ### Random Forest e XGBoost
 
-204. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+201. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ … de Chen e Guestrin (2016), com árvores mais profundas e em menor número na base subamostrada."
 
 ### HDBSCAN*

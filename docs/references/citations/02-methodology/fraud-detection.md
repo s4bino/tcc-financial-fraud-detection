@@ -1,8 +1,7 @@
 > [!check] Status: em uso na monografia
-> As chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes, salvo as três da pertinência, indicadas abaixo.
+> As chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes, salvo as indicadas abaixo.
 > - `fawcett2006`: classificação pelo escore e pelo limiar. Parte do grifo da nota de métricas de avaliação.
-> - `sklearn2026rf`: probabilidade de fraude do Random Forest e regra de decisão. É a documentação da biblioteca, sem PDF.
-> - `xgboost2026`: saída do XGBoost como probabilidade. É a documentação da biblioteca, sem PDF.
+> - `sklearn2026rf` e `xgboost2026`: probabilidade de fraude do Random Forest e do XGBoost e regra de decisão. São a documentação das bibliotecas, sem PDF, e não são citadas na seção, para não citar as bibliotecas a cada frase. Os grifos ficam como registro de onde vem essa descrição. A `xgboost2026` segue citada em Metodologia › Grades de Hiperparâmetros, e a `sklearn2026rf` não é citada no texto.
 > - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 > - `dalpozzolo2018`: alertas inspecionados por investigadores que contatam os titulares, na abertura da seção, e poucos alertas verificados por dia, com preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o grifo dos poucos alertas por dia.

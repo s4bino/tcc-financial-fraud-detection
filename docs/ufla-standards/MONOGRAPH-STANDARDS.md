@@ -165,14 +165,14 @@ Na primeira menção, o nome completo vem seguido da sigla entre parênteses (ma
 | Folha de rosto | `\tipo`, `\orientador` ou `\orientadora`, `\coorientador` ou `\coorientadora` | Nota descritiva em caixa de 8 cm à direita, em espaço 1,5, nome na linha de cima e o papel ("Orientadora", "Coorientador") abaixo, sem negrito | Ver pendência 17 (o modelo do manual mostra os nomes em negrito, que o texto do manual não exige) |
 | Ficha catalográfica | `\fcautor` e afins | Só aparece se `\fcautor` estiver preenchido | Não usada (não obrigatória na graduação) |
 | Folha de aprovação | `\engtitle`, `\engsubtitle`, `\bancaum` a `\bancaquatro{nome}{instituição}`, `\defesa` | Só aparece se `\defesa` não estiver vazio. Escreve "Co-Orientador" ou "Co-Orientadora" | Ver pendências 6 a 8 |
-| Resumo e abstract | `\palchaves`, `\resumo`, `\keywords`, `\abstract` | Espaço simples, título em `\large` | Ver pendências 4 e 14 |
+| Resumo e abstract | `\palchaves`, `\resumo`, `\keywords`, `\abstract` | Espaço simples, título em `\large` | Ver pendência 14 |
 | Sumário | `\tableofcontents` | SUMÁRIO em negrito, tamanho normal | Conforme |
 | Seções | `\chapter` (seção primária), `\section` e abaixo | Primária em maiúsculas e negrito, em página nova. As demais em negrito | Conforme |
-| Figuras, tabelas e quadros | ambientes `figure`, `table` e `quadro` | Numeração por seção (3.1), título acima com travessão e alinhamento pendurado, título em `font=small` (cerca de 11 pt) | Ver pendência 5 |
+| Figuras, tabelas e quadros | ambientes `figure`, `table` e `quadro` | Numeração por seção (3.1), título acima com travessão e alinhamento pendurado, título em `font=small` (cerca de 11 pt) | Mantido (pendência 5) |
 | Citação longa | ambiente `quote` | Recuo de 4 cm, `\small`, espaço simples | Conforme |
 | Notas | `\footnote` | `footmisc` com alinhamento pendurado, `\small` | Conforme |
 | Apêndices | `\apendice{Título}` | "APÊNDICE A -- Título" em negrito, com o título na grafia digitada. No sumário, "APENDICE" sem acento | Ver pendência 9 |
-| Referências | `\referencias` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3` e `abnt-emphasize=bf` | Título em negrito e *et al.* a partir de quatro autores. Chamadas entre parênteses em caixa alta | Ver pendências 3 e 10 |
+| Referências | `\referencias` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3` e `abnt-emphasize=bf` | Título em negrito e *et al.* a partir de quatro autores. Chamadas entre parênteses em caixa alta | Caixa alta mantida (pendência 3). Ver pendência 10 |
 | Paginação | estilo `ufla` | Número no canto superior direito, tamanho normal (12) | Ver pendência 13 |
 
 ## 5. Pendências da monografia
@@ -180,10 +180,10 @@ Na primeira menção, o nome completo vem seguido da sigla entre parênteses (ma
 Cada item traz a regra, a fonte, onde está no projeto e a situação. As mudanças no texto seguem o fluxo de sempre (bloco no `scratch.tex`, aprovação, `main.tex` e commit). Ao resolver um item, marcar `[x]` e anotar o commit.
 
 - [x] **1. Titulação da orientadora e do coorientador e rótulo "Orientadora".** Manual, p. 38 e 45. `main.tex:82-83`. Resolvida no commit `docs: add the UFLA standards guide and the advisors' titles`.
-- [ ] **2. "Capítulo" vira "seção" no texto.** NBR 14724:2024 (manual, p. 69 e 146). `main.tex:155`, `159`, `193`, `537` e `734`. Coincide com os comentários 18 e 20 do coorientador na v4.
-- [ ] **3. Chamadas entre parênteses em maiúsculas e minúsculas.** NBR 10520:2023 (manual, p. 84-87). O `abntex2cite` gera caixa alta, como em "(HUBERT; DEBRUYNE, 2010)", em todo o texto. Precisa de ajuste no estilo das citações, a investigar.
-- [ ] **4. Palavras-chave e keywords separadas por ponto e vírgula, com inicial minúscula e ponto final.** Manual, p. 50-51. `main.tex:105` e `110`. O bloco 12 seguiu o exemplo de Uchôa (2016), anterior ao manual de 2025.
-- [ ] **5. Título das ilustrações, tabelas e quadros em tamanho 12.** Manual, p. 74 e 78, e template. `uflamon.cls:981-985` (`font=small`).
+- [x] **2. "Capítulo" vira "seção" no texto.** NBR 14724:2024 (manual, p. 69 e 146). As seções primárias são chamadas pela referência numerada ("Seção 1", "Seção 5"), com rótulos `cap:` em todas elas. Resolvida no commit `docs: call the divisions sections and apply the v4 form fixes`.
+- [x] **3. Chamadas entre parênteses em maiúsculas e minúsculas.** NBR 10520:2023 (manual, p. 84-87). O `abntex2cite` gera caixa alta, como em "(HUBERT; DEBRUYNE, 2010)", em todo o texto. Decidido manter a caixa alta, que é o padrão da classe `uflamon` distribuída pela UFLA.
+- [x] **4. Palavras-chave e keywords separadas por ponto e vírgula, com inicial minúscula e ponto final.** Manual, p. 50-51. `\palchaves`, `\keywords` e o `pdfkeywords` do `hyperref`. Resolvida no commit `docs: call the divisions sections and apply the v4 form fixes`.
+- [x] **5. Título das ilustrações, tabelas e quadros em tamanho 12.** Manual, p. 74 e 78, e template. `uflamon.cls:981-985` (`font=small`). Decidido manter o `font=small`, o mesmo da `uflamon` do exemplo de Uchôa (2016).
 - [ ] **6. Título em inglês na folha de aprovação.** Manual, p. 44. `main.tex:77-78` (`\engtitle` e `\engsubtitle` vazios).
 - [ ] **7. Data de aprovação e banca com titulação e instituição.** Manual, p. 45. `main.tex:85-87`. Depende da defesa.
 - [ ] **8. Rótulo "Co-Orientador" na folha de aprovação.** A grafia atual é "Coorientador", como na folha de rosto e no manual. `uflamon.cls:758` e `765`.
