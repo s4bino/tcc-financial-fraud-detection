@@ -1,5 +1,6 @@
 > [!check] Status: em uso na monografia
-> - `schubert2017`, `ester1996` e `campello2015`: constam do `refbib.bib`, citados em Fundamentação Teórica › Algoritmo Não Supervisionado › DBSCAN\*.
+> - `schubert2017` e `campello2015`: constam do `refbib.bib`, citados em Fundamentação Teórica › Algoritmo Não Supervisionado › DBSCAN\*.
+> - `ester1996`: consta do `refbib.bib`, citado em Trabalhos Correlatos, na expansão da sigla DBSCAN, na apresentação de Ghalwash et al. (2025).
 
 > [!PDF|yellow] [[schubert2017_dbscan-revisited.pdf#page=2&selection=51,0,93,33&color=yellow|schubert2017_dbscan-revisited, p.2]]
 > > The model introduced by DBSCAN uses a simple minimum density level estimation, based on a threshold for the number of neighbors, minPts, within the radius ε (with an arbitrary distance measure). Objects with more than minPts neighbors within this radius (including the query point) are considered to be a core point. The intuition of DBSCAN is to find those areas, which satisfy this minimum density, and which are separated by areas of lower density. For efficiency reasons, DBSCAN does not perform density estimation in-between points. Instead, all neighbors within the ε radius of a core point are considered to be part of the same cluster as the core point (called direct density reachable). If any of these neighbors is again a core point, their neighborhoods are transitively included (density reachable). Non-core points in this set are called border points, and all points within the same set are density connected. Points which are not density reachable from any core point are considered noise and do not belong to any cluster.
@@ -18,7 +19,7 @@
 > [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=9&selection=99,2,259,2&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.9]]
 > > In the following, we define the density-based clustering algorithm DBSCAN* as in our preliminary work [Campello et al. 2013a], which differs from DBSCAN [Ester et al. 1996] in that the clusters are defined based on core objects alone. Definition 2.1 (Core and Noise Objects). An object xp is called a core object w.r.t. ε and mpts if its ε-neighborhood contains at least mpts many objects, that is, if |Nε(xp)| ≥ mpts, where Nε(xp) = {x ∈ X | d(x, xp) ≤ ε} and |·| denotes cardinality. An object is called noise if it is not a core object. Definition 2.2 (ε-Reachable). Two core objects xp and xq are ε-reachable w.r.t. ε and mpts if xp ∈ Nε(xq) and xq ∈ Nε(xp).
 >
-> Página 8 na numeração da revista. Sustenta o DBSCAN\* como variante do DBSCAN, com os agrupamentos formados apenas por pontos centrais, a definição de ponto central, o ruído como todo ponto não central e a alcançabilidade direta entre pontos centrais.
+> Página 8 na numeração da revista. Sustenta o DBSCAN\* como algoritmo de agrupamento baseado em densidade, com os clusters formados apenas por pontos centrais, a definição de ponto central, o ruído como todo ponto não central e a alcançabilidade direta entre pontos centrais.
 
 ^campello2015-p9
 

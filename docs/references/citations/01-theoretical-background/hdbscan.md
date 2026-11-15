@@ -1,6 +1,6 @@
 > [!check] Status: em uso na monografia
 > Todas as chaves constam do `refbib.bib` e são citadas em Fundamentação Teórica › Algoritmo Não Supervisionado › HDBSCAN\*.
-> - `campello2015`: base das definições da seção, inclusive a do GLOSH.
+> - `campello2015`: base das definições da seção, inclusive a do GLOSH e a das anomalias globais e locais, com o que o kNN e o GLOSH encontram de cada tipo.
 > - `campello2013b`: citado ao lado de `campello2015` na extração da partição.
 > - `neto2022`: grafo conceitual e faixas de $m_{pts}$.
 > - `neto2021`: citado ao lado de `neto2022` nas faixas de $m_{pts}$.
@@ -205,4 +205,25 @@
 > Página 26 na numeração da revista. Sustenta o exemplo da distribuição em forma de sino e o modelo não paramétrico, sem suposição sobre a distribuição dos dados. A frase começa na página anterior, com o caso de um agrupamento que segue essa distribuição.
 
 ^campello2015-p27
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=6&selection=12,72,22,22&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.6]]
+> > Global outliers are outliers that are unusual w.r.t. the complete database. Local outliers are outliers that are unusual w.r.t. a local selection of the database only, such as an ε-range query or the K-NNs, but that would not necessarily look suspicious when compared globally to the complete database.
+>
+> Página 5 na numeração da revista. Sustenta a definição das anomalias globais e das locais.
+
+^campello2015-p6
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=6&selection=78,88,83,25&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.6]]
+> > In any case, the most meaningful reference structure for a point is the “nearest” cluster in the hierarchical cluster hierarchy, as opposed to all points in some sphere around the point. This avoids comparing outliers to other outliers or unrelated clusters, as it could happen for a local method or LOCI; it also enables the user to find both global and local outliers
+>
+> Página 5 na numeração da revista. Sustenta que o GLOSH toma como referência de cada objeto o cluster mais próximo na hierarquia, e não uma vizinhança esférica, e que encontra os dois tipos de anomalia.
+
+^campello2015-p6-2
+
+> [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=28&selection=67,39,73,8&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.28]]
+> > KNN finds all the global outliers, the outlier “in-between” the less dense clusters, and perhaps the point at the bottom of the lowest cluster in a way that is consistent with the earlier formulated requirements. However, it fails entirely to distinguish the local outliers around the dense cluster from other points. Their outlier scores are lower than the scores of many points of the less dense clusters, with ranks as low as 285 and 407. For a “global method”, this is the expected behavior
+>
+> Página 27 na numeração da revista. Sustenta que o kNN, método global, encontra as anomalias globais e não distingue as locais em volta de um cluster denso, cujos escores ficam abaixo dos de muitos objetos dos clusters menos densos.
+
+^campello2015-p28
 
