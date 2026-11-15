@@ -181,7 +181,7 @@
 > [!PDF|yellow] [[campello2015_hierarchical-density-estimates-hdbscan.pdf#page=26&selection=432,17,567,16&color=yellow|campello2015_hierarchical-density-estimates-hdbscan, p.26]]
 > > To take the most general case into account, we generalize Expression (7) and define our Global-Local Outlier Score from Hierarchies (GLOSH) as: GLOSH(xᵢ) = (λ_max(xᵢ) − λ(xᵢ)) / λ_max(xᵢ) = (1/ε_max(xᵢ) − 1/ε(xᵢ)) / (1/ε_max(xᵢ)) = 1 − ε_max(xᵢ)/ε(xᵢ) (8) where ε_max(xᵢ) and ε(xᵢ) are the values for the radii ε associated with the density thresholds λ_max(xᵢ) and λ(xᵢ), respectively.
 >
-> Página 25 na numeração da revista. Sustenta o GLOSH como a comparação entre a densidade do objeto e a densidade máxima do agrupamento, com cada densidade igual ao inverso do raio, e a Equação 3.2 da monografia.
+> Página 25 na numeração da revista. Sustenta o GLOSH como a comparação entre a densidade do objeto e a densidade máxima do agrupamento, com cada densidade igual ao inverso do raio, e a Equação 2.2 da monografia.
 
 ^campello2015-p26
 

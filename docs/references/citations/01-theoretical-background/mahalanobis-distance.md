@@ -233,7 +233,7 @@
 > [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=6&selection=29,0,73,12&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.6]]
 > > It is a scale invariant metric and provides a measure of distance between a point x ∈ Rᵖ generated from a given p-variate (probability) distribution f_X(.) and the mean µ = E(X) of the distribution. Assume f_X(.) has finite second order moments and denote Σ = E(X − µ) be the covariance matrix. Then the Mahalanobis distance is defined by
 >
-> Página 588 da revista. Sustenta a definição da Equação 3.2, a distância de um ponto ao centro de uma distribuição com covariância Σ. A equação (3.1) do artigo vem logo depois do trecho.
+> Página 588 da revista. Sustenta a definição da Equação 2.3, a distância de um ponto ao centro de uma distribuição com covariância Σ. A equação (3.1) do artigo vem logo depois do trecho.
 
 ^ghorbani2019-p6-4
 

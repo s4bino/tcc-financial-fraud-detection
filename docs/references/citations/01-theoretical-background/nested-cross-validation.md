@@ -1,6 +1,6 @@
 > [!check] Status — em uso na monografia
 > - `krstajic2014` — consta do `refbib.bib`, citado em Fundamentação Teórica › Pipeline de Desenvolvimento e Validação › Validação Cruzada Aninhada.
-> - `berrar2024`: consta do `refbib.bib`, citado em Fundamentação Teórica › Pipeline de Desenvolvimento e Validação › Validação Cruzada Aninhada, no texto e na fonte das Figuras 3.1 e 3.2.
+> - `berrar2024`: consta do `refbib.bib`, citado em Fundamentação Teórica › Pipeline de Desenvolvimento e Validação › Validação Cruzada Aninhada, no texto e na fonte das Figuras 2.1 e 2.2.
 
 > [!PDF|yellow] [[krstajic2014_cross-validation-pitfalls.pdf#page=10&selection=3,0,19,50&color=yellow|krstajic2014, p.9]]
 > > The nested cross-validation loss estimates differed significantly compared with the cross-validation estimates of the best model on at least caco-QuickProp, Melting Point Mutagen and PLD datasets. This confirms previous reports in the literature (Varma and Simon [9]). Model assessment using repeated nested cross-validation (Figures 10, 11, 12, 13, 14 and 15) showed large variation of loss estimates across the nested cross-validation runs. For example, the proportion misclassified estimate for bbb2 varied between approximately 0.13 and 0.23 (Figure 13). In practical terms, this means that the best model selected on this dataset may have large-sample performance of anywhere between 13% and 23%. Whether this is adequate for a particular application is a domain-dependent question, however we point out that the repeated nested crossvalidation provides the means to make an informed decision regarding the acceptance of the best model.
@@ -20,7 +20,7 @@
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=5|berrar2024, p.5]]
 > > In k-fold cross-validation, the available learning set is partitioned into k disjoint subsets of approximately equal size. Here, "fold" refers to the number of resulting subsets. This partitioning is performed by randomly sampling cases from the learning set without replacement. The model is trained on k-1 subsets, which, together, represent the training set. Then, the model is applied to the remaining subset, which is denoted as the validation set, and the performance is measured. This procedure is repeated until each of the k subsets has served as validation set. The average of the k performance measurements on the k validation sets is the cross-validated performance.
 >
-> Sustenta a definição da validação cruzada *k-fold*. A Figura 1 do artigo, na mesma página, é a base da Figura 3.1.
+> Sustenta a definição da validação cruzada *k-fold*. A Figura 1 do artigo, na mesma página, é a base da Figura 2.1.
 
 ^berrar2024-p5
 
@@ -48,7 +48,7 @@
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=7&selection=32,27,60,81&color=yellow|berrar2024_cross-validation, p.7]]
 > > (b) For the hyperparameter h, four values are used in the fifth inner CV, h ∈ {1, 3, 5, 7}. The hyperparameter that results in the highest average accuracy in this example is hopt,5 = 3. All accuracies are contrived numbers and serve for numeric illustration only
 >
-> Painel (b) da Figura 2 do artigo, que a Figura 3.2 não reproduz. Ilustra a escolha, no ciclo interno, do hiperparâmetro de maior desempenho médio.
+> Painel (b) da Figura 2 do artigo, que a Figura 2.2 não reproduz. Ilustra a escolha, no ciclo interno, do hiperparâmetro de maior desempenho médio.
 
 > [!PDF|yellow] [[berrar2024_cross-validation.pdf#page=8|berrar2024, p.8]]
 > > The optimal value for the fifth inner CV is $h_{opt,5} = 3$, since the average accuracy is the highest. The optimal hyperparameter $h_{opt,k}$ is then used for the model that is to be trained on $R_k$. This model is then applied to $V_k$. [...] By proceeding analogously for all five outer folds, we achieve a cross-validated accuracy of 0.85. The optimal values of the hyperparameters are not necessarily the same for each outer fold [...]
