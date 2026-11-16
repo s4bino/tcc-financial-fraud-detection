@@ -106,7 +106,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "As técnicas primárias empregadas no aprendizado supervisionado são a classificação e a regressão, as quais diferem fundamentalmente na natureza da previsão alvo"
 
 30. **(GOPAL, 2018)** → [[machine-learning#^rezazadeh2025-p7|p. 7]] *(trecho de Rezazadeh (2025), que cita a obra)*
-   "A função primária de um classificador é atribuir novos pontos de dados a categorias distinhas predefinidas, utilizando o conhecimento extraído da base de treinamento"
+   "A função primária de um classificador é atribuir novos pontos de dados a categorias distintas predefinidas, utilizando o conhecimento extraído da base de treinamento"
 
 31. **Rezazadeh (2025)** → [[machine-learning#^rezazadeh2025-p9|p. 9]]
    "Ao contrário da classificação, a técnica de regressão é utilizada quando a saída desejada é de natureza numérica ou contínua, conforme contextualizado por Rezazadeh (2025)."
@@ -114,7 +114,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 #### 2.2.2 Aprendizado Não Supervisionado
 
 32. **(SOLORIO-FERNÁNDEZ; CARRASCO-OCHOA; MARTÍNEZ-TRINIDAD, 2020)** → [[machine-learning#^rezazadeh2025-p9-2|p. 9]] *(Rezazadeh (2025) cita a obra logo depois do trecho grifado)*
-   "A segunda principal técnica em ML é o aprendizado não supervisionado, empregado na construção de modelos preditivos em situações onde não há disponibilidade de dados previamente rotulados para o treinamento"
+   "A segunda principal técnica em ML é o aprendizado não supervisionado, empregado na construção de modelos preditivos em situações em que não há disponibilidade de dados previamente rotulados para o treinamento"
 
 33. **(REZAZADEH, 2025)** → [[machine-learning#^rezazadeh2025-p19|p. 19]]
    "Nesse caso, o papel do algoritmo é permitir que os dados falem … de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados"
@@ -139,7 +139,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 ##### 2.2.3.1 Análise de Componentes Principais
 
 39. **(GREENACRE et al., 2022)** → [[principal-component-analysis#^greenacre2022-p2|p. 2]]
-   "A Análise de Componentes Principais (Principal Component Analysis, PCA) é um procedimento … intuitiva e estruturada a interpretação das principais features inerentes a um conjunto de dados multivariado complexo"
+   "A Análise de Componentes Principais (Principal Component Analysis, PCA) é um método … interpretar de forma intuitiva e estruturada as principais características de um conjunto de dados multivariado complexo"
 
 ##### 2.2.3.2 Validação Cruzada Aninhada
 
@@ -193,7 +193,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "o que torna as árvores mais diferentes e menos correlacionadas entre si e confere maior estabilidade à agregação"
 
 55. **(BIAU; SCORNET, 2016)** → [[random-forest#^biau2016-p20|p. 20]] · [[random-forest#^biau2016-p9|p. 9]]
-   "A variância da floresta corresponde ao produto da correlação entre as árvores … do modelo, que diminui à medida que o número de árvores aumenta, sem conduzir ao sobreajuste"
+   "Por isso, a combinação de árvores pouco correlacionadas reduz a variância do modelo, que diminui à medida que o número de árvores aumenta, sem conduzir ao sobreajuste"
 
 #### 2.3.2 Extreme Gradient Boosting
 
@@ -497,7 +497,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Com base no mesmo dataset que é usado nesta pesquisa, Alarfaj et … taxa de alarmes falsos, mudança constante na natureza das fraudes e o alto desbalanceamento das bases."
 
 145. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p5|p. 5]]
-   "Enquanto o trabalho de Alarfaj et al. (2022) foca, em sua maioria, … baseado em densidade para a identificação de fraudes, assumindo como hipótese que fraudes são anomalias (outliers)."
+   "Enquanto o trabalho de Alarfaj et al. (2022) se concentra sobretudo em … baseado em densidade para a identificação de fraudes, assumindo como hipótese que fraudes são anomalias (outliers)."
 
 146. **Sulaiman, Schetinin e Sant (2022)** → [[related-work#^sulaiman2022-p1|p. 1]] · [[related-work#^sulaiman2022-p3|p. 3]] · [[related-work#^sulaiman2022-p3-2|p. 3]] · [[related-work#^sulaiman2022-p3-3|p. 3]] · [[related-work#^sulaiman2022-p7|p. 7]] · [[related-work#^sulaiman2022-p7-2|p. 7]] · [[related-work#^sulaiman2022-p10|p. 10]] · [[related-work#^sulaiman2022-p8|p. 8]] · [[related-work#^sulaiman2022-p4|p. 4]] · [[related-work#^sulaiman2022-p5|p. 5]] · [[related-work#^sulaiman2022-p1-2|p. 1]] · [[related-work#^sulaiman2022-p7-3|p. 7]] · [[related-work#^sulaiman2022-p9|p. 9]]
    "Em uma revisão da literatura sobre o tema, Sulaiman, Schetinin e Sant … à detecção de fraudes em cartões de crédito, considerando também a confidencialidade dos dados dos clientes."
@@ -543,7 +543,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 ### 4.1 Conjunto de Dados
 
 159. **(MACHINE LEARNING GROUP - UNIVERSITÉ LIBRE DE BRUXELLES, 2018)** → *página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)*
-   "Assim, o conjunto de dados manipulado neste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles, ao qual está acessível pelo site Kaggle"
+   "Assim, o conjunto de dados deste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles e está disponível no Kaggle"
 
 160. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
    "Em relação às features, o dataset possui 31 variáveis numéricas das quais … conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação"
