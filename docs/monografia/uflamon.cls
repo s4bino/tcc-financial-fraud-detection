@@ -810,17 +810,16 @@
 
 % Agradecimentos
 \renewcommand{\thanks}[1]{
-    %\begin{titlepage}
-    %\pagestyle{empty}                       
-                          
-    \null\vfill
-    \begin{center}\textbf{AGRADECIMENTOS}\end{center}
-    \noindent #1
-    \vspace*{1cm}    
-    \vfill\null
-    
+    % Título no alto da página e texto em parágrafos, como no modelo do manual da UFLA
+    % (2025, p. 47, Figura 3.10), no mesmo arranjo do resumo.
+    \newpage
+    \begin{center}
+        \textbf{AGRADECIMENTOS}
+    \end{center}
+
+    #1
+
     \cleardoublepage
-    %\end{titlepage}
 } % \thanks
 
 
