@@ -130,7 +130,7 @@ def figure_spread(df, key="dbcv_score", label="DBCV"):
         summary["min"],
         positions,
         s=34,
-        color=ps.BLUE,
+        color=ps.NAVY,
         zorder=3,
         edgecolors=ps.SURFACE,
         linewidths=0.8,
@@ -140,7 +140,7 @@ def figure_spread(df, key="dbcv_score", label="DBCV"):
         summary["max"],
         positions,
         s=34,
-        color=ps.ORANGE,
+        color=ps.CYAN,
         zorder=3,
         edgecolors=ps.SURFACE,
         linewidths=0.8,
@@ -163,7 +163,7 @@ def figure_spread(df, key="dbcv_score", label="DBCV"):
     threshold = 2 * summary["spread"].median()
     for tick, spread_value in zip(ax.get_yticklabels(), summary["spread"]):
         if spread_value > threshold:
-            tick.set_color(ps.ORANGE)
+            tick.set_color(ps.NAVY)
             tick.set_fontweight("bold")
     ax.set_xlabel(label)
     ax.set_title(f"Amplitude do {label} entre os cinco folds, por configuração", pad=10)
@@ -217,7 +217,7 @@ def figure_criterion(df):
             df["dbcv_score"],
             df[key],
             s=22,
-            color=ps.BLUE,
+            color=ps.NAVY,
             alpha=0.6,
             edgecolors=ps.SURFACE,
             linewidths=0.5,

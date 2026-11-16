@@ -229,7 +229,7 @@ def figure_coverage(outer, total):
     ax = axes[0]
     ax.grid(True, axis="y")
     values, counts = np.unique(times_tested, return_counts=True)
-    bars = ax.bar([str(v) for v in values], counts, color=ps.BLUE, width=0.55)
+    bars = ax.bar([str(v) for v in values], counts, color=ps.NAVY, width=0.55)
     for bar, count in zip(bars, counts):
         ax.annotate(
             ps.thousands(int(count)),
@@ -373,7 +373,7 @@ def figure_density_by_fold(outer, scaled, y, rng, k=K_NEIGHBOURS):
 
     ax = axes[1]
     ax.grid(True, axis="y")
-    ax.plot(table["fold"], table["ratio"], marker="o", color=ps.VIOLET)
+    ax.plot(table["fold"], table["ratio"], marker="o", color=ps.NAVY)
     ax.axhline(1.0, color=ps.INK_MUTED, lw=1.0)
     for _, row in table.iterrows():
         ax.annotate(

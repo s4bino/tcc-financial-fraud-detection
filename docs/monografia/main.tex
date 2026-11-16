@@ -47,6 +47,11 @@
 \usepackage{caption}            % remodelando o formato dos títulos de tabelas e figuras
 \usepackage{tikz}                % para desenho de figuras e esquemas
 \usetikzlibrary{decorations.pathreplacing} % chaves de agrupamento nas figuras
+% paleta das figuras, a mesma de src/analysis/plot_style.py
+\definecolor{figink}{HTML}{1A222E}       % texto e traços
+\definecolor{figaxis}{HTML}{424E5E}      % contorno dos blocos
+\definecolor{fignavy}{HTML}{265496}      % azul-marinho
+\definecolor{figcyanlight}{HTML}{A9D7E2} % ciano claro
 
 % configuração padrão do listings   
 \lstset{
@@ -215,10 +220,10 @@ Segundo \citeonline{berrar2024}, a validação cruzada é um dos métodos de rea
     \centering
     \caption{Validação cruzada \textit{k-fold} com $k = 5$.}
     \label{fig:kfold}
-    \begin{tikzpicture}[
-        bloco/.style={draw, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
+    \begin{tikzpicture}[color=figink,
+        bloco/.style={draw=figaxis, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
         treino/.style={bloco, fill=white},
-        validacao/.style={bloco, fill=black!70}]
+        validacao/.style={bloco, fill=fignavy}]
         \foreach \r in {1,...,5} {
             \node[anchor=east] at (0.4, -0.8*\r) {Rodada \r};
             \foreach \c in {1,...,5} {
@@ -246,11 +251,11 @@ Para isso, a validação cruzada aninhada opera em dois níveis. O ciclo externo
     \centering
     \caption{Validação cruzada aninhada com cinco rodadas externas e duas internas. O ciclo interno é representado apenas para a quinta rodada externa.}
     \label{fig:nested}
-    \begin{tikzpicture}[
-        bloco/.style={draw, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
+    \begin{tikzpicture}[color=figink,
+        bloco/.style={draw=figaxis, minimum width=1.1cm, minimum height=0.55cm, inner sep=0pt},
         treino/.style={bloco, fill=white},
-        valint/.style={bloco, fill=black!25},
-        teste/.style={bloco, fill=black!70}]
+        valint/.style={bloco, fill=figcyanlight},
+        teste/.style={bloco, fill=fignavy}]
         \foreach \r in {1,...,5} {
             \node[anchor=east] at (0.4, -0.8*\r) {Rodada externa \r};
             \foreach \c in {1,...,5} {
@@ -570,7 +575,7 @@ Os dados referentes a transações financeiras reais são sigilosos em virtude d
 
 Assim, o conjunto de dados manipulado neste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles, ao qual está acessível pelo site Kaggle \cite{kaggle2018}.
 
-O \textit{dataset} contém transações em cartões de crédito em setembro de 2013, feitas por titulares de cartões europeus e foram coletadas e analisadas durante uma pesquisa em colaboração com a Worldline, uma empresa francesa de serviços de pagamento e transações, fundada em 1974. Foram capturadas 284.807 transações ao longo de um período de dois dias, onde apenas 492 são classificadas como fraudulentas. Logo, o conjunto de dados é altamente desbalanceado considerando a elevada desproporção entre as classes, com a classe positiva (fraude) representando 0,172\% de todas as transações.
+O \textit{dataset} contém transações em cartões de crédito em setembro de 2013, feitas por titulares de cartões europeus e foram coletadas e analisadas durante uma pesquisa em colaboração com a Worldline, uma empresa francesa de serviços de pagamento e transações, fundada em 1974. Foram capturadas 284.807 transações ao longo de um período de dois dias, onde apenas 492 são classificadas como fraudulentas. Logo, o conjunto de dados é altamente desbalanceado considerando a elevada desproporção entre as classes, com a classe positiva (fraude) representando 0,172\% de todas as transações. A Figura~\ref{fig:densidade-fraudes} mostra como as fraudes se distribuem em relação às regiões mais densas das transações legítimas.
 
 Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis numéricas das quais 28 (V1, V2, \dots, V28) delas foram submetidas à Análise de Componentes Principais (PCA), uma técnica padrão e amplamente utilizada para reduzir a dimensionalidade de tais conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação \cite{abdi2010}. Isso acontece por meio da criação de novas variáveis não correlacionadas que maximizam sucessivamente a variância. Concomitantemente, a PCA colabora para a anonimização dos dados \cite{alarfaj2022}. As \textit{features} que não foram submetidas à PCA são \textit{amount}, \textit{class} e \textit{time}.
 
@@ -593,6 +598,15 @@ Em relação às \textit{features}, o \textit{dataset} possui 31 variáveis num�
     \end{tabular}
     \label{tab:descricao_colunas}
 \end{table}
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{Transações legítimas e fraudes nas componentes V17, V14 e V12, as de maior correlação com a variável Class em valor absoluto, (a) em três dimensões e (b) no plano de V17 e V14, em torno do núcleo das transações legítimas. Os tons de azul indicam as regiões mais densas que contêm 50\%, 90\% e 99\% das transações legítimas, pela densidade estimada com núcleo gaussiano \cite{moulavi2014}, e as curvas violeta, as regiões que contêm 50\% e 90\% das fraudes no plano de V17 e V14, projetadas na base de (a). São mostradas uma amostra aleatória de 20.000 transações legítimas e todas as 492 fraudes.}
+    \label{fig:densidade-fraudes}
+    \includegraphics[width=\textwidth]{09-fraud-density-3d.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
 
 \section{Pré-processamento}
 \label{sec:preprocessamento}
@@ -823,9 +837,11 @@ A Tabela~\ref{tab:resultados} reúne a média e o desvio padrão das métricas n
 
 \begin{figure}[!htbp]
     \centering
-    \caption{\textit{Boxplots} das métricas de cada modelo no teste externo das cinco rodadas. Cada caixa vai do primeiro ao terceiro quartil, com a mediana marcada, as hastes vão do menor ao maior valor, e cada ponto é uma rodada.}
+    \caption{\textit{Boxplots} das métricas de cada modelo no teste externo das cinco rodadas, na base (a) completa e (b) subamostrada. Cada caixa vai do primeiro ao terceiro quartil, com a mediana marcada, e as hastes vão do menor ao maior valor entre as rodadas.}
     \label{fig:boxplots}
-    \includegraphics[width=\textwidth]{01-outer-metrics.pdf}
+    \includegraphics[width=\textwidth]{01-outer-metrics-full.pdf}
+    \par\vspace{3mm}
+    \includegraphics[width=\textwidth]{01-outer-metrics-undersampled.pdf}
     \par\vspace{2mm}
     {\small Fonte: Do autor (2026).}
 \end{figure}

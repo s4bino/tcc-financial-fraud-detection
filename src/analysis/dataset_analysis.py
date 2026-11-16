@@ -3,13 +3,14 @@ Exploratory analysis of the transaction dataset.
 
 Produces the figures and the statistical summary that describe how fraud
 behaves: correlation structure, per-feature discriminative power, relevance of
-the Time variable, projections onto the most informative components, and the
-local density of each class.
+the Time variable, projections onto the most informative components, the
+local density of each class, and the densest regions of the legitimate
+transactions against the frauds.
 
-The last analysis is the one that tests the premise of this work. If fraud is
-an anomaly, fraudulent transactions should sit in lower-density regions than
+The last two analyses are the ones that test the premise of this work. If fraud
+is an anomaly, fraudulent transactions should sit in lower-density regions than
 legitimate ones, and that is measurable through the distance to the nearest
-neighbours.
+neighbours and through a kernel density estimate of the legitimate transactions.
 
 Run from the repository root:
 
@@ -18,6 +19,7 @@ Run from the repository root:
 
 import os
 import sys
+from itertools import zip_longest
 
 import numpy as np
 import pandas as pd
@@ -118,19 +120,19 @@ def figure_correlation(df):
     width = 0.8 * ps.TEXT_WIDTH_IN
     fig, ax = plt.subplots(figsize=(width, 0.9 * width))
     ax.grid(False)
-    for side in ("left", "bottom"):
-        ax.spines[side].set_visible(False)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
     im = ax.imshow(matrix, cmap=ps.DIVERGING, vmin=-1, vmax=1, interpolation="nearest")
 
     ax.set_xticks(range(len(order)))
     ax.set_yticks(range(len(order)))
-    ax.set_xticklabels(order, rotation=90, fontsize=6)
-    ax.set_yticklabels(order, fontsize=6)
+    ax.set_xticklabels(order, rotation=90, fontsize=7)
+    ax.set_yticklabels(order, fontsize=7)
     ax.tick_params(length=0)
 
     bar = fig.colorbar(im, ax=ax, fraction=0.040, pad=0.02, ticks=[-1, -0.5, 0, 0.5, 1])
-    bar.set_label("Coeficiente de correlação", color=ps.INK_SECONDARY)
-    bar.ax.tick_params(labelsize=7)
+    bar.set_label("Coeficiente de correlação")
+    bar.ax.tick_params(labelsize=8)
     bar.outline.set_visible(False)
     ps.decimal_comma(bar.ax.yaxis)
     return fig, corr
@@ -146,7 +148,7 @@ def figure_discriminative(table, prevalence):
     from matplotlib.patches import Patch
 
     ordered = table.sort_values("lift")
-    colors = [ps.ORANGE if f in ("Time", "Amount") else ps.BLUE for f in ordered["feature"]]
+    colors = [ps.CYAN if f in ("Time", "Amount") else ps.NAVY for f in ordered["feature"]]
 
     fig, ax = plt.subplots(figsize=(7.4, 8.2))
     ax.grid(True, axis="x")
@@ -183,8 +185,8 @@ def figure_discriminative(table, prevalence):
 
     ax.legend(
         handles=[
-            Patch(color=ps.BLUE, label="Componente do PCA (V1–V28)"),
-            Patch(color=ps.ORANGE, label="Variável original"),
+            Patch(color=ps.NAVY, label="Componente do PCA (V1–V28)"),
+            Patch(color=ps.CYAN, label="Variável original"),
         ],
         loc="lower right",
     )
@@ -252,7 +254,7 @@ def figure_time(df, y):
     band = (hour_of_day // 3).astype(int) * 3
     bands = np.arange(0, 24, 3)
     rates = np.array([10000 * y[band == b].mean() for b in bands])
-    colours = [ps.ORANGE if r >= rates.mean() else ps.BLUE for r in rates]
+    colours = [ps.NAVY if r >= rates.mean() else ps.SLATE_LIGHT for r in rates]
     ax.bar([f"{b:02d}–{b + 3:02d}" for b in bands], rates, color=colours, width=0.66)
     ax.axhline(10000 * y.mean(), color=ps.INK_MUTED, lw=1.0)
     ax.annotate(
@@ -302,7 +304,7 @@ def figure_amount_transformation(df, y):
         z = (values - values.mean()) / values.std()
         bins = np.arange(np.floor(z.min()), z.max() + width, width)
         low, high = np.quantile(z, [0.01, 0.99])
-        ax.axvspan(low, high, color=ps.INK_MUTED, alpha=0.12, lw=0, label="98% centrais")
+        ax.axvspan(low, high, color=ps.SLATE, alpha=0.15, lw=0, label="98% centrais")
         for mask, color, name in (
             (legit, ps.COLOR_LEGIT, ps.LABEL_LEGIT),
             (fraud, ps.COLOR_FRAUD, ps.LABEL_FRAUD),
@@ -610,11 +612,206 @@ def figure_local_density(scaled, y, rng, k=K_NEIGHBOURS):
 
 
 # ===========================================================================
+# Figure 09. Density of the legitimate transactions and the frauds
+# ===========================================================================
+
+DENSITY_GRID_POINTS = 300  # grid side for the density of the plane
+DENSITY_VIEW = (24, -58)  # elevation and azimuth of the three-dimensional panel
+
+
+def density_axes(corr):
+    """The three PCA components with the largest absolute correlation with the class.
+
+    They are read from the correlation matrix of Figure 01, so the choice of the
+    axes can be checked in the figure that the monograph already shows.
+    """
+    components = [c for c in corr.columns if c.startswith("V")]
+    ranked = corr.loc[components, TARGET].abs().sort_values(ascending=False)
+    return list(ranked.index[:3])
+
+
+def density_regions(kde, reference, points, levels=ps.DENSITY_LEVELS):
+    """Region of each point among the densest regions of the reference sample.
+
+    The densest region that holds a fraction p of the reference points is the
+    set where the density is at least the (1 - p) quantile of the density at
+    those points. Region 0 is the densest one (levels[0]), and len(levels) means
+    outside every region. Returns the thresholds and the region of each point.
+    """
+    thresholds = np.quantile(kde(reference.T), [1 - level for level in levels])
+    density = kde(points.T)
+    return thresholds, (density[:, None] < thresholds[None, :]).sum(axis=1)
+
+
+def figure_density_3d(df, y, corr, rng):
+    """Legitimate transactions by density region and the frauds.
+
+    (a) The three components with the largest absolute correlation with the class.
+        Each legitimate transaction takes the colour of the densest region of the
+        legitimate transactions that holds it (50%, 90% and 99% of them), from a
+        Gaussian kernel density estimate in the three dimensions. The floor shows
+        the same regions in the plane of the first two components, the regions
+        that hold 50% and 90% of the frauds in that plane, and the window of (b).
+    (b) The window of the plane around the dense core of the legitimate
+        transactions, where the regions can be told apart.
+
+    The legitimate transactions are a random sample, and every fraud is shown.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    from matplotlib.ticker import MultipleLocator
+    from scipy.stats import gaussian_kde
+
+    names = density_axes(corr)
+    values = df[names].to_numpy()
+    legit_idx = np.where(y == 0)[0]
+    legit_idx = rng.choice(legit_idx, size=min(LEGIT_SAMPLE_SIZE, len(legit_idx)), replace=False)
+    legit, fraud = values[legit_idx], values[y == 1]
+    shown = np.vstack([legit, fraud])
+    low, high = np.floor(shown.min(axis=0)) - 1, np.ceil(shown.max(axis=0)) + 1
+
+    kde_3d = gaussian_kde(legit.T)
+    _, legit_regions = density_regions(kde_3d, legit, legit)
+    _, fraud_regions = density_regions(kde_3d, legit, fraud)
+
+    # Density in the plane of the first two components. The grid covers the bulk
+    # of the legitimate transactions, where their regions lie, and is also the
+    # window of panel (b).
+    plane_legit, plane_fraud = legit[:, :2], fraud[:, :2]
+    kde_2d = gaussian_kde(plane_legit.T)
+    window_low = np.floor(np.quantile(plane_legit, 0.0005, axis=0) - 2)
+    window_high = np.ceil(np.quantile(plane_legit, 0.9995, axis=0) + 2)
+    gx, gy = np.meshgrid(
+        np.linspace(window_low[0], window_high[0], DENSITY_GRID_POINTS),
+        np.linspace(window_low[1], window_high[1], DENSITY_GRID_POINTS),
+    )
+    grid_density = kde_2d(np.vstack([gx.ravel(), gy.ravel()])).reshape(gx.shape)
+    thresholds_2d, plane_regions = density_regions(kde_2d, plane_legit, plane_legit)
+    _, plane_fraud_regions = density_regions(kde_2d, plane_legit, plane_fraud)
+    fill = {
+        "levels": [*thresholds_2d[::-1], grid_density.max() * 1.01],
+        "colors": ps.DENSITY_COLORS[::-1],
+    }
+
+    # Regions that hold 50% and 90% of the frauds in the same plane.
+    kde_fraud = gaussian_kde(plane_fraud.T)
+    fx, fy = np.meshgrid(
+        np.linspace(low[0], high[0], DENSITY_GRID_POINTS),
+        np.linspace(low[1], high[1], DENSITY_GRID_POINTS),
+    )
+    fraud_density = kde_fraud(np.vstack([fx.ravel(), fy.ravel()])).reshape(fx.shape)
+    fraud_thresholds = np.quantile(kde_fraud(plane_fraud.T), [0.10, 0.50])  # 90% and 50%
+    fraud_lines = {"levels": fraud_thresholds, "colors": ps.ACCENT, "linewidths": (0.6, 1.0)}
+
+    region_colors = [*ps.DENSITY_COLORS, ps.SLATE_LIGHT]
+    point_sizes = (1.2, 1.2, 1.6, 2.4)
+    fraud_marker = {"facecolors": "none", "edgecolors": ps.ACCENT, "linewidths": 0.6}
+
+    # Fixed positions: the automatic layout leaves a wide margin around 3D axes.
+    fig = plt.figure(figsize=(ps.TEXT_WIDTH_IN, 3.8))
+    fig.set_layout_engine("none")
+
+    # (a) three dimensions
+    ax = fig.add_axes((-0.07, 0.17, 0.68, 0.86), projection="3d", computed_zorder=False)
+    ax.contourf(gx, gy, grid_density, zdir="z", offset=low[2], **fill)
+    ax.contour(fx, fy, fraud_density, zdir="z", offset=low[2], **fraud_lines)
+    corners_x = [window_low[0], window_high[0], window_high[0], window_low[0], window_low[0]]
+    corners_y = [window_low[1], window_low[1], window_high[1], window_high[1], window_low[1]]
+    ax.plot(corners_x, corners_y, low[2], zdir="z", color=ps.INK, linewidth=0.6)
+    # Sparse regions first, so that the dense core stays on top of its halo.
+    for region in range(len(ps.DENSITY_LEVELS), -1, -1):
+        members = legit[legit_regions == region]
+        ax.scatter(
+            *members.T,
+            s=point_sizes[region],
+            color=region_colors[region],
+            alpha=0.8,
+            linewidths=0,
+            rasterized=True,
+        )
+    # Hollow frauds, so that the legitimate core stays visible under them.
+    ax.scatter(*fraud.T, s=6, rasterized=True, **fraud_marker)
+    ax.set_xlim(low[0], high[0])
+    ax.set_ylim(low[1], high[1])
+    ax.set_zlim(low[2], high[2])
+    ax.set_xlabel(names[0], labelpad=-3)
+    ax.set_ylabel(names[1], labelpad=-3)
+    ax.set_zlabel(names[2], labelpad=-2)
+    ax.tick_params(labelsize=8, pad=-1)
+    ax.tick_params(axis="z", pad=0)
+    ax.view_init(*DENSITY_VIEW)
+    ax.set_box_aspect(None, zoom=1.08)
+    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        axis.pane.set_facecolor(ps.SURFACE)
+        axis.pane.set_edgecolor(ps.AXIS)
+        axis.pane.set_linewidth(0.5)
+        axis._axinfo["grid"].update(color=ps.GRID, linewidth=0.5)
+        axis._axinfo["tick"].update(inward_factor=0.0, outward_factor=0.3)
+    fig.text(0.0, 0.97, "(a)", va="top")
+
+    # (b) window of the plane around the dense core
+    ax = fig.add_axes((0.69, 0.26, 0.30, 0.66))
+    ax.contourf(gx, gy, grid_density, zorder=1, **fill)
+    sparse = plane_legit[plane_regions == len(ps.DENSITY_LEVELS)]
+    ax.scatter(*sparse.T, s=2.5, color=ps.SLATE_LIGHT, linewidths=0, zorder=2, rasterized=True)
+    ax.scatter(*plane_fraud.T, s=9, zorder=3, rasterized=True, **fraud_marker)
+    ax.set_xlim(window_low[0], window_high[0])
+    ax.set_ylim(window_low[1], window_high[1])
+    ax.set_aspect("equal")
+    ax.set_xlabel(names[0])
+    ax.set_ylabel(names[1], labelpad=1)
+    for axis in (ax.xaxis, ax.yaxis):
+        axis.set_major_locator(MultipleLocator(2))
+    fig.text(0.635, 0.97, "(b)", va="top")
+
+    # Two legend rows: the legitimate transactions, then the frauds and the window
+    # of (b). The legend fills column by column, so the rows are interleaved.
+    legit_row = [
+        Patch(facecolor=color, edgecolor="none", label=f"{level:.0%} das legítimas")
+        for level, color in zip(ps.DENSITY_LEVELS, ps.DENSITY_COLORS, strict=True)
+    ] + [
+        Line2D(
+            [], [], color=ps.SLATE_LIGHT, marker="o", linewidth=0, markersize=3,
+            label="Demais legítimas",
+        ),
+    ]
+    fraud_row = [
+        Line2D(
+            [], [], color=ps.ACCENT, marker="o", markerfacecolor="none", markeredgewidth=0.8,
+            linewidth=0, markersize=4.5, label=ps.LABEL_FRAUD,
+        ),
+        Line2D([], [], color=ps.ACCENT, linewidth=1.0, label="50% e 90% das fraudes"),
+        Line2D([], [], color=ps.INK, linewidth=0.6, label="Área de (b)"),
+    ]
+    handles = [h for pair in zip_longest(legit_row, fraud_row) for h in pair if h is not None]
+    fig.legend(
+        handles=handles,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.0),
+        ncol=4,
+        columnspacing=1.4,
+        handlelength=1.4,
+    )
+
+    regions = len(ps.DENSITY_LEVELS) + 1
+    stats = {
+        "axes": names,
+        "fraud_regions_3d": np.bincount(fraud_regions, minlength=regions) / len(fraud),
+        "fraud_regions_2d": np.bincount(plane_fraud_regions, minlength=regions) / len(fraud),
+        "window": (window_low, window_high),
+        "legit_sample": len(legit),
+        "frauds": len(fraud),
+    }
+    return fig, stats
+
+
+# ===========================================================================
 # Statistical summary
 # ===========================================================================
 
 
-def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, target):
+def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, density_3d, target):
     total = len(df)
     frauds = int(y.sum())
     amount = df["Amount"]
@@ -704,6 +901,36 @@ def write_summary(df, y, corr, table, prevalence, ks_time, density, axes, target
         "distantes de seus vizinhos — ou seja, em regiões menos densas. É a",
         "premissa que sustenta o tratamento de fraude como ruído.",
         "",
+        "## Regiões de densidade das legítimas (figura 09)",
+        "",
+        f"- Eixos: {', '.join(density_3d['axes'])}, as componentes de maior correlação "
+        "absoluta com Class",
+        f"- Densidade estimada por núcleo gaussiano sobre uma amostra de "
+        f"{ps.thousands(density_3d['legit_sample'])} legítimas, com todas as "
+        f"{density_3d['frauds']} fraudes",
+        f"- Janela do painel (b): {density_3d['axes'][0]} de "
+        f"{density_3d['window'][0][0]:g} a {density_3d['window'][1][0]:g}, "
+        f"{density_3d['axes'][1]} de {density_3d['window'][0][1]:g} a "
+        f"{density_3d['window'][1][1]:g}",
+        "",
+        "Fração das fraudes em cada região das legítimas (a mais densa que contém",
+        "a fração indicada das legítimas):",
+        "",
+        "| Região | Três dimensões | Plano dos dois primeiros eixos |",
+        "|---|---|---|",
+    ]
+    region_names = [f"{level:.0%} mais densas" for level in ps.DENSITY_LEVELS]
+    region_names[1:] = [
+        f"de {previous:.0%} a {level:.0%}"
+        for previous, level in zip(ps.DENSITY_LEVELS, ps.DENSITY_LEVELS[1:], strict=False)
+    ]
+    region_names.append(f"fora das {ps.DENSITY_LEVELS[-1]:.0%}")
+    for name, share_3d, share_2d in zip(
+        region_names, density_3d["fraud_regions_3d"], density_3d["fraud_regions_2d"], strict=True
+    ):
+        lines.append(f"| {name} | {share_3d:.1%} | {share_2d:.1%} |")
+    lines += [
+        "",
         "## Correlação com a variável alvo",
         "",
         "Cinco maiores em valor absoluto:",
@@ -777,8 +1004,22 @@ def main():
     print("   ", ps.save(fig, f"{OUTPUT}/08-amount-transformation")[0])
     plt.close(fig)
 
+    print("09 - density of the legitimate transactions and the frauds")
+    fig, density_3d = figure_density_3d(df, y, corr, np.random.RandomState(SEED))
+    print("   ", ps.save(fig, f"{OUTPUT}/09-fraud-density-3d")[0])
+    plt.close(fig)
+
     summary = write_summary(
-        df, y, corr, table, prevalence, ks_time, density, axes, f"{OUTPUT}/dataset-statistics.md"
+        df,
+        y,
+        corr,
+        table,
+        prevalence,
+        ks_time,
+        density,
+        axes,
+        density_3d,
+        f"{OUTPUT}/dataset-statistics.md",
     )
     print("summary:", summary)
 

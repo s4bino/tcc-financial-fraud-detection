@@ -551,172 +551,175 @@ o texto, o sumário precisa ser gerado de novo.
 161. **(ALARFAJ et al., 2022)** → *sem grifo para esta afirmação; o PDF está no acervo*
    "Concomitantemente, a PCA colabora para a anonimização dos dados"
 
+162. **(MOULAVI et al., 2014)** → [[dataset#^moulavi2014-p3|p. 3]]
+   "Os tons de azul indicam as regiões mais densas que contêm 50%, 90% e 99% das transações legítimas, pela densidade estimada com núcleo gaussiano"
+
 ### 4.2 Pré-processamento
 
-162. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
+163. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
    "As componentes V1 a V28 não são correlacionadas entre si, por construção da PCA"
 
-163. **(HUANG; LI; XIE, 2015)** → [[scaling-and-standardization#^huang2015-p2|p. 2]]
+164. **(HUANG; LI; XIE, 2015)** → [[scaling-and-standardization#^huang2015-p2|p. 2]]
    "Já a variável Amount foi escalonada, pois, em ML, esse processo transforma … escalonadas têm o mesmo grau de influência e esse método é imune à escolha das unidades"
 
-164. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
+165. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
    "A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$"
 
 ### 4.3 Estratégia de Avaliação
 
 #### 4.3.1 Validação Cruzada Aninhada
 
-165. **Kohavi (1995)** → *sem PDF no acervo*
+166. **Kohavi (1995)** → *sem PDF no acervo*
    "De acordo com Kohavi (1995), a amostragem estratificada é superior ao esquema … o viés quanto a variância das estimativas de desempenho em conjuntos de dados do mundo real."
 
 #### 4.3.2 Base Subamostrada
 
-166. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1|p. 1]]
+167. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1|p. 1]]
    "A subamostragem é uma técnica comum em bases desbalanceadas para reduzir a diferença entre as proporções das classes"
 
-167. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-2|p. 1]]
+168. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-2|p. 1]]
    "A subamostragem aleatória parte da premissa de que a classe majoritária tem muitas observações redundantes e de que retirar parte delas ao acaso não altera a estimativa da sua distribuição"
 
-168. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-3|p. 1]]
+169. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-3|p. 1]]
    "A subamostragem, porém, altera a proporção das classes no treino, e o … estimadas, embora não afete a ordenação das transações, afeta a classificação e a calibração dessas probabilidades"
 
 #### 4.3.3 Busca em Grade
 
-169. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
+170. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
    "Conforme evidenciado pela literatura recente, a utilização de configurações padrão ou arbitrárias frequentemente resulta em desempenho subótimo, tornando a etapa de otimização paramétrica um requisito fundamental para a robustez do modelo."
 
-170. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
+171. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
    "Durante a fase de calibração, o modelo é instanciado, treinado e avaliado iterativamente para cada combinação única presente nesta grade"
 
-171. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
+172. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
    "De acordo com estudos comparativos em otimização de hiperparâmetros, o Grid Search demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade."
 
 #### 4.3.4 Escores e Comparação dos Modelos
 
-172. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
+173. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
    "Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar"
 
-173. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
+174. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
    "Em todos eles, as transações classificadas como fraudulentas constituem os alertas, que, … que entram em contato com os titulares para determinar se cada transação é legítima ou fraudulenta"
 
 ### 4.4 Avaliação do Random Forest
 
-174. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
+175. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
    "Segundo Probst, Wright e Boulesteix (2019), os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma."
 
-175. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
+176. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
    "Valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas"
 
-176. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
+177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
    "A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis"
 
-177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
+178. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
    "O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações"
 
-178. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
+179. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
    "O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes"
 
-179. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
+180. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
    "Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste"
 
-180. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
+181. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
    "mas o tempo de execução cresce linearmente com ele"
 
-181. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
+182. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
    "Por fim, como as fraudes são raras, a grade compara o treinamento … maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo"
 
 ### 4.5 Avaliação do XGBoost
 
-182. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
+183. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
    "A taxa de aprendizado (shrinkage) multiplica por um fator a contribuição de … influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo"
 
-183. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
+184. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
    "O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste"
 
-184. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+185. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "A profundidade e a taxa de aprendizado abrangem a configuração que Chen e Guestrin (2016) adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1."
 
-185. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
+186. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
    "O parâmetro scale\_pos\_weight controla o equilíbrio entre os pesos das fraudes e das transações legítimas"
 
 ### 4.6 Avaliação do HDBSCAN*
 
 #### 4.6.1 Distâncias e Hiperparâmetros
 
-186. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+187. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
 
-187. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+188. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
 
-188. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
+189. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
    "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
 
 #### 4.6.2 Grau de Anomalia
 
-189. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+190. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore, $d_{m_{pts}}(x)$, é a distância da transação $x$ ao seu … as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
 #### 4.6.3 Regra de Decisão
 
-190. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+191. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-191. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+192. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
 #### 4.6.4 Seleção e Validação
 
-192. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
+193. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
    "O número mínimo de pontos da distância núcleo do índice foi fixado … em todos os experimentos, já que o desempenho do índice se mostrou pouco sensível a ele."
 
 ### 4.7 Ambiente de Execução e Bibliotecas
 
-193. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
+194. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"
 
-194. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
+195. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
    "que fornece o Random Forest, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost"
 
-195. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
+196. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
    "a biblioteca cuML, que oferece, em unidades de processamento gráfico (Graphics Processing Units, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn"
 
 ## 5 Resultados e Discussão
 
-196. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
+197. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
    "As fraudes restantes não se distinguem das transações legítimas pelo grau de … na Seção 1, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
 
-197. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+198. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Como os investigadores conseguem verificar apenas poucos alertas por dia"
 
-198. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
+199. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
    "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar clusters próprios."
 
-199. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
+200. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
    "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
 
 ## 6 Conclusão
 
-200. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
+201. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
    "Como trabalhos futuros, sugere-se, em primeiro lugar, um modelo híbrido, em que … (2025), com o HDBSCAN* no lugar do DBSCAN para eliminar a escolha do raio de vizinhança."
 
-201. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
+202. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
    "Essa direção é reforçada por Hajek, Abedin e Sivarajah (2022), que obtiveram os melhores resultados de classificação ao integrar vários algoritmos não supervisionados de detecção de outliers a um classificador XGBoost."
 
-202. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
+203. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
    "Os modelos podem ainda ser avaliados em outras bases, como a PaySim, … já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo."
 
-203. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
+204. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
    "em partições ordenadas no tempo, em que o treino antecede o teste, já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo"
 
-204. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
+205. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
    "Outra direção é tratar o problema como detecção de novidades, ou classificação de uma classe, em que há informação apenas sobre as instâncias normais e o modelo é aprendido somente com elas"
 
 ## Apêndice A – Hiperparâmetros dos modelos
 
 ### Random Forest e XGBoost
 
-205. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+206. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ … de Chen e Guestrin (2016), com árvores mais profundas e em menor número na base subamostrada."
 
 ### HDBSCAN*
@@ -741,6 +744,6 @@ Citações sem grifo ou com grifo que não cobre toda a afirmação, pelo númer
 - 58. `chen2016`: sem grifo para esta afirmação; o PDF está no acervo
 - 159. `kaggle2018`: página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
 - 161. `alarfaj2022`: sem grifo para esta afirmação; o PDF está no acervo
-- 165. `kohavi1995`: sem PDF no acervo
-- 169. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
-- 171. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada
+- 166. `kohavi1995`: sem PDF no acervo
+- 170. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
+- 172. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada

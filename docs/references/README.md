@@ -27,6 +27,7 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/hdbscan.md` | 2.4.2 HDBSCAN* |
 | `01-theoretical-background/mahalanobis-distance.md` | 2.5 Distância de Mahalanobis |
 | `01-theoretical-background/evaluation-metrics.md` | 2.6 Métricas de Avaliação |
+| `02-methodology/dataset.md` | 4.1 Conjunto de Dados, na legenda da Figura 4.1 |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
 | `02-methodology/grid-search.md` | 4.3.3 Busca em Grade |
 | `02-methodology/hyperparameter-selection.md` | 4.3.3 Busca em Grade e 4.6 Avaliação do HDBSCAN* |

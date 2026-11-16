@@ -51,9 +51,9 @@ OUTLIER_CENTRE = (4.5, -2.0)
 OUTLIER_SPREAD = 0.4
 TOLERANCE = 0.975  # coverage of the tolerance ellipse, chi-squared quantile with p = 2
 
-COLOR_EUCLIDEAN = ps.VIOLET
-COLOR_EMPIRICAL = ps.AQUA
-COLOR_MCD = ps.MAGENTA
+COLOR_EUCLIDEAN = ps.SLATE
+COLOR_EMPIRICAL = ps.NAVY
+COLOR_MCD = ps.CYAN
 
 
 def covariance_matrix(spread, correlation):
@@ -103,7 +103,7 @@ def euclidean_vs_mahalanobis():
         data[:, 1],
         s=12,
         facecolor="none",
-        edgecolor=ps.INK_MUTED,
+        edgecolor=ps.SLATE_LIGHT,
         linewidth=0.7,
         zorder=2,
     )
@@ -123,9 +123,11 @@ def euclidean_vs_mahalanobis():
             point,
             xytext=offset,
             textcoords="offset points",
-            fontsize=8.5,
+            fontsize=9.5,
             color=ps.INK,
             ha=align,
+            # White box, so that the label stays legible where it crosses an ellipse.
+            bbox={"facecolor": ps.SURFACE, "edgecolor": "none", "pad": 0.8, "alpha": 0.9},
             zorder=5,
         )
     ax.set_aspect("equal")
@@ -172,11 +174,20 @@ def classical_vs_robust():
         regular[:, 1],
         s=12,
         facecolor="none",
-        edgecolor=ps.INK_MUTED,
+        edgecolor=ps.SLATE_LIGHT,
         linewidth=0.7,
         zorder=2,
     )
-    ax.scatter(outliers[:, 0], outliers[:, 1], s=14, color=ps.INK_SECONDARY, zorder=2)
+    # Outliers are anomalies, so they wear the accent reserved for them in every figure.
+    ax.scatter(
+        outliers[:, 0],
+        outliers[:, 1],
+        s=16,
+        color=ps.ACCENT,
+        edgecolor=ps.SURFACE,
+        linewidth=0.4,
+        zorder=2,
+    )
     for name, color in (("empirical", COLOR_EMPIRICAL), ("mcd", COLOR_MCD)):
         draw_closed(ax, ellipse(*estimates[name], cutoff), color, 1.4)
     ax.set_aspect("equal")
@@ -189,7 +200,7 @@ def classical_vs_robust():
         Line2D(
             [],
             [],
-            color=ps.INK_SECONDARY,
+            color=ps.ACCENT,
             marker="o",
             linewidth=0,
             markersize=4.5,

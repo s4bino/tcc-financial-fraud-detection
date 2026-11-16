@@ -1,8 +1,11 @@
 # Figuras e estatísticas
 
 Geradas pelos scripts em `src/analysis/`. Cada figura sai em PNG (leitura
-rápida) e PDF (vetorial, para inclusão no LaTeX). Os sumários em Markdown
-trazem os números que as figuras mostram.
+rápida, 300 dpi) e PDF (vetorial, para inclusão no LaTeX), com o estilo comum
+de `src/analysis/plot_style.py`, que fixa a fonte Times da monografia, a paleta
+fria (azul-marinho, ciano e cinza-ardósia) e o violeta reservado às fraudes e
+às observações discrepantes. Os sumários em Markdown trazem os números que as
+figuras mostram.
 
 ```bash
 python src/analysis/dataset_analysis.py   # results/figures/dataset
@@ -37,7 +40,7 @@ a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
 | Arquivo | O que responde |
 |---|---|
 | `tables/outer-results.tex` | média e desvio padrão da AUPRC, da precisão, da revocação e da F1 no teste externo, por modelo e base |
-| `01-outer-metrics` | como essas métricas variam entre as cinco rodadas externas |
+| `01-outer-metrics-full`, `01-outer-metrics-undersampled` | como essas métricas variam entre as cinco rodadas externas, uma figura por base |
 | `tables/outer-alerts.tex` | quantos alertas, VP, FP e FN cada modelo gera, somados nos cinco testes |
 | `02-alert-fraction` | como a precisão, a revocação e a F1 do HDBSCAN* com MCD mudam com a fração de alertas |
 | `tables/reference-scores.tex` | AUPRC do grau de anomalia contra o GLOSH sozinho e a distância ao centro |
@@ -59,6 +62,7 @@ a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
 | `06-projection-3d` | a mesma nuvem em três dimensões, de quatro ângulos |
 | `07-local-density` | fraudes ocupam regiões menos densas? |
 | `08-amount-transformation` | o logaritmo corrige a assimetria de Amount antes do Z-score? |
+| `09-fraud-density-3d` | onde ficam as fraudes em relação às regiões mais densas das transações legítimas, em três dimensões e no plano |
 
 Números em `dataset-statistics.md`; ranking completo em
 `feature-discriminative-power.csv`.

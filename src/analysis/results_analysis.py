@@ -7,7 +7,8 @@ the HDBSCAN* come from the alert fraction the monograph adopts (ADOPTED_RATE). F
 
   1. outer-results.tex: mean and standard deviation of AUPRC, precision, recall and F1 over the
      five outer test folds, for every model and base, with the best mean of each metric in bold.
-  2. 01-outer-metrics: boxplots of the same metrics over the five outer test folds.
+  2. 01-outer-metrics-full and 01-outer-metrics-undersampled: boxplots of the same metrics over
+     the five outer test folds, one figure per base.
   3. outer-alerts.tex: alerts, true positives, false positives and false negatives summed over the
      five outer test folds, which together cover every transaction of the dataset.
   4. 02-alert-fraction: precision, recall and F1 of the HDBSCAN* with the MCD distance at each
@@ -102,9 +103,9 @@ DESCRIPTIONS = {
     },
 }
 
-# The two bases keep the same colour in every figure of the chapter. Blue and orange are reserved
-# for the classes (plot_style), so the bases take the next hues of the categorical order.
-BASE_COLORS = {"full": ps.AQUA, "undersampled": ps.VIOLET}
+# The two bases keep the same colour and marker in every figure of the chapter, the two series
+# hues of plot_style. The violet accent stays reserved for anomalies.
+BASE_COLORS = {"full": ps.NAVY, "undersampled": ps.CYAN}
 BASE_MARKERS = {"full": "o", "undersampled": "s"}
 
 
@@ -315,46 +316,57 @@ def alert_curve(outer, rates):
     return pd.DataFrame(rows)
 
 
-def figure_outer_metrics(outer):
-    """Boxplots of each metric over the outer test folds, one row per model, one colour per base."""
-    import matplotlib.pyplot as plt
-    from matplotlib.colors import to_rgba
-    from matplotlib.lines import Line2D
+METRIC_COLORS = dict(zip((key for key, _ in METRICS), ps.CATEGORICAL, strict=True))
 
-    rng = np.random.default_rng(0)  # fixed jitter, so the figure is reproducible
+
+def figure_outer_metrics(outer, base, panel):
+    """Boxplots of each metric over the outer test folds of one base, grouped by model.
+
+    Vertical boxes filled with one colour per metric, side by side for each model, as in the
+    boxplots of Alcino (2022). Each box goes from the first to the third quartile, with the median
+    marked, and the whiskers go from the lowest to the highest of the five outer rounds.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import to_rgb
+    from matplotlib.patches import Patch
+
+    def luminance(color):
+        r, g, b = to_rgb(color)
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    width = 0.18  # adjacent boxes, as in Alcino (2022)
     centers = np.arange(len(OUTER_MODELS))
-    offsets = {"full": -0.19, "undersampled": 0.19}
-    fig, axes = plt.subplots(2, 2, figsize=(ps.TEXT_WIDTH_IN, 5.0), sharex=True, sharey=True)
-    for ax, (metric, label) in zip(axes.flat, METRICS):
-        for base, _, _ in BASES:
-            color = BASE_COLORS[base]
-            data = [outer[(outer["model"] == key) & (outer["base"] == base)][metric].to_numpy()
-                    for key, _, _ in OUTER_MODELS]
-            positions = centers + offsets[base]
-            line = {"color": color, "linewidth": 1.0}
-            ax.boxplot(data, positions=positions, orientation="horizontal", widths=0.3,
-                       whis=(0, 100), showfliers=False, patch_artist=True,
-                       boxprops={"facecolor": to_rgba(color, 0.12), "edgecolor": color,
-                                 "linewidth": 1.0},
-                       medianprops={"color": color, "linewidth": 1.8},
-                       whiskerprops=line, capprops=line)
-            for position, values in zip(positions, data):
-                jitter = rng.uniform(-0.07, 0.07, size=len(values))
-                ax.scatter(values, position + jitter, s=13, marker=BASE_MARKERS[base],
-                           facecolor=color, edgecolor=ps.SURFACE, linewidth=0.5, zorder=3,
-                           clip_on=False)
-        ax.set_title(label)
-        ax.set_xlim(0, 1)
-        ax.grid(axis="x")
-        ax.grid(axis="y", visible=False)
-        ps.decimal_comma(ax.xaxis)
-    axes[0, 0].set_yticks(centers, [figure_label for _, _, figure_label in OUTER_MODELS])
-    axes[0, 0].set_ylim(len(OUTER_MODELS) - 0.5, -0.5)  # first model on top, set once (shared)
-    handles = [Line2D([], [], color=BASE_COLORS[base], marker=BASE_MARKERS[base],
-                      markerfacecolor=BASE_COLORS[base], markeredgecolor=ps.SURFACE,
-                      markersize=6, linewidth=1.8, label=f"Base {label.lower()}")
-               for base, _, label in BASES]
-    fig.legend(handles=handles, loc="outside upper center", ncol=2)
+    offsets = (np.arange(len(METRICS)) - (len(METRICS) - 1) / 2) * width
+    data_base = outer[outer["base"] == base]
+
+    fig, ax = plt.subplots(figsize=(ps.TEXT_WIDTH_IN, 2.75))
+    for offset, (metric, _) in zip(offsets, METRICS, strict=True):
+        color = METRIC_COLORS[metric]
+        # White median on dark fills, ink on light ones, so that it always shows.
+        median = ps.SURFACE if luminance(color) < 0.45 else ps.INK
+        data = [data_base[data_base["model"] == key][metric].to_numpy()
+                for key, _, _ in OUTER_MODELS]
+        line = {"color": ps.INK_SECONDARY, "linewidth": 0.7}
+        ax.boxplot(data, positions=centers + offset, widths=width, whis=(0, 100),
+                   showfliers=False, patch_artist=True,
+                   boxprops={"facecolor": color, "edgecolor": ps.INK_SECONDARY,
+                             "linewidth": 0.7},
+                   medianprops={"color": median, "linewidth": 1.0},
+                   whiskerprops=line, capprops=line)
+    # Model names in up to three lines, so that the five groups fit the width.
+    labels = [label.replace("Mahalanobis ", "Mahalanobis\n") for _, _, label in OUTER_MODELS]
+    ax.set_xticks(centers, labels)
+    ax.tick_params(axis="x", length=0)
+    ax.set_xlim(-0.55, len(OUTER_MODELS) - 0.45)
+    ax.set_ylim(0, 1.02)
+    ax.set_yticks(np.linspace(0, 1, 6))
+    ax.set_ylabel("Valor da métrica")
+    ax.grid(axis="x", visible=False)
+    ps.decimal_comma(ax.yaxis)
+    ax.set_title(panel, loc="left")
+    handles = [Patch(facecolor=METRIC_COLORS[metric], edgecolor=ps.INK_SECONDARY,
+                     linewidth=0.7, label=label) for metric, label in METRICS]
+    fig.legend(handles=handles, loc="outside right upper", ncol=1, handlelength=1.4)
     return fig
 
 
@@ -371,9 +383,9 @@ def figure_alert_fraction(outer, rates):
     percent = sorted(rate * 100 for rate in curve["rate"].unique())
     fig, axes = plt.subplots(1, 3, figsize=(ps.TEXT_WIDTH_IN, 2.7), sharey=True)
     for ax, (metric, label) in zip(axes, METRICS[1:]):
-        ax.axhspan(supervised[metric].min(), supervised[metric].max(), color=ps.INK_MUTED,
-                   alpha=0.22, linewidth=0, zorder=1)
-        ax.axvline(ADOPTED_RATE * 100, color=ps.INK_MUTED, linewidth=0.8, zorder=1)
+        ax.axhspan(supervised[metric].min(), supervised[metric].max(), color=ps.SLATE,
+                   alpha=0.20, linewidth=0, zorder=1)
+        ax.axvline(ADOPTED_RATE * 100, color=ps.SLATE, linewidth=0.8, zorder=1)
         for base, _, _ in BASES:
             data = curve[curve["base"] == base]
             color = BASE_COLORS[base]
@@ -390,8 +402,8 @@ def figure_alert_fraction(outer, rates):
     handles = [Line2D([], [], color=BASE_COLORS[base], marker=BASE_MARKERS[base],
                       markerfacecolor=ps.SURFACE, markersize=5, linewidth=1.6,
                       label=f"HDBSCAN*, base {label.lower()}") for base, _, label in BASES]
-    handles += [Patch(facecolor=ps.INK_MUTED, alpha=0.22, label="Modelos supervisionados"),
-                Line2D([], [], color=ps.INK_MUTED, linewidth=0.8, label="Fração adotada")]
+    handles += [Patch(facecolor=ps.SLATE, alpha=0.20, label="Modelos supervisionados"),
+                Line2D([], [], color=ps.SLATE, linewidth=0.8, label="Fração adotada")]
     fig.legend(handles=handles, loc="outside upper center", ncol=2)
     return fig
 
@@ -530,7 +542,7 @@ def figure_hdbscan_selection(cycle):
                            facecolor=color, edgecolor=ps.SURFACE, linewidth=1.2, zorder=4)
             if row_index == 0:
                 ax.set_title(distance_label)
-                ax.axhline(0, color=ps.AXIS, linewidth=0.8, zorder=1)
+                ax.axhline(0, color=ps.SLATE, linewidth=0.6, zorder=1)
             if col == 0:
                 ax.set_ylabel(metric_label)
             if row_index == len(rows) - 1:
@@ -693,7 +705,9 @@ def main():
         print("   ", write_table(name, content))
 
     figures = {
-        "01-outer-metrics": figure_outer_metrics(outer),
+        **{f"01-outer-metrics-{base}":
+           figure_outer_metrics(outer, base, f"({panel}) Base {label.lower()}")
+           for (base, _, label), panel in zip(BASES, "ab", strict=True)},
         "02-alert-fraction": figure_alert_fraction(outer, rates),
         "03-hdbscan-selection": figure_hdbscan_selection(cycle),
     }
