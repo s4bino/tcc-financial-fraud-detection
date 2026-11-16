@@ -308,8 +308,8 @@
 
 \fancypagestyle{ufla}{
 \fancyhf{}
-\fancyhead[RO]{\thepage}
-\fancyhead[LE]{\thepage}
+\fancyhead[RO]{\small\thepage}
+\fancyhead[LE]{\small\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 }
@@ -532,7 +532,7 @@
 
         \vspace{\stretch{1}}
 
-        \hfill\begin{minipage}{8cm}{\@tipo}\end{minipage} % tipo da monografia
+        \hfill\begin{minipage}{8cm}\renewcommand{\baselinestretch}{1}\normalsize\@tipo\end{minipage} % tipo da monografia, em espaço simples
 
         \vspace{\stretch{.58}}
 
@@ -838,7 +838,7 @@
     %\null\vfill
                           
     \begin{center}
-        \large{\textbf{RESUMO}}
+        \textbf{RESUMO}
     \end{center}
     
     % espaçamento simples no resumo
@@ -863,7 +863,7 @@
     %\null\vfill
                           
     \begin{center}
-        \large{\textbf{ABSTRACT}}
+        \textbf{ABSTRACT}
     \end{center}
     
         
@@ -1084,8 +1084,8 @@
   } {% se não for, pule a página 
     \cleardoublepage          
   }
-  {\centering \bf  AP\^{E}NDICE~\theapendice\ -- #1\\}
-  \addcontentsline{toc}{chapter}{\numberline{} APENDICE~\theapendice\ -- #1}
+  {\centering \bf  AP\^{E}NDICE~\theapendice\ -- \MakeUppercase{#1}\\}
+  \addcontentsline{toc}{chapter}{\numberline{} AP\^{E}NDICE~\theapendice\ -- #1}
 }
 %######################################################################
 

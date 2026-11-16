@@ -162,18 +162,18 @@ Na primeira menção, o nome completo vem seguido da sigla entre parênteses (ma
 | Elemento | Comando | Comportamento da classe | Situação |
 |---|---|---|---|
 | Capa | `\author`, `\title`, `\subtitle`, `\local`, `\date` | Autor em `\Large` (14,4 pt) e negrito, título em `\LARGE` (redefinido para 16 pt) e negrito, subtítulo em maiúsculas sem negrito, cidade e ano em negrito | Conforme |
-| Folha de rosto | `\tipo`, `\orientador` ou `\orientadora`, `\coorientador` ou `\coorientadora` | Nota descritiva em caixa de 8 cm à direita, em espaço 1,5, nome na linha de cima e o papel ("Orientadora", "Coorientador") abaixo, sem negrito | Ver pendência 17 (o modelo do manual mostra os nomes em negrito, que o texto do manual não exige) |
+| Folha de rosto | `\tipo`, `\orientador` ou `\orientadora`, `\coorientador` ou `\coorientadora` | Nota descritiva em caixa de 8 cm à direita, em espaço simples, nome na linha de cima e o papel ("Orientadora", "Coorientador") abaixo, sem negrito | Conforme (o modelo do manual mostra os nomes em negrito, que o texto do manual não exige) |
 | Ficha catalográfica | `\fcautor` e afins | Só aparece se `\fcautor` estiver preenchido | Não usada (não obrigatória na graduação) |
 | Folha de aprovação | `\engtitle`, `\engsubtitle`, `\bancaum` a `\bancaquatro{nome}{instituição}`, `\defesa` | Só aparece se `\defesa` não estiver vazio. Escreve "Co-Orientador" ou "Co-Orientadora" | Fora do documento até a defesa. Os dados ficam em `docs/monografia/approval-page.tex`, que volta ao preâmbulo com `\input{approval-page}`. Ver pendências 6 a 8 |
-| Resumo e abstract | `\palchaves`, `\resumo`, `\keywords`, `\abstract` | Espaço simples, título em `\large` | Ver pendência 14 |
+| Resumo e abstract | `\palchaves`, `\resumo`, `\keywords`, `\abstract` | Espaço simples, título em tamanho 12 e negrito | Conforme |
 | Sumário | `\tableofcontents` | SUMÁRIO em negrito, tamanho normal | Conforme |
 | Seções | `\chapter` (seção primária), `\section` e abaixo | Primária em maiúsculas e negrito, em página nova. As demais em negrito | Conforme |
 | Figuras, tabelas e quadros | ambientes `figure`, `table` e `quadro` | Numeração por seção (3.1), título acima com travessão e alinhamento pendurado, título em `font=small` (cerca de 11 pt) | Mantido (pendência 5) |
 | Citação longa | ambiente `quote` | Recuo de 4 cm, `\small`, espaço simples | Conforme |
 | Notas | `\footnote` | `footmisc` com alinhamento pendurado, `\small` | Conforme |
-| Apêndices | `\apendice{Título}` | "APÊNDICE A -- Título" em negrito, com o título na grafia digitada. No sumário, "APENDICE" sem acento | Ver pendência 9 |
-| Referências | `\referencias` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3` e `abnt-emphasize=bf` | Título em negrito e *et al.* a partir de quatro autores. Chamadas entre parênteses em caixa alta | Caixa alta mantida (pendência 3). Ver pendência 10 |
-| Paginação | estilo `ufla` | Número no canto superior direito, tamanho normal (12) | Ver pendência 13 |
+| Apêndices | `\apendice{Título}` | "APÊNDICE A -- TÍTULO" em negrito e maiúsculas. No sumário, "APÊNDICE A -- Título", na grafia digitada, como as seções primárias | Conforme |
+| Referências | `\referencias` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3`, `abnt-etal-text=emph` e `abnt-emphasize=bf` | Título em negrito e *et al.*, em itálico, a partir de quatro autores. Chamadas entre parênteses em caixa alta. Local desconhecido como "[S.l.]" | Caixa alta mantida (pendência 3). Ver pendência 18 |
+| Paginação | estilo `ufla` | Número no canto superior direito, em `\small` (cerca de 11 pt) | Conforme |
 
 ## 5. Pendências da monografia
 
@@ -187,15 +187,17 @@ Cada item traz a regra, a fonte, onde está no projeto e a situação. As mudan�
 - [ ] **6. Título em inglês na folha de aprovação.** Manual, p. 44. `approval-page.tex` (`\engtitle` e `\engsubtitle` vazios).
 - [ ] **7. Data de aprovação e banca com titulação e instituição.** Manual, p. 45. `approval-page.tex`. Depende da defesa.
 - [ ] **8. Rótulo "Co-Orientador" na folha de aprovação.** A grafia atual é "Coorientador", como na folha de rosto e no manual. `uflamon.cls:758` e `765`.
-- [ ] **9. Título do apêndice com o destaque das seções primárias (maiúsculas) e acento em "APÊNDICE" no sumário.** Manual, p. 64-65. `uflamon.cls:1087-1088`.
-- [ ] **10. *Et al.* em itálico.** Manual, p. 20. `main.tex:62`. Conferir no PDF. O exemplo da `uflamon` traz a opção `abnt-etal-text=emph`, comentada.
-- [ ] **11. Nota descritiva com "Curso de Ciência da Computação".** Manual, Quadro 3.1 (p. 39), e exemplo de folha de aprovação. `main.tex:81` diz "curso de Ciências da Computação". Confirmar o nome oficial do curso.
-- [ ] **12. Referência do conjunto de dados no modelo "[Conjunto de dados]".** Manual, p. 138-139. `refbib.bib:146` (`kaggle2018`, `@misc`).
-- [ ] **13. Paginação em tamanho 11.** Manual, p. 68. `uflamon.cls:311`. Ajuste menor.
-- [ ] **14. Títulos RESUMO e ABSTRACT em `\large`.** O template usa tamanho 12. `uflamon.cls:841` e `866`. Ajuste menor, a conferir.
+- [x] **9. Título do apêndice com o destaque das seções primárias (maiúsculas) e acento em "APÊNDICE" no sumário.** Manual, p. 64-65. `uflamon.cls:1087-1088`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **10. *Et al.* em itálico.** Manual, p. 20. `main.tex:62`. Conferir no PDF. Opção `abnt-etal-text=emph` do `abntex2cite`, que vale para as chamadas e para a lista. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **11. Nota descritiva com "Curso de Ciência da Computação".** Manual, Quadro 3.1 (p. 39), e exemplo de folha de aprovação. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **12. Referência do conjunto de dados no modelo "[Conjunto de dados]".** Manual, p. 138-139. `refbib.bib:146` (`kaggle2018`, `@misc`), com "[S.l.]" como as demais referências (ver pendência 18). Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **13. Paginação em tamanho 11.** Manual, p. 68. `uflamon.cls:311`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **14. Títulos RESUMO e ABSTRACT em `\large`.** O template usa tamanho 12. `uflamon.cls:841` e `866`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
 - [ ] **15. Logomarca mais recente da UFLA na capa.** Manual, p. 35. `docs/monografia/logoufla.png`. Conferir.
-- [ ] **16. Autoria da epígrafe.** "(Pierre Bourdie)" em `main.tex:100-102`. Conferir a grafia (Bourdieu) e a indicação da obra.
-- [ ] **17. Nota descritiva da folha de rosto em espaço simples.** Manual, p. 38. A classe a imprime com o espaço 1,5 do texto, enquanto a folha de aprovação já usa espaço simples. `uflamon.cls:535`.
+- [x] **16. Autoria da epígrafe.** "(Pierre Bourdie)" em `main.tex:100-102`. Grafia corrigida para Bourdieu. A NBR 14724 pede só a indicação de autoria. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [x] **17. Nota descritiva da folha de rosto em espaço simples.** Manual, p. 38. A classe a imprime com o espaço 1,5 do texto, enquanto a folha de aprovação já usa espaço simples. `uflamon.cls:535`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
+- [ ] **18. Local desconhecido como "[*S. l.*]".** Manual, p. 100 e 104 (NBR 6023:2018). O estilo `abntex2-alf` gera "[S.l.]" e "[S.l.: s.n.]", sem espaço e sem itálico, em todas as referências sem local.
+- [ ] **19. Seções primárias no sumário com a grafia do texto.** Manual, p. 58, item c (recomendação). No texto, a classe põe as seções primárias em maiúsculas, e no sumário elas ficam na grafia digitada ("Metodologia").
 
 Não se aplicam ao TCC de graduação a ficha catalográfica e os indicadores de impacto. As listas de ilustrações, tabelas e siglas são opcionais.
 
