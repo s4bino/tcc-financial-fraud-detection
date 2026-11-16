@@ -641,6 +641,8 @@ o texto, o sumário precisa ser gerado de novo.
 
 ### 4.6 Avaliação do HDBSCAN*
 
+#### 4.6.1 Distâncias e Hiperparâmetros
+
 186. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
 
@@ -650,14 +652,20 @@ o texto, o sumário precisa ser gerado de novo.
 188. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
    "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
 
+#### 4.6.2 Grau de Anomalia
+
 189. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore, $d_{m_{pts}}(x)$, é a distância da transação $x$ ao seu … as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
+
+#### 4.6.3 Regra de Decisão
 
 190. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
 191. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
+
+#### 4.6.4 Seleção e Validação
 
 192. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
    "O número mínimo de pontos da distância núcleo do índice foi fixado … em todos os experimentos, já que o desempenho do índice se mostrou pouco sensível a ele."

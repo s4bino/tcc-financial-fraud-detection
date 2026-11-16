@@ -34,7 +34,7 @@
 > [!PDF|yellow] [[alarfaj2022_credit-card-fraud-detection-state-of-the-art.pdf#page=6&selection=87,0,87,31&color=yellow|alarfaj2022_credit-card-fraud-detection-state-of-the-art, p.6]]
 > > iii) K-NEAREST NEIGHBOURS (KNN)
 >
-> Página 39705 da revista. Sustenta o KNN na lista, que não aparece no resumo.
+> Página 39705 da revista. Sustenta o kNN na lista, que não aparece no resumo.
 
 ^alarfaj2022-p6
 
@@ -134,7 +134,7 @@
 > [!PDF|yellow] [[sulaiman2022_review-machine-learning-credit-card-fraud.pdf#page=5&selection=82,29,84,9&color=yellow|sulaiman2022_review-machine-learning-credit-card-fraud, p.5]]
 > > When the algorithm is fed a large amount of data, the performance of the KNN algorithm degrades.
 >
-> Página 59 da revista. Sustenta a queda de desempenho do KNN com grandes volumes de dados.
+> Página 59 da revista. Sustenta a queda de desempenho do kNN com grandes volumes de dados.
 
 ^sulaiman2022-p5
 
