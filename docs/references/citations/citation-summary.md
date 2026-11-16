@@ -5,8 +5,8 @@ Cada link abre a nota de citação no grifo que sustenta o trecho, e o link do g
 página do PDF. No modo de leitura, passar o mouse sobre um link mostra o grifo sem sair
 desta página (no modo de edição, com o Ctrl pressionado). As páginas são as do PDF.
 
-Gerado por `docs/scratch/obsidian/citation_summary.py` a partir do `main.tex`. Ao mudar
-o texto, o sumário precisa ser gerado de novo.
+Gerado por `docs/scratch/obsidian/citation_summary.py` a partir do `main.tex`, do `main.bbl`
+e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser gerado de novo.
 
 ## 1 Introdução
 
@@ -726,6 +726,166 @@ o texto, o sumário precisa ser gerado de novo.
 
 *Sem citações.*
 
+## Lista de referências
+
+As referências na ordem da lista do PDF, com os números das citações acima e os desvios
+do manual da UFLA (2025) encontrados em cada uma. Os desvios vêm da conferência do
+`refbib.bib` e das observações em `REFERENCE_NOTES`, no script.
+
+Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre < >, que a NBR 6023:2018 não usa.
+
+- **Abdi e Williams (2010)** `abdi2010`, citações 160, 163
+    - Título do periódico abreviado (Wiley Interdiscip. Rev. Comput. Stat.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Alarfaj et al. (2022)** `alarfaj2022`, citações 2, 4, 140, 144, 145, 147, 151, 161, 200
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+- **Beer et al. (2025)** `beer2025`, citações 18, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 149, 193
+- **Berrar (2024)** `berrar2024`, citações 40, 41, 42, 45, 46
+- **Biau e Scornet (2016)** `biau2016`, citações 49, 53, 55, 180
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Bzdok, Krzywinski e Altman (2018)** `bzdok2018`, citações 28, 29
+    - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
+- **Campello et al. (2013)** `campello2013b`, citações 72
+- **Campello et al. (2015)** `campello2015`, citações 16, 59, 60, 62, 63, 64, 65, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 83, 84, 85, 86, 92, 95, 158, 189
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Campos et al. (2016)** `campos2016`, citações 123, 125, 126
+- **Chawla et al. (2002)** `chawla2002`, citações 114
+- **Chen, Liaw e Breiman (2004)** `chen2004`, citações 182
+    - O .bib traz a instituição e o número do relatório técnico (666, University of California, Berkeley), mas a lista imprime só "[S. l.], 2004".
+- **Chen e Guestrin (2016)** `chen2016`, citações 58, 183, 184, 185, 195, 206
+    - Preprint registrado como periódico, em formato diferente dos demais preprints da lista.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Citada pela versão do arXiv. A versão publicada é a dos anais do KDD 2016 (22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, p. 785-794).
+- **Dal Pozzolo et al. (2018)** `dalpozzolo2018`, citações 9, 11, 21, 174, 191, 198, 204
+- **Dal Pozzolo et al. (2015)** `dalpozzolo2015`, citações 167, 168, 169, 192
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Davis e Goadrich (2006)** `davis2006`, citações 19, 119, 120, 121, 122
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Dike et al. (2018)** `dike2018`, citações 37
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Ester et al. (1996)** `ester1996`, citações 156
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Fauconnier e Haesbroeck (2009)** `fauconnier2009`, citações 101, 106, 107
+- **Fawcett (2006)** `fawcett2006`, citações 111, 112, 113, 115, 116, 117, 118, 173
+- **Ghalwash et al. (2025)** `ghalwash2025`, citações 143, 155, 157, 199, 201
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+- **Ghorbani (2019)** `ghorbani2019`, citações 87, 88, 89, 90, 91, 98, 99
+- **Ghosh et al. (2024)** `ghosh2024`, citações 14, 74, 76, 79, 82, 205
+- **Gopal (2018)** `gopal2018`, citações 30, 34, 38
+    - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
+    - Sem o local de publicação.
+- **Greenacre et al. (2022)** `greenacre2022`, citações 39
+    - Título do periódico abreviado (Nat. Rev. Methods Primers), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Hajek, Abedin e Sivarajah (2022)** `hajek2022`, citações 152, 202, 203
+    - Sem volume e páginas. Conferir os dados da versão final no periódico (a versão online é de 2022).
+    - Dia do acesso com zero à esquerda (09 nov.), e o manual escreve 9 nov.
+- **Huang, Li e Xie (2015)** `huang2015`, citações 164
+    - Título do periódico abreviado (Inf. Softw. Technol.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Hubert e Debruyne (2010)** `hubert2010`, citações 93, 94, 96, 97, 100, 102, 103, 104, 105, 108, 109, 110
+- **Iglesias, Zseby e Zimek (2021)** `iglesias2021`, citações 36
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+- **Joanes e Gill (1998)** `joanes1998`, citações 165
+- **Jurgovsky et al. (2018)** `jurgovsky2018`, citações 3, 6, 7, 11, 12, 20, 142, 153, 154, 197
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+- **Kohavi (1995)** `kohavi1995`, citações 166
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+    - Sem PDF no acervo.
+- **Kononenko e Kukar (2007)** `kononenko2007`, citações 35
+- **Krstajic et al. (2014)** `krstajic2014`, citações 43
+    - Título do periódico abreviado (J. Cheminform.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Liashchynskyi e Liashchynskyi (2019)** `liashchynskyi2019`, citações 172
+    - Preprint registrado como periódico, em formato diferente dos demais preprints da lista.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - A sigla NAS do título sai em minúsculas ("nas"), por falta de chaves no .bib.
+- **Machine Learning Group - UniversitÉ Libre de Bruxelles (2018)** `kaggle2018`, citações 17, 159
+    - Entidade com hífen entre os níveis. Pela NBR 6023:2018, ela vem em ordem hierárquica, separada por ponto (UNIVERSITÉ LIBRE DE BRUXELLES. Machine Learning Group), o que também encurta a chamada no texto.
+    - Dia do acesso com zero à esquerda (02 jun.), e o manual escreve 2 jun.
+- **Mahalanobis (1936)** `mahalanobis1936`, citações 87
+    - Citada só por apud. O manual (p. 89) põe na lista apenas a fonte consultada.
+- **Moulavi et al. (2014)** `moulavi2014`, citações 129, 162
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Neto et al. (2022)** `neto2022`, citações 69, 75
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+    - Sobrenome com indicação de parentesco. Pela NBR 6023:2018, Neto entra junto do sobrenome anterior (ARAUJO NETO, A. C.), e a chamada passa a ARAUJO NETO et al.
+- **Neto et al. (2021)** `neto2021`, citações 13, 15, 75
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Sobrenome com indicação de parentesco. Pela NBR 6023:2018, Neto entra junto do sobrenome anterior (ARAUJO NETO, A. C.), e a chamada passa a ARAUJO NETO et al.
+- **Ngai et al. (2011)** `ngai2011`, citações 1, 8, 150
+- **Pan (2018)** `pan2018`, citações 57
+    - Título do periódico abreviado (IOP Conf. Ser. Earth Environ. Sci.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Artigo de aplicação (previsão de PM2,5), fonte fraca para a teoria do gradient boosting, e a citação se apoia num trecho de outra monografia que cita a obra.
+- **Pedregosa et al. (2011)** `pedregosa2011`, citações 194
+- **Probst, Wright e Boulesteix (2019)** `probst2019`, citações 54, 175, 176, 177, 178, 179, 181
+    - Faltam volume e número (v. 9, n. 3).
+- **Ramaswamy, Rastogi e Shim (2000)** `ramaswamy2000`, citações 77, 190
+    - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
+- **Raschka, Patterson e Nolet (2020)** `raschka2020`, citações 196
+- **Reurink (2016)** `reurink2016`, citações 22, 23, 24, 25
+- **Rezazadeh (2025)** `rezazadeh2025`, citações 27, 31, 33
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
+    - Periódico de baixa visibilidade para sustentar a classificação das abordagens de aprendizado de máquina. As obras que ele cita já estão na lista.
+- **Rousseeuw (1985)** `rousseeuw1985`, citações 99
+    - Citada só por apud. O manual (p. 89) põe na lista apenas a fonte consultada.
+    - Volume impresso como "B," antes das páginas, em vez de "v. B".
+- **Rousseeuw e Van Driessen (1999)** `rousseeuw1999`, citações 105
+    - Citada só por apud. O manual (p. 89) põe na lista apenas a fonte consultada.
+- **Salman, Kalakech e Steiti (2024)** `salman2024`, citações 51, 52
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Sem PDF no acervo.
+- **Samuel (1959)** `samuel1959`, citações 26
+    - Título do periódico abreviado (IBM J. Res. Dev.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
+    - Sem PDF no acervo. Conferir no artigo o trecho que sustenta a definição, já que a formulação "sem ser explicitamente programado" é atribuída a Samuel por terceiros.
+- **Sander et al. (1998)** `sander1998`, citações 187
+    - Citada só por apud. O manual (p. 89) põe na lista apenas a fonte consultada.
+- **Schubert et al. (2017)** `schubert2017`, citações 59, 60, 61, 187, 188
+    - Título do periódico abreviado (ACM Trans. Database Syst.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **Shalev-Shwartz e Ben-David (2014)** `shalev2014`, citações 36
+    - Falta o subtítulo (from theory to algorithms).
+- **Shams et al. (2023)** `shams2024`, citações 170, 171
+    - Título do periódico abreviado (Multimed. Tools Appl.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+    - Artigo de aplicação (qualidade da água) usado em afirmações gerais sobre a busca em grade. A chave traz 2024, e o ano impresso é 2023.
+- **Solorio-Fernández, Carrasco-Ochoa e Martínez-Trinidad (2020)** `solorio2020`, citações 32
+    - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
+- **Stone (1974)** `stone1974`, citações 44
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Conferir a obra pretendida. A de Stone (1974) sobre a escolha e a avaliação de modelos por validação cruzada saiu no Journal of the Royal Statistical Society, Series B, v. 36, n. 2, p. 111-147. Se for a da Biometrika, faltam v. 61 e n. 3.
+    - Sem PDF no acervo e citada a partir de Krstajic et al. (2014). Sem a consulta à obra, a NBR 10520:2023 pede apud.
+- **Sulaiman, Schetinin e Sant (2022)** `sulaiman2022`, citações 10, 141, 146, 148
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+- **Varma e Simon (2006)** `varma2006`, citações 44
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Título do periódico em minúsculas (BMC bioinformatics).
+    - Citada a partir de Krstajic et al. (2014). Sem a consulta à obra, a NBR 10520:2023 pede apud.
+- **Wade (2020)** `wade2020`, citações 56, 57
+    - As duas citações se apoiam num trecho de outra monografia que cita a obra, e não no livro. Conferir no livro ou trocar por uma fonte consultada.
+- **West e Bhattacharya (2016)** `west2016`, citações 5, 48
+    - Título do periódico abreviado (Comput. Secur.), e as demais referências usam o título completo.
+    - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
+    - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
+- **XGBoost Developers (2026)** `xgboost2026`, citações 186
+- **Zhang e Zhang (2009)** `zhang2009`, citações 124
+- **Zhang e Singer (2010)** `zhang2010`, citações 47, 50
+    - Edição em português (2. ed.) numa obra em inglês. O manual pede a edição no idioma do documento (2nd ed.).
+    - Sem PDF no acervo.
+
 ## Pendências
 
 Citações sem grifo ou com grifo que não cobre toda a afirmação, pelo número da lista.
@@ -747,3 +907,8 @@ Citações sem grifo ou com grifo que não cobre toda a afirmação, pelo númer
 - 166. `kohavi1995`: sem PDF no acervo
 - 170. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
 - 172. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada
+
+### Conferência das referências
+
+- As 64 obras citadas no texto estão na lista de referências, e as 64 entradas da lista são citadas no texto.
+- Referências com desvios do manual: 45 de 64, detalhadas na Lista de referências.
