@@ -9,7 +9,7 @@
 \usepackage{amssymb}             % símbolos extras da AMS
 \usepackage{latexsym}            % símbolos extras do LaTeX
 \usepackage{graphicx}            % para inserção de gráficos
-\graphicspath{{../../results/figures/dataset/}{../../results/figures/evaluation/}} % figuras geradas por src/analysis/dataset_analysis.py e results_analysis.py
+\graphicspath{{../../results/figures/dataset/}{../../results/figures/evaluation/}{../../results/figures/theory/}} % figuras geradas por src/analysis/dataset_analysis.py, results_analysis.py e mahalanobis_figures.py
 \usepackage{listings}            % para inserção de código
 \usepackage{fancyvrb}            % para inserção de saídas de comandos
 \usepackage{longtable}           % para tabelas muito grandes
@@ -361,7 +361,18 @@ Ao contrário da distância euclidiana, a distância de Mahalanobis considera as
     \label{eq:mahalanobis}
 \end{equation}
 
-Quando a covariância é a matriz identidade, a distância de Mahalanobis se reduz à euclidiana \cite{ghorbani2019}. A mesma forma mede a distância entre dois pontos, com o segundo no lugar do centro, e pode servir de função de distância ao HDBSCAN*, que é definido sobre as distâncias entre pares de objetos em um espaço métrico qualquer \cite{campello2015}. Na prática, o centro e a covariância são desconhecidos e precisam ser estimados a partir dos dados. As subseções seguintes tratam da estimativa clássica, pela covariância empírica, e de uma estimativa robusta, pelo MCD.
+Quando a covariância é a matriz identidade, a distância de Mahalanobis se reduz à euclidiana \cite{ghorbani2019}. A Figura~\ref{fig:mahalanobis} compara as duas distâncias em dados simulados. Os pontos a uma mesma distância euclidiana do centro formam um círculo, e os pontos a uma mesma distância de Mahalanobis, uma elipse \cite{ghorbani2019}. Na figura, as elipses acompanham a forma da nuvem de pontos, e os pontos A e B estão à mesma distância euclidiana do centro, mas, pela distância de Mahalanobis, A, na direção em que os dados variam mais, fica bem mais perto do centro que B, na direção em que variam menos.
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{Comparação entre as distâncias euclidiana (círculos) e de Mahalanobis (elipses) ao centro de dados simulados.}
+    \label{fig:mahalanobis}
+    \includegraphics[width=\textwidth]{01-euclidean-vs-mahalanobis.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
+
+A mesma forma mede a distância entre dois pontos, com o segundo no lugar do centro, e pode servir de função de distância ao HDBSCAN*, que é definido sobre as distâncias entre pares de objetos em um espaço métrico qualquer \cite{campello2015}. Na prática, o centro e a covariância são desconhecidos e precisam ser estimados a partir dos dados. As subseções seguintes tratam da estimativa clássica, pela covariância empírica, e de uma estimativa robusta, pelo MCD.
 
 \subsection{Covariância empírica}
 \label{sec:cov-empirica}
@@ -377,7 +388,16 @@ O estimador robusto mais usado é o determinante mínimo da covariância (MCD, d
 
 Por padrão, os programas não retornam a estimativa bruta, e sim um centro e uma covariância ponderados, com pesos derivados dela \cite{fauconnier2009}. Cada observação recebe peso 1 quando o quadrado da sua distância de Mahalanobis a $\hat{\mu}_0$, calculada com $\hat{\Sigma}_0$, não passa de um corte, e peso 0 caso contrário. O centro e a covariância são então recalculados só com as observações de peso 1, e a covariância é de novo multiplicada por um fator de consistência \cite{fauconnier2009}. Um corte simples e eficaz, padrão nas implementações, é o mesmo quantil da distribuição qui-quadrado que define a elipse de tolerância da Seção~\ref{sec:cov-empirica} \cite{hubert2010}.
 
-A distância robusta de cada observação é a distância de Mahalanobis da Equação~\ref{eq:mahalanobis} com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$ \cite{hubert2010}. Como essas estimativas vêm do núcleo dos dados, a elipse de tolerância robusta se ajusta às observações regulares, e as observações afastadas desse núcleo passam a ter distâncias grandes. No exemplo de \citeonline{hubert2010}, a elipse robusta é bem menor que a clássica e envolve os pontos regulares, e as distâncias robustas destacam oito observações discrepantes que as distâncias clássicas não apontavam.
+A distância robusta de cada observação é a distância de Mahalanobis da Equação~\ref{eq:mahalanobis} com o centro e a covariância do MCD no lugar de $\mu$ e $\Sigma$ \cite{hubert2010}. Como essas estimativas vêm do núcleo dos dados, a elipse de tolerância robusta se ajusta às observações regulares, e as observações afastadas desse núcleo passam a ter distâncias grandes. No exemplo de \citeonline{hubert2010}, a elipse robusta é bem menor que a clássica e envolve os pontos regulares, e as distâncias robustas destacam oito observações discrepantes que as distâncias clássicas não apontavam. A Figura~\ref{fig:mcd} mostra o mesmo efeito em dados simulados com um grupo de observações discrepantes. A elipse de tolerância clássica fica bem maior que a robusta e engloba todas elas, enquanto a robusta se ajusta às observações regulares e deixa todas de fora.
+
+\begin{figure}[!htbp]
+    \centering
+    \caption{Elipses de tolerância de 97,5\% com a covariância empírica e com a robusta (MCD), em dados simulados com observações discrepantes.}
+    \label{fig:mcd}
+    \includegraphics[width=\textwidth]{02-classical-vs-robust-covariance.pdf}
+    \par\vspace{2mm}
+    {\small Fonte: Do autor (2026).}
+\end{figure}
 
 \section{Métricas de Avaliação}
 \label{sec:metricas}

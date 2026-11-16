@@ -9,7 +9,21 @@ python src/analysis/dataset_analysis.py   # results/figures/dataset
 python src/analysis/fold_analysis.py      # results/figures/folds
 python src/analysis/hdbscan_metrics.py    # results/figures/hdbscan
 python src/analysis/results_analysis.py   # results/figures/evaluation
+python src/analysis/mahalanobis_figures.py  # results/figures/theory
 ```
+
+---
+
+## `theory/` (seção 2.5, distância de Mahalanobis)
+
+Figuras com dados simulados (semente 42), com o centro e a covariância estimados
+como no pipeline (`src/models/whitening.py`). Os números que o texto descreve
+estão em `mahalanobis-statistics.md`.
+
+| Figura | O que responde |
+|---|---|
+| `01-euclidean-vs-mahalanobis` | como as curvas de distância euclidiana (círculos) e de Mahalanobis (elipses) diferem, e por que dois pontos à mesma distância euclidiana do centro podem ter distâncias de Mahalanobis muito diferentes |
+| `02-classical-vs-robust-covariance` | como um grupo de observações discrepantes alarga a elipse de tolerância clássica e não altera a robusta (MCD) |
 
 ---
 
@@ -29,7 +43,7 @@ a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
 | `tables/reference-scores.tex` | AUPRC do grau de anomalia contra o GLOSH sozinho e a distância ao centro |
 | `tables/rf-hyperparameters.tex`, `xgb-hyperparameters.tex`, `hdbscan-hyperparameters.tex` | grade de cada modelo e configuração escolhida em cada base |
 | `tables/supervised-selection.tex` | AUPRC interna da configuração supervisionada escolhida, perto da maior média da grade? |
-| `tables/hdbscan-selection.tex`, `03-hdbscan-selection` | grupos, DISCO e AUPRC interna do HDBSCAN* para cada `min_samples` |
+| `tables/hdbscan-selection.tex`, `03-hdbscan-selection` | *clusters*, DISCO e AUPRC interna do HDBSCAN* para cada `min_samples` |
 
 ---
 
