@@ -562,12 +562,14 @@ o texto, o sumário precisa ser gerado de novo.
 164. **(JOANES; GILL, 1998)** → [[preprocessing#^joanes1998-p1|p. 1]] · [[preprocessing#^joanes1998-p2|p. 2]]
    "A assimetria foi medida pelo coeficiente tradicional de assimetria amostral (Coeficiente de Assimetria de Fisher, ou Coeficiente de Momento de Assimetria), $g_1$"
 
-### 4.3 Parametrização e avaliação de consistência
+### 4.3 Estratégia de Avaliação
 
-#### 4.3.1 Nested Cross-Validation
+#### 4.3.1 Validação Cruzada Aninhada
 
 165. **Kohavi (1995)** → *sem PDF no acervo*
    "De acordo com Kohavi (1995), a amostragem estratificada é superior ao esquema … o viés quanto a variância das estimativas de desempenho em conjuntos de dados do mundo real."
+
+#### 4.3.2 Base Subamostrada
 
 166. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1|p. 1]]
    "A subamostragem é uma técnica comum em bases desbalanceadas para reduzir a diferença entre as proporções das classes"
@@ -578,7 +580,7 @@ o texto, o sumário precisa ser gerado de novo.
 168. **(DAL POZZOLO et al., 2015)** → [[preprocessing#^dalpozzolo2015-p1-3|p. 1]]
    "A subamostragem, porém, altera a proporção das classes no treino, e o … estimadas, embora não afete a ordenação das transações, afeta a classificação e a calibração dessas probabilidades"
 
-#### 4.3.2 Grid Search
+#### 4.3.3 Busca em Grade
 
 169. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
    "Conforme evidenciado pela literatura recente, a utilização de configurações padrão ou arbitrárias frequentemente resulta em desempenho subótimo, tornando a etapa de otimização paramétrica um requisito fundamental para a robustez do modelo."
@@ -589,84 +591,78 @@ o texto, o sumário precisa ser gerado de novo.
 171. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
    "De acordo com estudos comparativos em otimização de hiperparâmetros, o Grid Search demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade."
 
-172. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
-   "O número mínimo de pontos da distância núcleo do índice foi fixado … em todos os experimentos, já que o desempenho do índice se mostrou pouco sensível a ele."
+#### 4.3.4 Escores e Comparação dos Modelos
 
-#### 4.3.3 Grades de Hiperparâmetros
-
-173. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
-   "Segundo Probst, Wright e Boulesteix (2019), os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma."
-
-174. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
-   "Valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas"
-
-175. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
-   "A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis"
-
-176. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
-   "O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações"
-
-177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
-   "O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes"
-
-178. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
-   "Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste"
-
-179. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
-   "mas o tempo de execução cresce linearmente com ele"
-
-180. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
-   "Por fim, como as fraudes são raras, a grade compara o treinamento … maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo"
-
-181. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
-   "A taxa de aprendizado (shrinkage) multiplica por um fator a contribuição de … influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo"
-
-182. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
-   "O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste"
-
-183. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
-   "A profundidade e a taxa de aprendizado abrangem a configuração que Chen e Guestrin (2016) adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1."
-
-184. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
-   "No XGBoost, o parâmetro scale\_pos\_weight controla o equilíbrio entre os pesos das fraudes e das transações legítimas"
-
-185. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
-   "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
-
-186. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
-   "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
-
-187. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
-   "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
-
-### 4.4 Detecção de Fraudes
-
-188. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
+172. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
    "Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar"
 
-189. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
+173. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
    "Em todos eles, as transações classificadas como fraudulentas constituem os alertas, que, … que entram em contato com os titulares para determinar se cada transação é legítima ou fraudulenta"
 
-#### 4.4.1 Modelos Supervisionados
+### 4.4 Avaliação do Random Forest
 
-*Sem citações.*
+174. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
+   "Segundo Probst, Wright e Boulesteix (2019), os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma."
 
-#### 4.4.2 HDBSCAN*
+175. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
+   "Valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas"
 
-190. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+176. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
+   "A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis"
+
+177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
+   "O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações"
+
+178. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
+   "O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes"
+
+179. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
+   "Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste"
+
+180. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
+   "mas o tempo de execução cresce linearmente com ele"
+
+181. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
+   "Por fim, como as fraudes são raras, a grade compara o treinamento … maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo"
+
+### 4.5 Avaliação do XGBoost
+
+182. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
+   "A taxa de aprendizado (shrinkage) multiplica por um fator a contribuição de … influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo"
+
+183. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
+   "O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste"
+
+184. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+   "A profundidade e a taxa de aprendizado abrangem a configuração que Chen e Guestrin (2016) adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1."
+
+185. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
+   "O parâmetro scale\_pos\_weight controla o equilíbrio entre os pesos das fraudes e das transações legítimas"
+
+### 4.6 Avaliação do HDBSCAN*
+
+186. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+   "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
+
+187. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+   "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
+
+188. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
+   "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
+
+189. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore, $d_{m_{pts}}(x)$, é a distância da transação $x$ ao seu … as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
-191. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+190. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-192. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+191. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
-#### 4.4.3 Comparação dos Modelos
+192. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
+   "O número mínimo de pontos da distância núcleo do índice foi fixado … em todos os experimentos, já que o desempenho do índice se mostrou pouco sensível a ele."
 
-*Sem citações.*
-
-### 4.5 Ambiente de Execução e Bibliotecas
+### 4.7 Ambiente de Execução e Bibliotecas
 
 193. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"

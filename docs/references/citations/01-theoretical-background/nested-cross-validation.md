@@ -73,7 +73,7 @@
 > [[berrar2024_cross-validation.pdf#page=8|berrar2024, p.8]]
 > > It would not be advisable to select that value for which the best performance among the five outer folds was achieved because this approach would ignore the results from the remaining four folds and could be just due to chance. Instead, to find the "best" hyperparameter for the "winner" algorithm, it is preferable to run additional ordinary k-fold cross-validations (that is, without nesting), one for each distinct value of $h_{opt,k}$. The hyperparameter for which the best cross-validated performance is achieved will then be selected.
 >
-> Os três modelos são configurados pela maior métrica entre os vencedores dos ciclos internos, a AUPRC nos supervisionados e o DBCV no HDBSCAN* (Seção 4.3.2), critério que este trecho desaconselha. Nos supervisionados, a validação interna de uma rodada contém transações do teste das outras rodadas, de modo que, em quatro das cinco, a configuração é escolhida em parte com rótulos do próprio teste. No HDBSCAN*, o DBCV não usa rótulos. A justificativa da escolha e essa limitação ainda não estão no texto.
+> Os três modelos são configurados pela maior métrica entre os vencedores dos ciclos internos, a AUPRC nos supervisionados e o DBCV no HDBSCAN* (Seção 4.3.3), critério que este trecho desaconselha. Nos supervisionados, a validação interna de uma rodada contém transações do teste das outras rodadas, de modo que, em quatro das cinco, a configuração é escolhida em parte com rótulos do próprio teste. No HDBSCAN*, o DBCV não usa rótulos. A justificativa da escolha e essa limitação ainda não estão no texto.
 
 
 

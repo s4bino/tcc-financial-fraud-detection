@@ -28,12 +28,12 @@ dos capítulos na listagem do Obsidian.
 | `01-theoretical-background/mahalanobis-distance.md` | 2.5 Distância de Mahalanobis |
 | `01-theoretical-background/evaluation-metrics.md` | 2.6 Métricas de Avaliação |
 | `02-methodology/preprocessing.md` | 4.2 Pré-processamento |
-| `02-methodology/grid-search.md` | 4.3.2 Grid Search |
-| `02-methodology/hyperparameter-selection.md` | 4.3 Parametrização |
-| `02-methodology/density-based-clustering-validation.md` | 4.3 Parametrização — critério DBCV |
-| `02-methodology/hyperparameter-grids.md` | 4.3.3 Grades de Hiperparâmetros |
-| `02-methodology/fraud-detection.md` | 4.4 Detecção de Fraudes |
-| `02-methodology/execution-environment.md` | 4.5 Ambiente de Execução e Bibliotecas |
+| `02-methodology/grid-search.md` | 4.3.3 Busca em Grade |
+| `02-methodology/hyperparameter-selection.md` | 4.3.3 Busca em Grade e 4.6 Avaliação do HDBSCAN* |
+| `02-methodology/density-based-clustering-validation.md` | sem citação (DBCV, substituído pelo DISCO) |
+| `02-methodology/hyperparameter-grids.md` | 4.4 a 4.6, grade de cada modelo |
+| `02-methodology/fraud-detection.md` | 4.3.4 Escores e Comparação dos Modelos e 4.6 Avaliação do HDBSCAN* |
+| `02-methodology/execution-environment.md` | 4.7 Ambiente de Execução e Bibliotecas |
 | `03-conclusion/conclusion.md` | 6 Conclusão |
 | `03-support/bibtex-references.md` | entradas BibTeX coletadas |
 | `03-support/ideas.md` | anotações de trabalho e pontos em aberto |

@@ -1,11 +1,11 @@
 > [!check] Status: em uso na monografia
-> As chaves constam do `refbib.bib` e são citadas em Metodologia › Detecção de Fraudes, salvo as indicadas abaixo.
+> As chaves constam do `refbib.bib` e são citadas em Metodologia › Estratégia de Avaliação › Escores e Comparação dos Modelos (`fawcett2006` e o primeiro grifo de `dalpozzolo2018`) e em Metodologia › Avaliação do HDBSCAN\* (as demais), salvo as indicadas abaixo.
 > - `fawcett2006`: classificação pelo escore e pelo limiar. Parte do grifo da nota de métricas de avaliação.
-> - `sklearn2026rf` e `xgboost2026`: probabilidade de fraude do Random Forest e do XGBoost e regra de decisão. São a documentação das bibliotecas, sem PDF, e não são citadas na seção, para não citar as bibliotecas a cada frase. Os grifos ficam como registro de onde vem essa descrição. A `xgboost2026` segue citada em Metodologia › Grades de Hiperparâmetros, e a `sklearn2026rf` não é citada no texto.
+> - `sklearn2026rf` e `xgboost2026`: probabilidade de fraude do Random Forest e do XGBoost e regra de decisão. São a documentação das bibliotecas, sem PDF, e não são citadas na seção, para não citar as bibliotecas a cada frase. Os grifos ficam como registro de onde vem essa descrição. A `xgboost2026` segue citada em Metodologia › Avaliação do XGBoost, e a `sklearn2026rf` não é citada no texto.
 > - `jain1999`, `oyewole2023` e `cuml2026`: não são citados nem constam do `refbib.bib`, porque o grau de anomalia usa o GLOSH, e não a pertinência. Os grifos da seção HDBSCAN\* ficam só como registro da leitura.
 > - `ramaswamy2000`: escore de anomalia kNN. Mesmo grifo da nota do HDBSCAN\*.
 > - `dalpozzolo2018`: alertas inspecionados por investigadores que contatam os titulares, na abertura da seção, e poucos alertas verificados por dia, com preocupação com a precisão dos alertas. Também citado em Resultados e Discussão, com o grifo dos poucos alertas por dia.
-> - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Nested Cross-Validation ficam na nota de pré-processamento.
+> - `dalpozzolo2015`: limiar adequado alterado pela subamostragem, que motiva o quantil ponderado na base subamostrada. Os demais grifos da seção sustentam as docstrings de `legitimate_weight` e `alert_threshold` em `src/models/metrics.py`. Os grifos citados em Metodologia › Estratégia de Avaliação › Base Subamostrada ficam na nota de pré-processamento.
 
 ## Escore e limiar
 

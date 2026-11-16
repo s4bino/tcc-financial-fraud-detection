@@ -399,7 +399,7 @@
 > [!PDF|yellow] [[beer2025_internal-evaluation-density-based-clusterings-noise.pdf#page=9&selection=56,9,66,18&color=yellow|beer2025_internal-evaluation-density-based-clusterings-noise, p.9]]
 > > Robustness across benchmarks indicates that DISCO's performance is not sensitive to µ, allowing us to fix µ = 5 in all experiments
 >
-> Seção 4.5. Sustenta o valor 5 para o número mínimo de pontos do índice, citado em Metodologia › Grid Search.
+> Seção 4.5. Sustenta o valor 5 para o número mínimo de pontos do índice, citado em Metodologia › Avaliação do HDBSCAN\*.
 
 ^beer2025-p9
 
