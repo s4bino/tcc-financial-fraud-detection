@@ -166,13 +166,13 @@ Na primeira menção, o nome completo vem seguido da sigla entre parênteses (ma
 | Ficha catalográfica | `\fcautor` e afins | Só aparece se `\fcautor` estiver preenchido | Não usada (não obrigatória na graduação) |
 | Folha de aprovação | `\engtitle`, `\engsubtitle`, `\bancaum` a `\bancaquatro{nome}{instituição}`, `\defesa` | Só aparece se `\defesa` não estiver vazio. Escreve "Co-Orientador" ou "Co-Orientadora" | Fora do documento até a defesa. Os dados ficam em `docs/monografia/approval-page.tex`, que volta ao preâmbulo com `\input{approval-page}`. Ver pendências 6 a 8 |
 | Resumo e abstract | `\palchaves`, `\resumo`, `\keywords`, `\abstract` | Espaço simples, título em tamanho 12 e negrito | Conforme |
-| Sumário | `\tableofcontents` | SUMÁRIO em negrito, tamanho normal | Conforme |
+| Sumário | `\tableofcontents` | SUMÁRIO em negrito, tamanho normal. Seções primárias em maiúsculas, como no texto, por um ajuste no `\addcontentsline` feito no fim do `\begin{document}`, depois do hyperref. Os marcadores do PDF ficam com o título digitado | Conforme |
 | Seções | `\chapter` (seção primária), `\section` e abaixo | Primária em maiúsculas e negrito, em página nova. As demais em negrito | Conforme |
 | Figuras, tabelas e quadros | ambientes `figure`, `table` e `quadro` | Numeração por seção (3.1), título acima com travessão e alinhamento pendurado, título em `font=small` (cerca de 11 pt) | Mantido (pendência 5) |
 | Citação longa | ambiente `quote` | Recuo de 4 cm, `\small`, espaço simples | Conforme |
 | Notas | `\footnote` | `footmisc` com alinhamento pendurado, `\small` | Conforme |
 | Apêndices | `\apendice{Título}` | "APÊNDICE A -- TÍTULO" em negrito e maiúsculas. No sumário, "APÊNDICE A -- Título", na grafia digitada, como as seções primárias | Conforme |
-| Referências | `\referencias` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3`, `abnt-etal-text=emph` e `abnt-emphasize=bf` | Título em negrito e *et al.*, em itálico, a partir de quatro autores. Chamadas entre parênteses em caixa alta. Local desconhecido como "[S.l.]" | Caixa alta mantida (pendência 3). Ver pendência 18 |
+| Referências | `\referencias`, estilo `abntex2-alf-ufla` e `abntex2cite` com `alf`, `abnt-etal-cite=3`, `abnt-etal-list=3`, `abnt-etal-text=emph` e `abnt-emphasize=bf` | Título em negrito e *et al.*, em itálico, a partir de quatro autores. Chamadas entre parênteses em caixa alta. Local e editora desconhecidos como "[*S. l.*]", "[*s. n.*]" e "[*S. l.: s. n.*]" | Caixa alta mantida (pendência 3) |
 | Paginação | estilo `ufla` | Número no canto superior direito, em `\small` (cerca de 11 pt) | Conforme |
 
 ## 5. Pendências da monografia
@@ -193,11 +193,11 @@ Cada item traz a regra, a fonte, onde está no projeto e a situação. As mudan�
 - [x] **12. Referência do conjunto de dados no modelo "[Conjunto de dados]".** Manual, p. 138-139. `refbib.bib:146` (`kaggle2018`, `@misc`), com "[S.l.]" como as demais referências (ver pendência 18). Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
 - [x] **13. Paginação em tamanho 11.** Manual, p. 68. `uflamon.cls:311`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
 - [x] **14. Títulos RESUMO e ABSTRACT em `\large`.** O template usa tamanho 12. `uflamon.cls:841` e `866`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
-- [ ] **15. Logomarca mais recente da UFLA na capa.** Manual, p. 35. `docs/monografia/logoufla.png`. Conferir.
+- [x] **15. Logomarca mais recente da UFLA na capa.** Manual, p. 35. `docs/monografia/logoufla.png`. Conferida em 15/11/2026: é idêntica, byte a byte, ao arquivo oficial "Logo UFLA - Colorida chapada" que o usuário trouxe.
 - [x] **16. Autoria da epígrafe.** "(Pierre Bourdie)" em `main.tex:100-102`. Grafia corrigida para Bourdieu. A NBR 14724 pede só a indicação de autoria. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
 - [x] **17. Nota descritiva da folha de rosto em espaço simples.** Manual, p. 38. A classe a imprime com o espaço 1,5 do texto, enquanto a folha de aprovação já usa espaço simples. `uflamon.cls:535`. Resolvida no commit `docs: apply the remaining UFLA manual fixes`.
-- [ ] **18. Local desconhecido como "[*S. l.*]".** Manual, p. 100 e 104 (NBR 6023:2018). O estilo `abntex2-alf` gera "[S.l.]" e "[S.l.: s.n.]", sem espaço e sem itálico, em todas as referências sem local.
-- [ ] **19. Seções primárias no sumário com a grafia do texto.** Manual, p. 58, item c (recomendação). No texto, a classe põe as seções primárias em maiúsculas, e no sumário elas ficam na grafia digitada ("Metodologia").
+- [x] **18. Local desconhecido como "[*S. l.*]".** Manual, p. 100 e 104 (NBR 6023:2018). O estilo `abntex2-alf` gera "[S.l.]" e "[S.l.: s.n.]", sem espaço e sem itálico, em todas as referências sem local. A monografia usa `docs/monografia/abntex2-alf-ufla.bst`, cópia renomeada do `abntex2-alf.bst` (LPPL) que só troca essas três abreviaturas. Resolvida no commit `docs: follow the manual in the contents, the references and the acronyms`.
+- [x] **19. Seções primárias no sumário com a grafia do texto.** Manual, p. 58, item c (recomendação). No texto, a classe põe as seções primárias em maiúsculas, e no sumário elas ficavam na grafia digitada ("Metodologia"). Resolvida no commit `docs: follow the manual in the contents, the references and the acronyms`.
 
 Não se aplicam ao TCC de graduação a ficha catalográfica e os indicadores de impacto. As listas de ilustrações, tabelas e siglas são opcionais.
 
