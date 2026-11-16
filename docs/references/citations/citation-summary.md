@@ -114,10 +114,10 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 #### 2.2.2 Aprendizado Não Supervisionado
 
 32. **(SOLORIO-FERNÁNDEZ; CARRASCO-OCHOA; MARTÍNEZ-TRINIDAD, 2020)** → [[machine-learning#^rezazadeh2025-p9-2|p. 9]] *(Rezazadeh (2025) cita a obra logo depois do trecho grifado)*
-   "A segunda principal técnica em ML é o aprendizado não supervisionado, empregado na construção de modelos preditivos em situações em que não há disponibilidade de dados previamente rotulados para o treinamento"
+   "A segunda principal abordagem em ML é o aprendizado não supervisionado, empregado na construção de modelos em situações em que não há dados previamente rotulados para o treinamento"
 
 33. **(REZAZADEH, 2025)** → [[machine-learning#^rezazadeh2025-p19|p. 19]]
-   "Nesse caso, o papel do algoritmo é permitir que os dados falem … de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados"
+   "Nesse caso, o algoritmo revela as estruturas intrínsecas do conjunto sem a orientação de rótulos predefinidos, o que caracteriza o aprendizado não supervisionado como um processo orientado pelos dados"
 
 34. **(GOPAL, 2018)** → [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)*
    "Uma vez que não existem métricas estatísticas simples que definam um resultado … errado"), o processo baseia-se fortemente em medidas de estatística descritiva e técnicas de visualização de dados"
@@ -126,7 +126,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Considerada a técnica não supervisionada mais prevalente, o agrupamento visa organizar os dados em clusters com base em suas semelhanças intrínsecas."
 
 36. **(IGLESIAS; ZSEBY; ZIMEK, 2021; SHALEV-SHWARTZ; BEN-DAVID, 2014)** → Iglesias, 2021: [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)* · Shalev-Shwartz, 2014: [[machine-learning#^rezazadeh2025-p8|p. 8]] *(trecho de Rezazadeh (2025), que cita a obra)*
-   "O objetivo é garantir que os itens dentro de um mesmo cluster compartilhem características fortes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros clusters"
+   "O objetivo é garantir que os itens dentro de um mesmo cluster compartilhem características semelhantes (como formato, cor ou dimensão), enquanto exibem alta dissimilaridade em relação aos itens de outros clusters"
 
 37. **(DIKE et al., 2018)** → *sem grifo; Rezazadeh (2025) cita a obra na p. 9 do PDF, fora dos trechos grifados*
    "Esta técnica foca na descoberta de dependências ou correlações entre entradas individuais de dados para, posteriormente, mapeá-las em conjunto"
@@ -585,141 +585,144 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 
 #### 4.3.3 Busca em Grade
 
-170. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]] *(o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada)*
-   "Conforme evidenciado pela literatura recente, a utilização de configurações padrão ou arbitrárias frequentemente resulta em desempenho subótimo, tornando a etapa de otimização paramétrica um requisito fundamental para a robustez do modelo."
+170. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
+   "Os hiperparâmetros são parâmetros definidos antes do treinamento e que não são … de hiperparâmetros de melhor desempenho é parte do ajuste de um modelo de aprendizado de máquina"
 
 171. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
    "Durante a fase de calibração, o modelo é instanciado, treinado e avaliado iterativamente para cada combinação única presente nesta grade"
 
-172. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]] *(o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada)*
-   "De acordo com estudos comparativos em otimização de hiperparâmetros, o Grid Search demonstra-se a abordagem mais adequada e rigorosa para espaços de busca de baixa e média dimensionalidade."
+172. **(LIASHCHYNSKYI; LIASHCHYNSKYI, 2019)** → [[grid-search#^liashchynskyi2019-p3|p. 3]]
+   "A busca em grade sofre com espaços de busca de alta dimensão, mas costuma ser fácil de paralelizar, já que os valores dos hiperparâmetros avaliados são, em geral, independentes entre si"
+
+173. **(SHAMS et al., 2023)** → [[grid-search#^shams2024-p13|p. 13]]
+   "O seu custo cresce com o número de hiperparâmetros e de valores da grade, e, em troca, todas as combinações são avaliadas e a de melhor desempenho na validação é escolhida"
 
 #### 4.3.4 Escores e Comparação dos Modelos
 
-173. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
+174. **(FAWCETT, 2006)** → [[fraud-detection#^fawcett2006-p3|p. 3]]
    "Os três modelos atribuem a cada transação um escore que cresce com a suspeita de fraude, e a transação é classificada como fraudulenta quando o escore alcança um limiar"
 
-174. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
+175. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p1|p. 1]]
    "Em todos eles, as transações classificadas como fraudulentas constituem os alertas, que, … que entram em contato com os titulares para determinar se cada transação é legítima ou fraudulenta"
 
 ### 4.4 Avaliação do Random Forest
 
-175. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
+176. **Probst, Wright e Boulesteix (2019)** → [[hyperparameter-grids#^probst2019-p2|p. 2]]
    "Segundo Probst, Wright e Boulesteix (2019), os três primeiros controlam o compromisso entre a baixa correlação das árvores e a qualidade de cada uma."
 
-176. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
+177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-2|p. 3]]
    "Valores menores geram árvores mais diferentes e menos correlacionadas, que se agregam com mais estabilidade, mas cada árvore tende a ser pior, por escolher as divisões entre poucas variáveis candidatas"
 
-177. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
+178. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p2-2|p. 2]]
    "A grade parte do valor padrão para classificação, a raiz quadrada do número de variáveis"
 
-178. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
+179. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-3|p. 3]] · [[hyperparameter-grids#^probst2019-p3-4|p. 3]]
    "O tamanho da amostra tem efeito semelhante, pois amostras menores produzem árvores mais diversas e reduzem o tempo de execução, mas cada árvore é treinada com menos transações"
 
-179. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
+180. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p3-5|p. 3]] · [[hyperparameter-grids#^probst2019-p3-6|p. 3]]
    "O tamanho mínimo das folhas tem como padrão o valor 1 na classificação, e valores maiores reduzem o tempo de execução em bases grandes"
 
-180. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
+181. **(BIAU; SCORNET, 2016)** → [[hyperparameter-grids#^biau2016-p9|p. 9]]
    "Quanto ao número de árvores, um número maior tende a produzir predições mais precisas e não leva ao sobreajuste"
 
-181. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
+182. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[hyperparameter-grids#^probst2019-p4|p. 4]]
    "mas o tempo de execução cresce linearmente com ele"
 
-182. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
+183. **(CHEN; LIAW; BREIMAN, 2004)** → [[hyperparameter-grids#^chen2004-p3|p. 3]] · [[hyperparameter-grids#^chen2004-p3-2|p. 3]]
    "Por fim, como as fraudes são raras, a grade compara o treinamento … maior no treinamento das árvores e cujos pesos são um parâmetro de ajuste essencial do modelo"
 
 ### 4.5 Avaliação do XGBoost
 
-183. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
+184. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p3|p. 3]]
    "A taxa de aprendizado (shrinkage) multiplica por um fator a contribuição de … influência de cada árvore individual e deixa espaço para que as árvores seguintes aperfeiçoem o modelo"
 
-184. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
+185. **(CHEN; GUESTRIN, 2016)** → [[hyperparameter-grids#^chen2016-p2|p. 2]] · [[hyperparameter-grids#^chen2016-p2-2|p. 2]]
    "O parâmetro $\gamma$ penaliza o número de folhas na função objetivo regularizada do XGBoost, cujo termo de regularização suaviza os pesos aprendidos e evita o sobreajuste"
 
-185. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+186. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "A profundidade e a taxa de aprendizado abrangem a configuração que Chen e Guestrin (2016) adotam como comum em seus experimentos, com profundidade máxima 8 e taxa de aprendizado 0,1."
 
-186. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
+187. **(XGBOOST DEVELOPERS, 2026)** → [[hyperparameter-grids#^xgboost2026-doc|documentação]]
    "O parâmetro scale\_pos\_weight controla o equilíbrio entre os pesos das fraudes e das transações legítimas"
 
 ### 4.6 Avaliação do HDBSCAN*
 
 #### 4.6.1 Distâncias e Hiperparâmetros
 
-187. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+188. **(SANDER et al., 1998 apud SCHUBERT et al., 2017)** → Schubert, 2017: [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "Para o DBSCAN, recomenda-se que esse número seja o dobro da dimensão dos dados"
 
-188. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
+189. **(SCHUBERT et al., 2017)** → [[hyperparameter-grids#^schubert2017-p11|p. 11]]
    "valores maiores podem melhorar os resultados em bases com muito ruído, muito grandes ou de alta dimensão"
 
-189. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
+190. **(CAMPELLO et al., 2015)** → [[hyperparameter-grids#^campello2015-p15|p. 15]]
    "O tamanho mínimo de cluster, $m_{clSize}$, atua como um controle adicional e independente da suavização"
 
 #### 4.6.2 Grau de Anomalia
 
-190. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
+191. **(RAMASWAMY; RASTOGI; SHIM, 2000)** → [[fraud-detection#^ramaswamy2000-p1|p. 1]]
    "O segundo escore, $d_{m_{pts}}(x)$, é a distância da transação $x$ ao seu … as transações do treino, sem contar a própria transação, que corresponde ao escore de anomalia kNN"
 
 #### 4.6.3 Regra de Decisão
 
-191. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+192. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Desse modo, cerca de uma fração $\alpha$ das transações é sinalizada, o … poucos alertas por dia e as empresas se preocupam sobretudo com a precisão dos alertas gerados"
 
-192. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
+193. **(DAL POZZOLO et al., 2015)** → [[fraud-detection#^dalpozzolo2015-p4|p. 4]] · [[fraud-detection#^dalpozzolo2015-p5-2|p. 5]]
    "Como a subamostragem altera a proporção das classes no treino, ela altera também o limiar adequado à classificação"
 
 #### 4.6.4 Seleção e Validação
 
-193. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
+194. **Beer et al. (2025)** → [[evaluation-metrics#^beer2025-p9|p. 9]]
    "O número mínimo de pontos da distância núcleo do índice foi fixado … em todos os experimentos, já que o desempenho do índice se mostrou pouco sensível a ele."
 
 ### 4.7 Ambiente de Execução e Bibliotecas
 
-194. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
+195. **(PEDREGOSA et al., 2011)** → [[execution-environment#^pedregosa2011-p2|p. 2]]
    "O desenvolvimento foi realizado na linguagem Python, com a biblioteca scikit-learn"
 
-195. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
+196. **(CHEN; GUESTRIN, 2016)** → [[execution-environment#^chen2016-p1|p. 1]]
    "que fornece o Random Forest, o pré-processamento e as métricas de avaliação, a biblioteca XGBoost"
 
-196. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
+197. **(RASCHKA; PATTERSON; NOLET, 2020)** → [[execution-environment#^raschka2020-p15|p. 15]]
    "a biblioteca cuML, que oferece, em unidades de processamento gráfico (Graphics Processing Units, GPU), implementações de algoritmos de aprendizado de máquina equivalentes às do scikit-learn"
 
 ## 5 Resultados e Discussão
 
-197. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
+198. **(JURGOVSKY et al., 2018)** → [[introduction#^jurgovsky2018-p10|p. 10]]
    "As fraudes restantes não se distinguem das transações legítimas pelo grau de … na Seção 1, de que as fraudes se misturem às transações legítimas no espaço dos atributos"
 
-198. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
+199. **(DAL POZZOLO et al., 2018)** → [[fraud-detection#^dalpozzolo2018-p2|p. 2]]
    "Como os investigadores conseguem verificar apenas poucos alertas por dia"
 
-199. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
+200. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p12|p. 12]]
    "Esse resultado se relaciona com a limitação apontada por Ghalwash et al. … de 0,2% dos registros, elas tendem a aparecer como ruído ou outliers, sem formar clusters próprios."
 
-200. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
+201. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p1|p. 1]]
    "Os modelos supervisionados, por sua vez, alcançam precisão e pontuação F1 próximas … proposta por Alarfaj et al. (2022), embora os processos de avaliação dos dois trabalhos sejam diferentes."
 
 ## 6 Conclusão
 
-201. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
+202. **Ghalwash et al. (2025)** → [[related-work#^ghalwash2025-p5|p. 5]]
    "Como trabalhos futuros, sugere-se, em primeiro lugar, um modelo híbrido, em que … (2025), com o HDBSCAN* no lugar do DBSCAN para eliminar a escolha do raio de vizinhança."
 
-202. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
+203. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p1|p. 1]]
    "Essa direção é reforçada por Hajek, Abedin e Sivarajah (2022), que obtiveram os melhores resultados de classificação ao integrar vários algoritmos não supervisionados de detecção de outliers a um classificador XGBoost."
 
-203. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
+204. **Hajek, Abedin e Sivarajah (2022)** → [[conclusion#^hajek2022-p3|p. 3]]
    "Os modelos podem ainda ser avaliados em outras bases, como a PaySim, … já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo."
 
-204. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
+205. **(DAL POZZOLO et al., 2018)** → [[introduction#^dalpozzolo2018-p1|p. 1]]
    "em partições ordenadas no tempo, em que o treino antecede o teste, já que os hábitos dos clientes e as estratégias dos fraudadores mudam ao longo do tempo"
 
-205. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
+206. **(GHOSH et al., 2024)** → [[conclusion#^ghosh2024-p1|p. 1]]
    "Outra direção é tratar o problema como detecção de novidades, ou classificação de uma classe, em que há informação apenas sobre as instâncias normais e o modelo é aprendido somente com elas"
 
 ## Apêndice A – Hiperparâmetros dos modelos
 
 ### Random Forest e XGBoost
 
-206. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
+207. **Chen e Guestrin (2016)** → [[hyperparameter-grids#^chen2016-p8|p. 8]]
    "No XGBoost, a taxa de aprendizado de 0,1 e o parâmetro $\gamma$ … de Chen e Guestrin (2016), com árvores mais profundas e em menor número na base subamostrada."
 
 ### HDBSCAN*
@@ -738,27 +741,27 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
     - Título do periódico abreviado (Wiley Interdiscip. Rev. Comput. Stat.), e as demais referências usam o título completo.
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
-- **Alarfaj et al. (2022)** `alarfaj2022`, citações 2, 4, 140, 144, 145, 147, 151, 161, 200
+- **Alarfaj et al. (2022)** `alarfaj2022`, citações 2, 4, 140, 144, 145, 147, 151, 161, 201
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
-- **Beer et al. (2025)** `beer2025`, citações 18, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 149, 193
+- **Beer et al. (2025)** `beer2025`, citações 18, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 149, 194
 - **Berrar (2024)** `berrar2024`, citações 40, 41, 42, 45, 46
-- **Biau e Scornet (2016)** `biau2016`, citações 49, 53, 55, 180
+- **Biau e Scornet (2016)** `biau2016`, citações 49, 53, 55, 181
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
 - **Bzdok, Krzywinski e Altman (2018)** `bzdok2018`, citações 28, 29
     - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
 - **Campello et al. (2013)** `campello2013b`, citações 72
-- **Campello et al. (2015)** `campello2015`, citações 16, 59, 60, 62, 63, 64, 65, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 83, 84, 85, 86, 92, 95, 158, 189
+- **Campello et al. (2015)** `campello2015`, citações 16, 59, 60, 62, 63, 64, 65, 66, 67, 68, 70, 71, 72, 73, 78, 79, 80, 81, 83, 84, 85, 86, 92, 95, 158, 190
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
 - **Campos et al. (2016)** `campos2016`, citações 123, 125, 126
 - **Chawla et al. (2002)** `chawla2002`, citações 114
-- **Chen, Liaw e Breiman (2004)** `chen2004`, citações 182
+- **Chen, Liaw e Breiman (2004)** `chen2004`, citações 183
     - O .bib traz a instituição e o número do relatório técnico (666, University of California, Berkeley), mas a lista imprime só "[S. l.], 2004".
-- **Chen e Guestrin (2016)** `chen2016`, citações 58, 183, 184, 185, 195, 206
+- **Chen e Guestrin (2016)** `chen2016`, citações 58, 184, 185, 186, 196, 207
     - Preprint registrado como periódico, em formato diferente dos demais preprints da lista.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
     - Citada pela versão do arXiv. A versão publicada é a dos anais do KDD 2016 (22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, p. 785-794).
-- **Dal Pozzolo et al. (2018)** `dalpozzolo2018`, citações 9, 11, 21, 174, 191, 198, 204
-- **Dal Pozzolo et al. (2015)** `dalpozzolo2015`, citações 167, 168, 169, 192
+- **Dal Pozzolo et al. (2018)** `dalpozzolo2018`, citações 9, 11, 21, 175, 192, 199, 205
+- **Dal Pozzolo et al. (2015)** `dalpozzolo2015`, citações 167, 168, 169, 193
     - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
 - **Davis e Goadrich (2006)** `davis2006`, citações 19, 119, 120, 121, 122
     - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
@@ -767,11 +770,11 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
 - **Ester et al. (1996)** `ester1996`, citações 156
     - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
 - **Fauconnier e Haesbroeck (2009)** `fauconnier2009`, citações 101, 106, 107
-- **Fawcett (2006)** `fawcett2006`, citações 111, 112, 113, 115, 116, 117, 118, 173
-- **Ghalwash et al. (2025)** `ghalwash2025`, citações 143, 155, 157, 199, 201
+- **Fawcett (2006)** `fawcett2006`, citações 111, 112, 113, 115, 116, 117, 118, 174
+- **Ghalwash et al. (2025)** `ghalwash2025`, citações 143, 155, 157, 200, 202
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
 - **Ghorbani (2019)** `ghorbani2019`, citações 87, 88, 89, 90, 91, 98, 99
-- **Ghosh et al. (2024)** `ghosh2024`, citações 14, 74, 76, 79, 82, 205
+- **Ghosh et al. (2024)** `ghosh2024`, citações 14, 74, 76, 79, 82, 206
 - **Gopal (2018)** `gopal2018`, citações 30, 34, 38
     - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
     - Sem o local de publicação.
@@ -779,7 +782,7 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
     - Título do periódico abreviado (Nat. Rev. Methods Primers), e as demais referências usam o título completo.
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
-- **Hajek, Abedin e Sivarajah (2022)** `hajek2022`, citações 152, 202, 203
+- **Hajek, Abedin e Sivarajah (2022)** `hajek2022`, citações 152, 203, 204
     - Sem volume e páginas. Conferir os dados da versão final no periódico (a versão online é de 2022).
     - Dia do acesso com zero à esquerda (09 nov.), e o manual escreve 9 nov.
 - **Huang, Li e Xie (2015)** `huang2015`, citações 164
@@ -790,7 +793,7 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
 - **Iglesias, Zseby e Zimek (2021)** `iglesias2021`, citações 36
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
 - **Joanes e Gill (1998)** `joanes1998`, citações 165
-- **Jurgovsky et al. (2018)** `jurgovsky2018`, citações 3, 6, 7, 11, 12, 20, 142, 153, 154, 197
+- **Jurgovsky et al. (2018)** `jurgovsky2018`, citações 3, 6, 7, 11, 12, 20, 142, 153, 154, 198
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
 - **Kohavi (1995)** `kohavi1995`, citações 166
     - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
@@ -823,12 +826,12 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
     - Artigo de aplicação (previsão de PM2,5), fonte fraca para a teoria do gradient boosting, e a citação se apoia num trecho de outra monografia que cita a obra.
-- **Pedregosa et al. (2011)** `pedregosa2011`, citações 194
-- **Probst, Wright e Boulesteix (2019)** `probst2019`, citações 54, 175, 176, 177, 178, 179, 181
+- **Pedregosa et al. (2011)** `pedregosa2011`, citações 195
+- **Probst, Wright e Boulesteix (2019)** `probst2019`, citações 54, 176, 177, 178, 179, 180, 182
     - Faltam volume e número (v. 9, n. 3).
-- **Ramaswamy, Rastogi e Shim (2000)** `ramaswamy2000`, citações 77, 190
+- **Ramaswamy, Rastogi e Shim (2000)** `ramaswamy2000`, citações 77, 191
     - Trabalho em evento no formato "In: Proceedings of...". O manual (p. 125-126) pede In: NOME DO EVENTO, número, ano, local. Proceedings [...].
-- **Raschka, Patterson e Nolet (2020)** `raschka2020`, citações 196
+- **Raschka, Patterson e Nolet (2020)** `raschka2020`, citações 197
 - **Reurink (2016)** `reurink2016`, citações 22, 23, 24, 25
 - **Rezazadeh (2025)** `rezazadeh2025`, citações 27, 31, 33
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
@@ -849,15 +852,15 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
     - Disponível em sem Acesso em, que a NBR 6023:2018 pede nos documentos online.
     - Sem PDF no acervo. Conferir no artigo o trecho que sustenta a definição, já que a formulação "sem ser explicitamente programado" é atribuída a Samuel por terceiros.
-- **Sander et al. (1998)** `sander1998`, citações 187
+- **Sander et al. (1998)** `sander1998`, citações 188
     - Citada só por apud. O manual (p. 89) põe na lista apenas a fonte consultada.
-- **Schubert et al. (2017)** `schubert2017`, citações 59, 60, 61, 187, 188
+- **Schubert et al. (2017)** `schubert2017`, citações 59, 60, 61, 188, 189
     - Título do periódico abreviado (ACM Trans. Database Syst.), e as demais referências usam o título completo.
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
 - **Shalev-Shwartz e Ben-David (2014)** `shalev2014`, citações 36
     - Falta o subtítulo (from theory to algorithms).
-- **Shams et al. (2023)** `shams2024`, citações 170, 171
+- **Shams et al. (2023)** `shams2024`, citações 170, 171, 173
     - Título do periódico abreviado (Multimed. Tools Appl.), e as demais referências usam o título completo.
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
@@ -880,7 +883,7 @@ Nas 8 referências com endereço eletrônico, o estilo imprime o endereço entre
     - Título do periódico abreviado (Comput. Secur.), e as demais referências usam o título completo.
     - Editora em artigo de periódico, elemento que o modelo do manual (p. 121-122) não traz.
     - Mês fora da abreviatura do idioma da publicação, que o manual pede (Anexo B). Nas obras em inglês, o estilo imprime o mês em português.
-- **XGBoost Developers (2026)** `xgboost2026`, citações 186
+- **XGBoost Developers (2026)** `xgboost2026`, citações 187
 - **Zhang e Zhang (2009)** `zhang2009`, citações 124
 - **Zhang e Singer (2010)** `zhang2010`, citações 47, 50
     - Edição em português (2. ed.) numa obra em inglês. O manual pede a edição no idioma do documento (2nd ed.).
@@ -905,8 +908,6 @@ Citações sem grifo ou com grifo que não cobre toda a afirmação, pelo númer
 - 159. `kaggle2018`: página do conjunto de dados, sem PDF: [página do Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
 - 161. `alarfaj2022`: sem grifo para esta afirmação; o PDF está no acervo
 - 166. `kohavi1995`: sem PDF no acervo
-- 170. `shams2024`: o grifo define a busca em grade; a afirmação sobre configurações padrão não está grifada
-- 172. `liashchynskyi2019`: o grifo trata da alta dimensionalidade; a comparação com outros métodos não está grifada
 
 ### Conferência das referências
 
