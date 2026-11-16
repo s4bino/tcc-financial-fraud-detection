@@ -34,7 +34,7 @@
 > [!PDF|yellow] [[alarfaj2022_credit-card-fraud-detection-state-of-the-art.pdf#page=6&selection=87,0,87,31&color=yellow|alarfaj2022_credit-card-fraud-detection-state-of-the-art, p.6]]
 > > iii) K-NEAREST NEIGHBOURS (KNN)
 >
-> Página 39705 da revista. Sustenta o KNN na lista, que não aparece no resumo.
+> Página 39705 da revista. Sustenta o kNN na lista, que não aparece no resumo.
 
 ^alarfaj2022-p6
 
@@ -134,7 +134,7 @@
 > [!PDF|yellow] [[sulaiman2022_review-machine-learning-credit-card-fraud.pdf#page=5&selection=82,29,84,9&color=yellow|sulaiman2022_review-machine-learning-credit-card-fraud, p.5]]
 > > When the algorithm is fed a large amount of data, the performance of the KNN algorithm degrades.
 >
-> Página 59 da revista. Sustenta a queda de desempenho do KNN com grandes volumes de dados.
+> Página 59 da revista. Sustenta a queda de desempenho do kNN com grandes volumes de dados.
 
 ^sulaiman2022-p5
 
@@ -162,7 +162,7 @@
 > [!PDF|yellow] [[moulavi2014_density-based-clustering-validation.pdf#page=1&selection=119,0,121,28&color=yellow|moulavi2014_density-based-clustering-validation, p.1]]
 > > Because internal validity criteria measure clustering quality based solely on information intrinsic to the data
 >
-> Sustenta, no contraste com o Sulaiman, que o DBCV mede a qualidade do agrupamento sem rótulos. O índice é detalhado na Seção 3.4.8, com os grifos em `01-theoretical-background/evaluation-metrics.md`.
+> Sustenta, no contraste com o Sulaiman, que o DBCV mede a qualidade do agrupamento sem rótulos. O índice é detalhado na Seção 2.6.8, com os grifos em `01-theoretical-background/evaluation-metrics.md`.
 
 ^moulavi2014-p1
 

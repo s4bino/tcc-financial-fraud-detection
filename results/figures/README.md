@@ -1,15 +1,32 @@
 # Figuras e estatísticas
 
 Geradas pelos scripts em `src/analysis/`. Cada figura sai em PNG (leitura
-rápida) e PDF (vetorial, para inclusão no LaTeX). Os sumários em Markdown
-trazem os números que as figuras mostram.
+rápida, 300 dpi) e PDF (vetorial, para inclusão no LaTeX), com o estilo comum
+de `src/analysis/plot_style.py`, que fixa a fonte Times da monografia, a paleta
+fria (azul-marinho, ciano e cinza-ardósia) e o violeta reservado às fraudes e
+às observações discrepantes. Os sumários em Markdown trazem os números que as
+figuras mostram.
 
 ```bash
 python src/analysis/dataset_analysis.py   # results/figures/dataset
 python src/analysis/fold_analysis.py      # results/figures/folds
 python src/analysis/hdbscan_metrics.py    # results/figures/hdbscan
 python src/analysis/results_analysis.py   # results/figures/evaluation
+python src/analysis/mahalanobis_figures.py  # results/figures/theory
 ```
+
+---
+
+## `theory/` (seção 2.5, distância de Mahalanobis)
+
+Figuras com dados simulados (semente 42), com o centro e a covariância estimados
+como no pipeline (`src/models/whitening.py`). Os números que o texto descreve
+estão em `mahalanobis-statistics.md`.
+
+| Figura | O que responde |
+|---|---|
+| `01-euclidean-vs-mahalanobis` | como as curvas de distância euclidiana (círculos) e de Mahalanobis (elipses) diferem, e por que dois pontos à mesma distância euclidiana do centro podem ter distâncias de Mahalanobis muito diferentes |
+| `02-classical-vs-robust-covariance` | como um grupo de observações discrepantes alarga a elipse de tolerância clássica e não altera a robusta (MCD) |
 
 ---
 
@@ -23,13 +40,13 @@ a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
 | Arquivo | O que responde |
 |---|---|
 | `tables/outer-results.tex` | média e desvio padrão da AUPRC, da precisão, da revocação e da F1 no teste externo, por modelo e base |
-| `01-outer-metrics` | como essas métricas variam entre as cinco rodadas externas |
+| `01-outer-metrics-full`, `01-outer-metrics-undersampled` | como essas métricas variam entre as cinco rodadas externas, uma figura por base |
 | `tables/outer-alerts.tex` | quantos alertas, VP, FP e FN cada modelo gera, somados nos cinco testes |
 | `02-alert-fraction` | como a precisão, a revocação e a F1 do HDBSCAN* com MCD mudam com a fração de alertas |
 | `tables/reference-scores.tex` | AUPRC do grau de anomalia contra o GLOSH sozinho e a distância ao centro |
 | `tables/rf-hyperparameters.tex`, `xgb-hyperparameters.tex`, `hdbscan-hyperparameters.tex` | grade de cada modelo e configuração escolhida em cada base |
 | `tables/supervised-selection.tex` | AUPRC interna da configuração supervisionada escolhida, perto da maior média da grade? |
-| `tables/hdbscan-selection.tex`, `03-hdbscan-selection` | grupos, DISCO e AUPRC interna do HDBSCAN* para cada `min_samples` |
+| `tables/hdbscan-selection.tex`, `03-hdbscan-selection` | *clusters*, DISCO e AUPRC interna do HDBSCAN* para cada `min_samples` |
 
 ---
 
@@ -45,6 +62,7 @@ a legenda, o rótulo e a fonte ficam no `main.tex`. Os números estão em
 | `06-projection-3d` | a mesma nuvem em três dimensões, de quatro ângulos |
 | `07-local-density` | fraudes ocupam regiões menos densas? |
 | `08-amount-transformation` | o logaritmo corrige a assimetria de Amount antes do Z-score? |
+| `09-fraud-density-3d` | onde ficam as fraudes em relação às regiões mais densas das transações legítimas, em três dimensões e no plano |
 
 Números em `dataset-statistics.md`; ranking completo em
 `feature-discriminative-power.csv`.

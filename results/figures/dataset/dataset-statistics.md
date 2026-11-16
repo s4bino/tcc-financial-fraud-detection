@@ -70,6 +70,22 @@ Uma razão acima de 1 indica que as fraudes estão, em mediana, mais
 distantes de seus vizinhos — ou seja, em regiões menos densas. É a
 premissa que sustenta o tratamento de fraude como ruído.
 
+## Regiões de densidade das legítimas (figura 09)
+
+- Eixos: V17, V14, V12, as componentes de maior correlação absoluta com Class
+- Densidade estimada por núcleo gaussiano sobre uma amostra de 20.000 legítimas, com todas as 492 fraudes
+- Janela do painel (b): V17 de -5 a 7, V14 de -8 a 7
+
+Fração das fraudes em cada região das legítimas (a mais densa que contém
+a fração indicada das legítimas):
+
+| Região | Três dimensões | Plano dos dois primeiros eixos |
+|---|---|---|
+| 50% mais densas | 2.4% | 2.8% |
+| de 50% a 90% | 6.9% | 5.7% |
+| de 90% a 99% | 4.3% | 5.5% |
+| fora das 99% | 86.4% | 86.0% |
+
 ## Correlação com a variável alvo
 
 Cinco maiores em valor absoluto:

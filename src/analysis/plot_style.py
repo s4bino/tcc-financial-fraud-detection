@@ -2,12 +2,20 @@
 Shared visual style for every figure in this work.
 
 Centralises palette, typography and matplotlib parameters so that all figures
-read as one system. The categorical palette is colourblind-safe; the sequential
-and diverging scales derive from the same hues.
+read as one system, in the clean style of the figures of Campello et al. (2015)
+and Neto et al. (2021): serif type, framed axes, thin lines and a discreet grid.
+
+The palette is cold and bluish. Navy and cyan carry the identity of the series
+(the bases, the covariance estimates), slate grey carries neutral references,
+and a cold violet is reserved for anomalies (frauds and outliers), so that the
+anomalous points stand out in every figure with the same colour. The pairs that
+share a figure were checked for colour-vision deficiency (protanopia and
+deuteranopia, OKLab distance of at least 12) and for contrast against white.
 
 Rules applied throughout:
   - thin marks, hairline grid, never dashed;
   - colour follows the entity, never its rank;
+  - the violet accent marks anomalies only, never an ordinary series;
   - sequential scales use a single hue, light to dark;
   - diverging scales use two opposite poles with a neutral grey midpoint;
   - text is always ink, never the series colour.
@@ -18,7 +26,9 @@ the monograph, which is written in Portuguese.
 Figures that go into the monograph follow the UFLA layout used by Alcino
 (2022): white background, no title or note inside the image (the caption and
 the "Fonte" line are written in LaTeX), and a figure size equal to the printed
-size, so that fonts keep their nominal size on the page.
+size, so that fonts keep their nominal size on the page. The type is Times, the
+font of the monograph (pslatex and mathptmx in uflamon.cls), with STIX for the
+mathematics.
 """
 
 from matplotlib.colors import LinearSegmentedColormap
@@ -27,102 +37,147 @@ from matplotlib.colors import LinearSegmentedColormap
 TEXT_WIDTH_IN = 16 / 2.54
 
 # ---------------------------------------------------------------------------
-# Surfaces and ink
+# Surfaces and ink, cold greys
 # ---------------------------------------------------------------------------
 SURFACE = "#ffffff"
-INK = "#0b0b0b"
-INK_SECONDARY = "#52514e"
-INK_MUTED = "#898781"
-GRID = "#e1e0d9"
-AXIS = "#c3c2b7"
+INK = "#1a222e"
+INK_SECONDARY = "#424e5e"
+INK_MUTED = "#6f7c8c"
+GRID = "#e4e8ed"
+AXIS = "#424e5e"
 
 # ---------------------------------------------------------------------------
-# Categorical palette, in fixed order
+# Cold palette
 # ---------------------------------------------------------------------------
-BLUE = "#2a78d6"
-ORANGE = "#eb6834"
-AQUA = "#1baf7a"
-YELLOW = "#eda100"
-MAGENTA = "#e87ba4"
-GREEN = "#008300"
-VIOLET = "#4a3aa7"
-RED = "#e34948"
+NAVY = "#265496"  # azul-marinho, first series
+CYAN = "#139cb6"  # ciano, second series
+PETROL = "#176c5f"  # azul-petróleo, negative pole of the diverging scale
+SLATE = "#7a8798"  # cinza-ardósia, neutral references
+SLATE_LIGHT = "#a9b2be"  # hollow points and background observations
+NAVY_LIGHT = "#a5c0e5"  # lighter companion of navy, for paired series
+CYAN_LIGHT = "#a9d7e2"  # lighter companion of cyan, for paired series
+ACCENT = "#7e55f0"  # violeta frio, anomalies only (frauds, outliers)
 
-CATEGORICAL = [BLUE, ORANGE, AQUA, YELLOW, MAGENTA, GREEN, VIOLET, RED]
+# Series in fixed order: two hues, each with a lighter companion, so that four
+# series pair up by hue (navy and its companion, cyan and its companion).
+CATEGORICAL = [NAVY, NAVY_LIGHT, CYAN, CYAN_LIGHT]
 
 # Class identity, fixed across every figure.
-COLOR_LEGIT = BLUE
-COLOR_FRAUD = ORANGE
+COLOR_LEGIT = NAVY
+COLOR_FRAUD = ACCENT
 LABEL_LEGIT = "Transação legítima"
 LABEL_FRAUD = "Fraude"
 
 # ---------------------------------------------------------------------------
 # Continuous scales
 # ---------------------------------------------------------------------------
+# Single hue (OKLCH h about 258), lightness from 0.97 to 0.28.
 _BLUE_RAMP = [
-    "#cde2fb",
-    "#9ec5f4",
-    "#6da7ec",
-    "#3987e5",
-    "#2a78d6",
-    "#256abf",
-    "#1c5cab",
-    "#184f95",
-    "#104281",
-    "#0d366b",
+    "#eff6fd",
+    "#d1e3f9",
+    "#adcaee",
+    "#85ade3",
+    "#6091d4",
+    "#4174bf",
+    "#295ca5",
+    "#204887",
+    "#1a3666",
+    "#15284b",
 ]
 
-SEQUENTIAL = LinearSegmentedColormap.from_list("seq_blue", _BLUE_RAMP)
+SEQUENTIAL = LinearSegmentedColormap.from_list("seq_navy", _BLUE_RAMP)
 
-# Diverging: blue and red as poles, neutral grey at the midpoint.
+# Diverging: petrol and navy as poles, with matching lightness on both arms and
+# a neutral grey midpoint.
 DIVERGING = LinearSegmentedColormap.from_list(
-    "div_blue_red",
-    ["#0d366b", "#2a78d6", "#9ec5f4", "#f0efec", "#f0a6a5", "#e34948", "#8f2020"],
+    "div_petrol_navy",
+    [
+        "#053c34",
+        "#176c5f",
+        "#499d8e",
+        "#9dccc5",
+        "#f1f4f6",
+        "#b4c5e2",
+        "#7292d0",
+        "#395ca9",
+        "#1b3168",
+    ],
 )
 
-FONT_STACK = ["Segoe UI", "DejaVu Sans", "Arial", "sans-serif"]
+# Nested density regions (densest 50%, 90% and 99% of the points), dark to
+# light, steps of the sequential ramp.
+DENSITY_LEVELS = (0.50, 0.90, 0.99)
+DENSITY_COLORS = ("#295ca5", "#6a94cf", "#adcaee")
+
+FONT_STACK = ["Times New Roman", "STIXGeneral", "DejaVu Serif", "serif"]
 
 
 def apply_style():
     """Apply the global matplotlib parameters."""
     import matplotlib as mpl
+    from cycler import cycler
 
+    if SEQUENTIAL.name not in mpl.colormaps:
+        mpl.colormaps.register(SEQUENTIAL)
     mpl.rcParams.update(
         {
             "figure.facecolor": SURFACE,
             "savefig.facecolor": SURFACE,
             "axes.facecolor": SURFACE,
             "savefig.bbox": "tight",
-            "savefig.dpi": 200,
-            "font.family": "sans-serif",
-            "font.sans-serif": FONT_STACK,
-            "font.size": 9,
+            "savefig.pad_inches": 0.02,
+            # 300 dpi for the PNG and for the rasterised layers inside the PDF.
+            "savefig.dpi": 300,
+            # TrueType fonts embedded in the PDF, so that the text stays text.
+            "pdf.fonttype": 42,
+            "font.family": "serif",
+            "font.serif": FONT_STACK,
+            "mathtext.fontset": "stix",
+            "font.size": 10,
             "axes.titlesize": 10,
-            "axes.labelsize": 9,
-            "xtick.labelsize": 8,
-            "ytick.labelsize": 8,
-            "legend.fontsize": 8.5,
-            "figure.titlesize": 12,
+            "axes.labelsize": 10,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+            "legend.fontsize": 9,
+            "figure.titlesize": 11,
             "text.color": INK,
-            "axes.labelcolor": INK_SECONDARY,
-            "xtick.color": INK_MUTED,
-            "ytick.color": INK_MUTED,
+            "axes.labelcolor": INK,
             "axes.titlecolor": INK,
-            # Recessive solid grid; top and right spines removed.
+            "xtick.color": AXIS,
+            "ytick.color": AXIS,
+            "xtick.labelcolor": INK_SECONDARY,
+            "ytick.labelcolor": INK_SECONDARY,
+            # Framed axes with outward ticks, as in the reference articles.
+            "axes.edgecolor": AXIS,
+            "axes.linewidth": 0.6,
+            "axes.spines.top": True,
+            "axes.spines.right": True,
+            "xtick.direction": "out",
+            "ytick.direction": "out",
+            "xtick.major.size": 3,
+            "ytick.major.size": 3,
+            "xtick.major.width": 0.6,
+            "ytick.major.width": 0.6,
+            "xtick.minor.size": 1.8,
+            "ytick.minor.size": 1.8,
+            "xtick.minor.width": 0.5,
+            "ytick.minor.width": 0.5,
+            # Recessive solid grid.
             "axes.grid": True,
-            "axes.grid.axis": "y",
+            "axes.grid.axis": "both",
             "grid.color": GRID,
-            "grid.linewidth": 0.6,
+            "grid.linewidth": 0.5,
             "grid.linestyle": "-",
             "grid.alpha": 1.0,
             "axes.axisbelow": True,
-            "axes.edgecolor": AXIS,
-            "axes.linewidth": 0.8,
-            "axes.spines.top": False,
-            "axes.spines.right": False,
-            "lines.linewidth": 1.6,
+            "axes.prop_cycle": cycler(color=CATEGORICAL),
+            "image.cmap": SEQUENTIAL.name,
+            "lines.linewidth": 1.4,
             "lines.markersize": 4.5,
+            "patch.linewidth": 0.6,
             "legend.frameon": False,
+            "legend.handlelength": 1.8,
+            "legend.borderaxespad": 0.3,
             "figure.constrained_layout.use": True,
         }
     )
@@ -143,7 +198,7 @@ def save(fig, path_without_extension, formats=("png", "pdf")):
 
 def footnote(fig, text):
     """Discreet footnote, used to record data provenance or sampling."""
-    fig.text(0.0, -0.02, text, ha="left", va="top", fontsize=7.5, color=INK_MUTED)
+    fig.text(0.0, -0.02, text, ha="left", va="top", fontsize=8, color=INK_MUTED)
 
 
 def thousands(value):

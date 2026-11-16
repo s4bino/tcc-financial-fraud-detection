@@ -308,8 +308,8 @@
 
 \fancypagestyle{ufla}{
 \fancyhf{}
-\fancyhead[RO]{\thepage}
-\fancyhead[LE]{\thepage}
+\fancyhead[RO]{\small\thepage}
+\fancyhead[LE]{\small\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 }
@@ -342,6 +342,20 @@
 []% codigo posterior
 \assignpagestyle{\chapter}{ufla} % pagestyle
 \titlespacing{\chapter}{0pt}{-1cm}{0.5cm} % espacamento
+
+% Seções primárias também em maiúsculas no sumário, como no texto (manual da UFLA, p. 58).
+% O hyperref redefine o \addcontentsline, por isso o ajuste entra no fim do \begin{document}.
+% O \MakeUppercase vale só para o título da entrada, sem tocar no destino do link, e o
+% \texorpdfstring deixa os marcadores do PDF com o título como foi digitado.
+\AddToHook{begindocument/end}{%
+  \providecommand{\texorpdfstring}[2]{#1}%
+  \let\ufla@addcontentsline\addcontentsline
+  \renewcommand{\addcontentsline}[3]{%
+    \ifthenelse{\equal{#1}{toc}\AND\equal{#2}{chapter}}%
+      {\ufla@addcontentsline{#1}{#2}{\texorpdfstring{\protect\MakeUppercase{#3}}{#3}}}%
+      {\ufla@addcontentsline{#1}{#2}{#3}}%
+  }%
+}
 
 % Criando subsubsubsection (argh!)
 % copiado daqui
@@ -532,7 +546,7 @@
 
         \vspace{\stretch{1}}
 
-        \hfill\begin{minipage}{8cm}{\@tipo}\end{minipage} % tipo da monografia
+        \hfill\begin{minipage}{8cm}\renewcommand{\baselinestretch}{1}\normalsize\@tipo\end{minipage} % tipo da monografia, em espaço simples
 
         \vspace{\stretch{.58}}
 
@@ -838,7 +852,7 @@
     %\null\vfill
                           
     \begin{center}
-        \large{\textbf{RESUMO}}
+        \textbf{RESUMO}
     \end{center}
     
     % espaçamento simples no resumo
@@ -863,7 +877,7 @@
     %\null\vfill
                           
     \begin{center}
-        \large{\textbf{ABSTRACT}}
+        \textbf{ABSTRACT}
     \end{center}
     
         
@@ -1084,8 +1098,8 @@
   } {% se não for, pule a página 
     \cleardoublepage          
   }
-  {\centering \bf  AP\^{E}NDICE~\theapendice\ -- #1\\}
-  \addcontentsline{toc}{chapter}{\numberline{} APENDICE~\theapendice\ -- #1}
+  {\centering \bf  AP\^{E}NDICE~\theapendice\ -- \MakeUppercase{#1}\\}
+  \addcontentsline{toc}{chapter}{\numberline{} AP\^{E}NDICE~\theapendice\ -- #1}
 }
 %######################################################################
 

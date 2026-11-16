@@ -20,7 +20,7 @@
 > [!PDF|yellow] [[fawcett2006_introduction-roc-analysis.pdf#page=2&selection=222,0,222,75&color=yellow|fawcett2006_introduction-roc-analysis, p.2]]
 > > Fig. 1. Confusion matrix and common performance metrics calculated from it.
 >
-> Página 862 da revista. A Figura 1 traz a disposição da matriz, adaptada no Quadro 3.1, e as fórmulas de acurácia, precisão, revocação e F-measure (Equações 3.2 a 3.5). As fórmulas estão desenhadas na figura, fora da camada de texto, por isso o grifo fica na legenda.
+> Página 862 da revista. A Figura 1 traz a disposição da matriz, adaptada no Quadro 2.1, e as fórmulas de acurácia, precisão, revocação e F-measure (Equações 2.4 a 2.7). As fórmulas estão desenhadas na figura, fora da camada de texto, por isso o grifo fica na legenda.
 
 ^fawcett2006-p2-2
 
@@ -108,14 +108,14 @@
 > [!PDF|yellow] [[campos2016_evaluation-unsupervised-outlier-detection.pdf#page=11&selection=44,2,45,82&color=yellow|campos2016_evaluation-unsupervised-outlier-detection, p.11]]
 > > One such measure, popular in information retrieval contexts, is the average precision (Zhang and Zhang 2009)
 >
-> Sustenta a precisão média como medida de avaliação da ordenação. A equação (Eq. 14 do artigo) remete a Zhang e Zhang (2009), citados na Equação 3.6.
+> Sustenta a precisão média como medida de avaliação da ordenação. A equação (Eq. 14 do artigo) remete a Zhang e Zhang (2009), citados na Equação 2.8.
 
 ^campos2016-p11
 
 > [!PDF|yellow] [[zhang2009_average-precision.pdf#page=192&selection=186,0,226,20&color=yellow|zhang2009_average-precision, p.192]]
 > > Average precision is a measure that combines recall and precision for ranked retrieval results. For one information need, the average precision is the mean of the precision scores after each relevant document is retrieved. Average Precision = Σr P@r / R where r is the rank of each relevant document, R is the total number of relevant documents, and P@r is the precision of the top-r retrieved documents.
 >
-> Página 192 da enciclopédia (o PDF reúne todos os verbetes da letra A). Sustenta a Equação 3.6: a média das precisões nas posições dos exemplos positivos. Na monografia, R é |O| e r é pos(o).
+> Página 192 da enciclopédia (o PDF reúne todos os verbetes da letra A). Sustenta a Equação 2.8: a média das precisões nas posições dos exemplos positivos. Na monografia, R é |O| e r é pos(o).
 
 ^zhang2009-p192
 
@@ -173,7 +173,7 @@
 > [!PDF|yellow] [[moulavi2014_density-based-clustering-validation.pdf#page=4&selection=342,0,342,44&color=yellow|moulavi2014_density-based-clustering-validation, p.4]]
 > > Definition 2. (Mutual Reachability Distance)
 >
-> A definição, logo abaixo do título, é a mesma da Equação 3.1 com a distância núcleo do DBCV no lugar da distância núcleo do HDBSCAN\*. O texto da definição está intercalado com a outra coluna na camada de texto, por isso o grifo fica no título.
+> A definição, logo abaixo do título, é a mesma da Equação 2.1 com a distância núcleo do DBCV no lugar da distância núcleo do HDBSCAN\*. O texto da definição está intercalado com a outra coluna na camada de texto, por isso o grifo fica no título.
 
 ^moulavi2014-p4
 
@@ -315,7 +315,7 @@
 > [!PDF|yellow] [[beer2025_internal-evaluation-density-based-clusterings-noise.pdf#page=4&selection=200,0,310,51&color=yellow|beer2025_internal-evaluation-density-based-clusterings-noise, p.4]]
 > > To assess density-connectivity in a clustering, DISCO uses the density-connectivity distance (dc-dist) d_dc(x, y) (Beer et al., 2023). It is the minimax path (i.e., the path with the smallest maximum step size) distance between two points x, y ∈ X in the graph given by all pairwise mutual reachability distances d_m(x, y) = max{κ(x), κ(y), d_eucl(x, y)} (Ankerst et al., 1999): d_dc(x, y) = max_{e ∈ p(x,y)} |e| if x ≠ y, else 0 (1) where |e| is the weight of any edge e (given by d_m) on the path p(x, y) that connects points x and y in the minimum spanning tree (MST) over this graph.
 >
-> Sustenta a distância de conectividade por densidade e a Equação 3.9 da monografia. A distância núcleo κ é calculada com o parâmetro μ do índice, independente do $m_{pts}$ do agrupamento.
+> Sustenta a distância de conectividade por densidade e a Equação 2.9 da monografia. A distância núcleo κ é calculada com o parâmetro μ do índice, independente do $m_{pts}$ do agrupamento.
 
 ^beer2025-p4
 
@@ -336,7 +336,7 @@
 > [!PDF|yellow] [[beer2025_internal-evaluation-density-based-clusterings-noise.pdf#page=4&selection=441,0,464,13&color=yellow|beer2025_internal-evaluation-density-based-clusterings-noise, p.4]]
 > > When x ∈ X is assigned to a cluster Ĉ_x, we compute ρ_cluster(x) by comparing average distances within the cluster (compactness) with those to the closest other cluster (separation).
 >
-> Sustenta o escore dos pontos de grupo, a Equação 3.10 da monografia, que corresponde à Equação (4) do artigo.
+> Sustenta o escore dos pontos de grupo, a Equação 2.10 da monografia, que corresponde à Equação (4) do artigo.
 
 ^beer2025-p4-3
 
@@ -378,7 +378,7 @@
 > [!PDF|yellow] [[beer2025_internal-evaluation-density-based-clusterings-noise.pdf#page=4&selection=334,88,350,31&color=yellow|beer2025_internal-evaluation-density-based-clusterings-noise, p.4]]
 > > we define DISCO pointwise, giving a score ρ(x) to each point x. The score for the entire dataset X is then the average over all points' scores
 >
-> Sustenta o escore por ponto e o índice como a média dos escores, a Equação 3.11 da monografia.
+> Sustenta o escore por ponto e o índice como a média dos escores, a Equação 2.11 da monografia.
 
 ^beer2025-p4-4
 
@@ -399,7 +399,7 @@
 > [!PDF|yellow] [[beer2025_internal-evaluation-density-based-clusterings-noise.pdf#page=9&selection=56,9,66,18&color=yellow|beer2025_internal-evaluation-density-based-clusterings-noise, p.9]]
 > > Robustness across benchmarks indicates that DISCO's performance is not sensitive to µ, allowing us to fix µ = 5 in all experiments
 >
-> Seção 4.5. Sustenta o valor 5 para o número mínimo de pontos do índice, citado em Metodologia › Grid Search.
+> Seção 4.5. Sustenta o valor 5 para o número mínimo de pontos do índice, citado em Metodologia › Avaliação do HDBSCAN\*.
 
 ^beer2025-p9
 

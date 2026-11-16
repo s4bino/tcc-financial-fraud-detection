@@ -1,5 +1,5 @@
 > [!check] Status: em uso na monografia
-> Todas as chaves constam do `refbib.bib` e são citadas em Metodologia › Parametrização e avaliação de consistência › Grades de Hiperparâmetros.
+> Todas as chaves constam do `refbib.bib` e são citadas nas seções de avaliação de cada modelo da Metodologia, em Avaliação do Random Forest (`probst2019`, `biau2016` e `chen2004`), Avaliação do XGBoost (`chen2016` e `xgboost2026`) e Avaliação do HDBSCAN\* (`sander1998` apud `schubert2017` e `campello2015`).
 > - `probst2019`: compromisso entre correlação e qualidade das árvores, efeito de cada hiperparâmetro do Random Forest, valores padrão e tempo de execução. Só afirmações do próprio artigo, sem as que ele atribui a outros autores.
 > - `biau2016`: mais árvores, predições mais precisas e sem sobreajuste. Mesmo trecho da nota do Random Forest.
 > - `chen2004`: ponderação das classes no Random Forest e pesos como parâmetro de ajuste essencial.

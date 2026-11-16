@@ -1,6 +1,6 @@
 > [!check] Status: em uso na monografia
 > Citado em Fundamentação › Distância de Mahalanobis, com as subseções de covariância empírica e de covariância robusta. Os grifos novos ficam na seção "Citado na fundamentação", no fim da nota, e alguns das seções de estudo também são citados.
-> - `ghorbani2019`: ponderação pela variabilidade, invariância à escala, definição, relação com a euclidiana, necessidade de estimadores robustos e o MCD como o mais usado. Por apud, `mahalanobis1936` e `rousseeuw1985`, sem PDF no acervo.
+> - `ghorbani2019`: ponderação pela variabilidade, invariância à escala, definição, relação com a euclidiana, círculo e elipse da comparação entre as duas distâncias (Figura 2.3), necessidade de estimadores robustos e o MCD como o mais usado. Por apud, `mahalanobis1936` e `rousseeuw1985`, sem PDF no acervo.
 > - `hubert2010`: afastamento do centro em relação ao tamanho da nuvem, elipse de tolerância, mascaramento, MCD bruto, concentração, cálculo exato, corte da repesagem, distância robusta e o exemplo dos vinhos. Por apud, `rousseeuw1999` (FAST-MCD), sem PDF no acervo.
 > - `fauconnier2009`: variância generalizada e repesagem com pesos 0 e 1, retornada por padrão pelos programas.
 > - `campello2015`: sensibilidade da média e da covariância às anomalias e HDBSCAN\* definido sobre distâncias num espaço métrico qualquer.
@@ -233,7 +233,7 @@
 > [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=6&selection=29,0,73,12&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.6]]
 > > It is a scale invariant metric and provides a measure of distance between a point x ∈ Rᵖ generated from a given p-variate (probability) distribution f_X(.) and the mean µ = E(X) of the distribution. Assume f_X(.) has finite second order moments and denote Σ = E(X − µ) be the covariance matrix. Then the Mahalanobis distance is defined by
 >
-> Página 588 da revista. Sustenta a definição da Equação 3.2, a distância de um ponto ao centro de uma distribuição com covariância Σ. A equação (3.1) do artigo vem logo depois do trecho.
+> Página 588 da revista. Sustenta a definição da Equação 2.3, a distância de um ponto ao centro de uma distribuição com covariância Σ. A equação (3.1) do artigo vem logo depois do trecho.
 
 ^ghorbani2019-p6-4
 
@@ -345,4 +345,11 @@
 > Página 36 da revista. Sustenta que, no exemplo, as distâncias robustas destacam oito observações discrepantes.
 
 ^hubert2010-p1-6
+
+> [!PDF|yellow] [[ghorbani2019_mahalanobis-distance-multivariate-outliers.pdf#page=7&selection=40,0,40,82&color=yellow|ghorbani2019_mahalanobis-distance-multivariate-outliers, p.7]]
+> > Schematic comparison of the Mahalanobis (ellipse) and Euclidean (circle) distances
+>
+> Página 589 da revista, legenda da Fig. 3.1. Sustenta que os pontos a uma mesma distância euclidiana do centro formam um círculo, e os pontos a uma mesma distância de Mahalanobis, uma elipse. A figura do artigo serviu de modelo para a Figura 2.3 da monografia, feita com dados simulados.
+
+^ghorbani2019-p7
 

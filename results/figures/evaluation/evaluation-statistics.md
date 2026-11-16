@@ -73,7 +73,7 @@ Fração adotada nas tabelas: 0.0017. Fração dos alertas das rodadas: 0.0008.
 
 ## Ciclo interno do HDBSCAN*
 
-| Distância | Base | m_pts | Grupos | DISCO médio | DISCO máximo | AUPRC | Escolhida |
+| Distância | Base | m_pts | Clusters | DISCO médio | DISCO máximo | AUPRC | Escolhida |
 |---|---|---|---|---|---|---|---|
 | euclidean | full | 50 | 124.4 | -0.162 | -0.142 | 0.243 |  |
 | euclidean | full | 100 | 61.4 | -0.087 | -0.078 | 0.281 |  |
