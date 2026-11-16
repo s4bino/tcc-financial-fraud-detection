@@ -53,7 +53,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Como a detecção não supervisionada de anomalias parte da premissa de que elas se encontram em regiões de baixa densidade"
 
 15. **(NETO et al., 2021)** → [[introduction#^neto2021-p1|p. 1]]
-   "O HDBSCAN*, estado da arte entre esses algoritmos, é um método hierárquico de agrupamento que, a partir de uma mesma hierarquia de densidades, produz o agrupamento dos dados e detecta outliers."
+   "O HDBSCAN* (Hierarchical Density-Based Spatial Clustering of Applications with Noise), estado da arte entre esses algoritmos"
 
 16. **(CAMPELLO et al., 2015)** → [[introduction#^campello2015-p2|p. 2]] · [[introduction#^campello2015-p2-2|p. 2]]
    "é um método hierárquico de agrupamento que, a partir de uma mesma hierarquia de densidades, produz o agrupamento dos dados e detecta outliers"
@@ -175,7 +175,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "À medida que os dados atravessam a árvore, eles passam por nós internos até serem classificados em subgrupos terminais mutuamente exclusivos, as folhas"
 
 49. **(BIAU; SCORNET, 2016)** → [[random-forest#^biau2016-p3|p. 3]] · [[random-forest#^biau2016-p16|p. 16]]
-   "O modelo RF é construído a partir de várias árvores de decisão, com o fim de superar a instabilidade das estimativas de uma árvore isolada"
+   "O Random Forest é construído a partir de várias árvores de decisão, com o fim de superar a instabilidade das estimativas de uma árvore isolada"
 
 50. **Zhang e Singer (2010)** → *sem PDF no acervo*
    "Nesse sentido, Zhang e Singer (2010) afirmam que, isoladamente, cada árvore não representa um bom modelo, mas a combinação delas gera ganho de valor."
@@ -187,7 +187,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Utiliza-se a média aritmética para tarefas de regressão ou o voto da maioria para classificação"
 
 53. **(BIAU; SCORNET, 2016)** → [[random-forest#^biau2016-p5|p. 5]]
-   "Além da amostragem com reposição, a cada divisão de nó o RF considera apenas um subconjunto de variáveis sorteado entre as disponíveis"
+   "Além da amostragem com reposição, a cada divisão de nó o Random Forest considera apenas um subconjunto de variáveis sorteado entre as disponíveis"
 
 54. **(PROBST; WRIGHT; BOULESTEIX, 2019)** → [[random-forest#^probst2019-p3|p. 3]]
    "o que torna as árvores mais diferentes e menos correlacionadas entre si e confere maior estabilidade à agregação"
@@ -339,7 +339,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
 #### 2.5.2 Covariância robusta
 
 99. **(ROUSSEEUW, 1985 apud GHORBANI, 2019)** → Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p8|p. 8]] · Ghorbani, 2019: [[mahalanobis-distance#^ghorbani2019-p9|p. 9]]
-   "O estimador robusto mais usado é o determinante mínimo da covariância (MCD, do inglês Minimum Covariance Determinant)"
+   "O estimador robusto mais usado é o MCD"
 
 100. **(HUBERT; DEBRUYNE, 2010)** → [[mahalanobis-distance#^hubert2010-p2-2|p. 2]]
    "Entre os subconjuntos de $h$ observações, com $h$ de pouco mais da metade até o total de observações, o MCD escolhe aquele cuja matriz de covariância amostral tem o menor determinante"
@@ -447,7 +447,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "A maior parte desses índices supõe clusters compactos e não serve para avaliar clusters de formato arbitrário, como os do agrupamento por densidade"
 
 129. **(MOULAVI et al., 2014)** → [[evaluation-metrics#^moulavi2014-p1-3|p. 1]]
-   "Entre os índices para clusters de formato arbitrário, o mais conhecido é o DBCV"
+   "Entre os índices para clusters de formato arbitrário, o mais conhecido é o DBCV (Density-Based Clustering Validation)"
 
 130. **(BEER et al., 2025)** → [[evaluation-metrics#^beer2025-p2-2|p. 2]] · [[evaluation-metrics#^beer2025-p3|p. 3]]
    "Ele, porém, apenas reduz o escore pela fração de pontos rotulados como … corretos, e não é determinístico, pois descarta pontos de árvores geradoras mínimas que não são únicas"
@@ -494,7 +494,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Em particular, são analisadas as publicações de Alarfaj et al. (2022), Sulaiman, Schetinin e Sant (2022), Jurgovsky et al. (2018) e Ghalwash et al. (2025)."
 
 144. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p1|p. 1]] · [[related-work#^alarfaj2022-p1-2|p. 1]] · [[related-work#^alarfaj2022-p5|p. 5]] · [[related-work#^alarfaj2022-p6|p. 6]] · [[related-work#^alarfaj2022-p1-3|p. 1]] · [[related-work#^alarfaj2022-p1-4|p. 1]] · [[related-work#^alarfaj2022-p1-5|p. 1]] · [[related-work#^alarfaj2022-p14|p. 14]]
-   "Com base no mesmo dataset que é usado nesta pesquisa, Alarfaj et … taxa de alarmes falsos, mudança constante na natureza das fraudes e o alto desbalanceamento das bases."
+   "Com base no mesmo conjunto de dados usado nesta pesquisa, Alarfaj et … taxa de alarmes falsos, mudança constante na natureza das fraudes e o alto desbalanceamento das bases."
 
 145. **Alarfaj et al. (2022)** → [[related-work#^alarfaj2022-p5|p. 5]]
    "Enquanto o trabalho de Alarfaj et al. (2022) se concentra sobretudo em … baseado em densidade para a identificação de fraudes, assumindo como hipótese que fraudes são anomalias (outliers)."
@@ -546,7 +546,7 @@ e do `refbib.bib`. Ao mudar o texto ou as referências, o sumário precisa ser g
    "Assim, o conjunto de dados deste trabalho foi disponibilizado pelo Machine Learning Group da Université Libre de Bruxelles e está disponível no Kaggle"
 
 160. **(ABDI; WILLIAMS, 2010)** → [[principal-component-analysis#^abdi2010-p1|p. 1]]
-   "Em relação às features, o dataset possui 31 variáveis numéricas das quais … conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação"
+   "O conjunto de dados possui 31 variáveis numéricas, das quais 28 (V1, … conjuntos de dados, assim aumentando a interpretabilidade e, de forma paralela, minimizando a perda de informação"
 
 161. **(ALARFAJ et al., 2022)** → *sem grifo para esta afirmação; o PDF está no acervo*
    "Concomitantemente, a PCA colabora para a anonimização dos dados"
